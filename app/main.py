@@ -11,7 +11,6 @@ app = Flask(__name__)
 #######################################################################################
 # PostgreSQL Config                                                                   #
 #######################################################################################
-# TODO: WIP
 PSQL_DB = getenv("PSQL_DB")
 PSQL_USER = getenv("PSQL_USER")
 PSQL_PASSWORD = getenv("PSQL_PASSWORD")
