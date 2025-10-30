@@ -21,7 +21,7 @@ dependencies = [
 requires-python = ">=3.12"
 authors = [
   {name = "Daniel Benjamin Georg", email = "dge46862@stud.hs-furtwangen.de"},
-  {name = "Mattis Depoorter", email = "tzu-ping@example.com"},
+  {name = "Mattis Depoorter", email = "mde45191@stud.hs-furtwangen.de"},
   {name = "Patrick Moser", email = "pmo47116@stud.hs-furtwangen.de"},
 ]
 keywords = ["python", "flask", "postgresql"]

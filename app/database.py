@@ -4,21 +4,23 @@ Credentials in dotenv.
 """
 import psycopg
 
-class SQL:
+class PSQL:
     """
-    TODO: Docstring
+    Handles all connections with the PostgreSQL database.
     """
     user: str = ""
     password: str = ""
+    db: str = ""
 
-    def __init__(self, user: str=None, password: str=None):
+    def __init__(self, user: str=None, password: str=None, db: str=None):
         """
-        TODO: Docstring
+        Credentials in dotenv; check README for instructions.
         """
-        if user is None or password is None:
-            raise("Can't find .env data. Does it exist?")
+        if user is None or password is None or db is None:
+            raise FileNotFoundError("Can't find .env data. Does it exist?")
         self.user = user
         self.password = password
+        self.db = db
 
 
     def create_table(self):

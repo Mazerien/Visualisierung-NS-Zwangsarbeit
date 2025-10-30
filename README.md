@@ -24,9 +24,10 @@ Run container: `docker compose up -d`
 Create these files and fill them with data.  
 ### .env
 ```
-POSTGRES_USER=  
-POSTGRES_PASSWORD=
-POSTGRES_DB=
+PSQL_USER=  
+PSQL_PASSWORD=
+PSQL_DB=
+PSQL_HOST=
 ```
 
 
