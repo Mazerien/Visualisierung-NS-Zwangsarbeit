@@ -1,0 +1,28 @@
+[project]
+version = "0.0.1"
+description = "Visualization of the International Dimension of Forced Labour in Nazi Germany"
+readme      = "README.md"
+dependencies = [
+    "blinker==1.9.0",
+    "click==8.3.0",
+    "flask==3.1.2",
+    "itsdangerous==2.2.0",
+    "jinja2==3.1.6",
+    "markupsafe==3.0.3",
+    "psycopg2==2.9.11",
+    "werkzeug==3.1.3",
+]
+requires-python = ">=3.12"
+authors = [
+  {name = "Daniel Benjamin Georg", email = "dge46862@stud.hs-furtwangen.de"},
+  {name = "Mattis Depoorter", email = "tzu-ping@example.com"},
+  {name = "Patrick Moser", email = "pmo47116@stud.hs-furtwangen.de"},
+]
+keywords = ["python", "flask", "postgresql"]
+
+[tool.pylint.MAIN]
+init-hook = """
+try: import pylint_venv
+except ImportError: pass
+else: pylint_venv.inithook()
+"""
