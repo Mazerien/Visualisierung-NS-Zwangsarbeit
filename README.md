@@ -15,13 +15,14 @@ Open with: [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
 ## Containerization
 Install Docker and docker-compose.  
-Current containerization supports an empty PostgreSQL database on port TCP/5432 as well as the Flask app on TCP/5000.  
+Current containerization supports an empty PostgreSQL database on TCP/5432 as well as the Flask app on TCP/5000.  
 Create container: `docker compose up --build`  
+Run container: `docker compose up -d`
 
 
 ## Dotenv Schema
 Create these files and fill them with data.  
-### .db.env
+### .env
 ```
 POSTGRES_USER=  
 POSTGRES_PASSWORD=
