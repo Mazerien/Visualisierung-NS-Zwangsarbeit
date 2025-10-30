@@ -1,10 +1,10 @@
 ## Visualization of the International Dimension of Forced Labour in Nazi Germany
 This is a Python/Flask app listening on port TCP/5000.  
+All terminal commands are run from project root directory unless stated otherwise.  
 
 ## Config
 Create a Python Virtual Environment using Python >=3.12.  
 Use the recommended extensions from `.vscode/extensions.json` if you use VSCode.  
-All terminal commands are run from project root directory unless stated otherwise.  
 Install dependencies: `pip install -r requirements.txt`  
 Add new module dependencies: `pip freeze > requirements.txt`  
 Add dependencies to pyproject.toml: `uv add -r requirements.txt`  
@@ -13,7 +13,24 @@ Add dependencies to pyproject.toml: `uv add -r requirements.txt`
 Run with `flask --app app/main.py run`  
 Open with: [http://127.0.0.1:5000](http://127.0.0.1:5000)
 
+## Containerization
+Install Docker and docker-compose.  
+Current containerization supports an empty PostgreSQL database on port TCP/5432 as well as the Flask app on TCP/5000.  
+Create container: `docker compose up --build`  
+
+
+## Dotenv Schema
+Create these files and fill them with data.  
+### .db.env
+```
+POSTGRES_USER=  
+POSTGRES_PASSWORD=
+POSTGRES_DB=
+```
+
 
 ## Sources
 [Writing your pyproject.toml](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/)  
-[Primer on Jinja Templating](https://realpython.com/primer-on-jinja-templating/)
+[Primer on Jinja Templating](https://realpython.com/primer-on-jinja-templating/)  
+[Dockerizing Flask App with Postgres: A Step-by-Step Guide](https://medium.com/@pooya.oladazimi/dockerizing-flask-app-with-postgres-a-step-by-step-guide-e9fc9939deff)  
+[Python Docker image documentation](https://hub.docker.com/_/python/)

@@ -1,0 +1,25 @@
+services:
+  db:
+    image: postgres
+    container_name: db
+    restart: always
+    env_file:
+      - .db.env    
+    volumes:
+      - ./pData:/var/lib/postgresql/
+    healthcheck:      
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB} -t 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+      start_period: 10s
+  
+  flask:
+    container_name: app
+    build:
+      context: .
+      dockerfile: dockerfile 
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
