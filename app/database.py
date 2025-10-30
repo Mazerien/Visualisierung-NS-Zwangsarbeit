@@ -27,11 +27,17 @@ class PSQL:
         """
         TODO: Docstring
         """
-        with psycopg.connect(host="localhost", port=5432) as conn:
+        with psycopg.connect(
+            user=self.user,
+            password=self.password,
+            port=5432,
+            dbname=self.db,
+            host="db"
+            ) as conn:
             pass
             with conn.cursor() as cur:
                 cur.execute("""
-                    CREATE TABLE test (
+                    CREATE TABLE IF NOT EXISTS test (
                         id serial PRIMARY KEY,
                         num integer,
                         data text

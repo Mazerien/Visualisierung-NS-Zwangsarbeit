@@ -17,7 +17,8 @@ Open with: [http://127.0.0.1:5000](http://127.0.0.1:5000)
 Install Docker and docker-compose.  
 Current containerization supports an empty PostgreSQL database on TCP/5432 as well as the Flask app on TCP/5000.  
 Create container: `docker compose up --build`  
-Run container: `docker compose up -d`
+Run container: `docker compose up -d`  
+Remove container: `docker compose down`  
 
 
 ## Dotenv Schema

@@ -3,7 +3,8 @@
 FROM python:3-alpine
 
 RUN apk update
-RUN apk add --no-cache gcc musl-dev libffi-dev postgresql-dev
+RUN apk add --no-cache gcc musl-dev libffi-dev postgresql-dev   
+# don't use dev in prod!
 
 ENV USERNAME=db
 ENV WORKING_DIR=/home/app
@@ -12,6 +13,7 @@ WORKDIR ${WORKING_DIR}
 COPY app app
 COPY requirements.txt .
 COPY script.sh .
+COPY .env .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
