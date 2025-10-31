@@ -5,6 +5,8 @@ Also tries establishing connection with a pre-existing PostgreSQL database.
 from flask import Flask, render_template
 from os import getenv
 from database import PSQL
+from map import draw_map_from_place
+
 
 app = Flask(__name__)
 
@@ -29,3 +31,13 @@ def index():
     TODO: Docstring
     """
     return render_template("index.html")
+
+
+@app.route("/map")
+def map():
+    """
+    TODO: Docstring
+    """
+    # TODO: Integrate OSM call into Jinja template
+    map = draw_map_from_place("Schwenningen, Villingen-Schwenningen, Germany")
+    return render_template("map.html")
