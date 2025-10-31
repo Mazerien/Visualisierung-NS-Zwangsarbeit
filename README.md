@@ -31,9 +31,15 @@ PSQL_DB=
 PSQL_HOST=
 ```
 
+## OpenStreetMap
+OpenStreetMap has a public API.  
+This project uses the [OSMnx Python library](https://osmnx.readthedocs.io/en/stable/getting-started.html).  
+As of right now, it is possible to generate a high-resolution PNG image of Schwenningen's roads from OSM. It is saved as `schwenningen.png`.
 
 ## Sources
 [Writing your pyproject.toml](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/)  
 [Primer on Jinja Templating](https://realpython.com/primer-on-jinja-templating/)  
 [Dockerizing Flask App with Postgres: A Step-by-Step Guide](https://medium.com/@pooya.oladazimi/dockerizing-flask-app-with-postgres-a-step-by-step-guide-e9fc9939deff)  
-[Python Docker image documentation](https://hub.docker.com/_/python/)
+[Python Docker image documentation](https://hub.docker.com/_/python/)  
+Boeing, G. (2025). [Modeling and Analyzing Urban Networks and Amenities with OSMnx.](https://doi.org/10.1111/gean.70009) Geographical Analysis 57 (4), 567-577. doi:10.1111/gean.70009  
+[Creating beautiful maps with Python](https://towardsdatascience.com/creating-beautiful-maps-with-python-6e1aae54c55c/)
