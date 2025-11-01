@@ -4,6 +4,7 @@ Credentials in dotenv.
 """
 import psycopg
 
+
 class PSQL:
     """
     Handles all connections with the PostgreSQL database.
@@ -12,7 +13,7 @@ class PSQL:
     password: str = ""
     db: str = ""
 
-    def __init__(self, user: str=None, password: str=None, db: str=None):
+    def __init__(self, user: str = None, password: str = None, db: str = None):
         """
         Credentials in dotenv; check README for instructions.
         """
@@ -21,7 +22,6 @@ class PSQL:
         self.user = user
         self.password = password
         self.db = db
-
 
     def create_table(self):
         """
@@ -33,7 +33,7 @@ class PSQL:
             port=5432,
             dbname=self.db,
             host="db"
-            ) as conn:
+        ) as conn:
             pass
             with conn.cursor() as cur:
                 cur.execute("""
@@ -42,11 +42,11 @@ class PSQL:
                         num integer,
                         data text
                     )"""
-                )
+                            )
                 cur.execute(
                     """
                     INSERT INTO test (num, data) VALUES (%s, %s)
                     """, (100, "abc'def"))
                 cur.execute("SELECT * FROM test")
                 print(cur.fetchone()
-                )
+                      )
