@@ -36,7 +36,7 @@ PSQL_HOST=
 ## OpenStreetMap
 OpenStreetMap has a public API.  
 This project uses the [OSMnx Python library](https://osmnx.readthedocs.io/en/stable/getting-started.html).  
-As of right now, it is possible to generate a high-resolution PNG image of Schwenningen's roads from OSM. It is saved as `schwenningen.png`.
+As of right now, it is possible to render a high-resolution PNG image of a chosen city's roads from OSM within the Flask app.
 
 ## Sources
 [Writing your pyproject.toml](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/)  

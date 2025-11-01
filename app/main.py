@@ -41,16 +41,18 @@ def index():
 @app.route("/map", methods=["GET", "POST"])
 def map():
     """
-    TODO: Docstring
+    Handles map rendering. 
+    Stores an image within static/images/ and displays it after finishing rendering.
     """
     if request.method == "POST":
         city = request.form["city"]
         area = request.form["area"]
         country = request.form["country"]
-        app.logger.info(f"Sending OSM API request about {city}, {area}, {country}...")
+        app.logger.info(
+            f"Sending OSM API request about {city}, {area}, {country}...")
         draw_map_from_place(f"{city}, {area}, {country}")
         return render_template("map.html")
 
-    # TODO: Integrate OSM call into Jinja template
-    #map = draw_map_from_place("Schwenningen, Villingen-Schwenningen, Germany")
+    # TODO: Add it so if there is no POST request, no image is shown
+    # TODO: Also check for lack of an image altogether (shows error image as of now)
     return render_template("map.html")
