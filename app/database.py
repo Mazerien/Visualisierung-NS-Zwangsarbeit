@@ -18,7 +18,8 @@ class PSQL:
         Credentials in dotenv; check README for instructions.
         """
         if user is None or password is None or db is None:
-            raise FileNotFoundError("Can't find .env data. Does it exist?")
+            # TODO: Stable PSQL connection.
+            print("Can't find .env data. Does it exist?")
         self.user = user
         self.password = password
         self.db = db
@@ -32,7 +33,6 @@ class PSQL:
             password=self.password,
             port=5432,
             dbname=self.db,
-            host="db"
         ) as conn:
             pass
             with conn.cursor() as cur:

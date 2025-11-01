@@ -11,7 +11,9 @@ Add dependencies to pyproject.toml: `uv add -r requirements.txt`
 
 ## Run Flask
 Run with `flask --app app/main.py run`  
-Open with: [http://127.0.0.1:5000](http://127.0.0.1:5000)
+Debug mode with `flask --app app/main.py run --debug`  
+Open with: [http://127.0.0.1:5000](http://127.0.0.1:5000)  
+Debug mode enables on-the-fly changes to the app as well as additional logging statements through Flask.logger.info().  
 
 ## Containerization
 Install Docker and docker-compose.  

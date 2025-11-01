@@ -3,5 +3,13 @@
 {% block title %} Map {% endblock title %}
 
 {% block body %}
-Hello, World!
+<!--TODO: Don't make in-line style. Think of something better. -->
+<img src="{{ url_for('static', filename='images/map.png') }}" style="max-height: 50em;">
+Make me a map. 
+<form method="POST" action="{{ url_for('map') }}">
+    <input type="text" name="city" placeholder="Schwenningen">
+    <input type="text" name="area" placeholder="Villingen-Schwenningen">
+    <input type="text" name="country" placeholder="Germany">
+    <button type="submit">Create map of city</button>
+</form>
 {% endblock body %}

@@ -28,6 +28,7 @@ def draw_map_from_place(place: str = "Schwenningen, Villingen-Schwenningen, Germ
                             save=False, edge_color="#a6a6a6",
                             edge_linewidth=0.5, edge_alpha=1)
     fig.tight_layout(pad=0)
-    # TODO: Make output more dynamic, maybe dynamically pass drawing to Flask?
-    fig.savefig("schwenningen.png", dpi=300, bbox_inches='tight',
+    # TODO: Make output more dynamic, maybe dynamically pass drawing to Flask instead of saving?
+    print("Image made. Saving...")
+    fig.savefig("app/static/images/map.png", dpi=300, bbox_inches='tight',
                 format="png", facecolor=fig.get_facecolor(), transparent=False)
