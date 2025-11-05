@@ -1,30 +1,27 @@
 """
 Starts the Flask app and listens in on TCP/5000.
-Also tries establishing connection with a pre-existing PostgreSQL database.
+Also tries establishing connection with a pre-existing MySQL database.
 """
 from flask import Flask, render_template, request
 from os import getenv
-from database import PSQL
+from database import MySQL
 from map import draw_map_from_place
 
 
 app = Flask(__name__)
 
 #######################################################################################
-# PostgreSQL Config                                                                   #
+# MySQL Config                                                                   #
 #######################################################################################
-PSQL_DB = getenv("PSQL_DB")
-PSQL_USER = getenv("PSQL_USER")
-PSQL_PASSWORD = getenv("PSQL_PASSWORD")
-database = PSQL(
-    user=PSQL_USER, password=PSQL_PASSWORD, db=PSQL_DB
+SQL_DB = getenv("SQL_DB")
+SQL_USER = getenv("SQL_USER")
+SQL_PASSWORD = getenv("SQL_PASSWORD")
+SQL_HOST = getenv("SQL_HOST")
+database = MySQL(
+    user=SQL_USER, password=SQL_PASSWORD, host=SQL_HOST, db=SQL_DB
 )
-# TODO: Working PostgreSQL database
-try:
-    database.create_table()
-except Exception as e:
-    print(e)
-    print("No PostgreSQL connection possible. Continuing.")
+# TODO: Working MySQL database
+database.connect()
 
 
 #######################################################################################

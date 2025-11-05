@@ -1,52 +1,57 @@
 """ 
-Control for the PostgreSQL server listening in TCP/5432.
+Control for the MySQL server listening in TCP/3306.
 Credentials in dotenv.
 """
-import psycopg
+import mysql.connector
 
-
-class PSQL:
+class MySQL:
     """
-    Handles all connections with the PostgreSQL database.
+    Handles all connections with the MySQL database.
     """
     user: str = ""
     password: str = ""
+    host: str = ""
     db: str = ""
 
-    def __init__(self, user: str = None, password: str = None, db: str = None):
-        """
-        Credentials in dotenv; check README for instructions.
-        """
-        if user is None or password is None or db is None:
-            # TODO: Stable PSQL connection.
-            print("Can't find .env data. Does it exist?")
+    def __init__(self, user: str, password: str, host: str, db: str):
         self.user = user
         self.password = password
-        self.db = db
+        self.host = host
+        self. db = db
 
-    def create_table(self):
+    def connect(self):
         """
         TODO: Docstring
         """
-        with psycopg.connect(
-            user=self.user,
-            password=self.password,
-            port=5432,
-            dbname=self.db,
-        ) as conn:
-            pass
-            with conn.cursor() as cur:
-                cur.execute("""
-                    CREATE TABLE IF NOT EXISTS test (
-                        id serial PRIMARY KEY,
-                        num integer,
-                        data text
-                    )"""
-                            )
-                cur.execute(
-                    """
-                    INSERT INTO test (num, data) VALUES (%s, %s)
-                    """, (100, "abc'def"))
-                cur.execute("SELECT * FROM test")
-                print(cur.fetchone()
-                      )
+        try:
+            cnx = mysql.connector.connect(
+                user=self.user, password=self.password, host=self.host, database=self.db)
+            print("Connected to MySQL database.")
+            cur = cnx.cursor()
+            cur.execute("""CREATE TABLE IF NOT EXISTS `person` (
+`id` int(11) NOT NULL AUTO_INCREMENT,
+`first_name` varchar(14) NOT NULL,
+`last_name` varchar(14) NOT NULL,
+`date_of_birth` date NOT NULL,
+`gender` enum('M', 'F', 'X'),
+PRIMARY KEY (`id`)
+) ENGINE=InnoDB""")
+            cnx.commit()
+        except mysql.connector.Error as e:
+            print(e)
+
+    def create_table():
+        """
+        TODO: Docstring
+        """
+        # TODO: Proper DB tables, right now just used for testing
+        table: str = """
+CREATE TABLE 'person' (
+'id' int(11) NOT NULL AUTO_INCREMENT,
+'first_name' varchar(14) NOT NULL,
+'last_name' varchar(14) NOT NULL,
+'date_of_birth' date NOT NULL,
+'gender' enum('M', 'F', 'X')
+PRIMARY KEY ('id')
+) ENGINE=InnoDB"""
+        pass

@@ -6,6 +6,13 @@ import osmnx as ox
 # TODO: Messy, but works.
 
 
+def get_place_features(place: str = "Schwenningen, Villingen-Schwenningen, Germany"):
+    """
+    TODO: Docstring
+    """
+    return ox.features_from_place(place, tags={"tourism": ["museum"]})
+
+
 def draw_map_from_place(place: str = "Schwenningen, Villingen-Schwenningen, Germany"):
     """
     TODO: Docstring

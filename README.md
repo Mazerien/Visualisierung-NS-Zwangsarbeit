@@ -18,6 +18,7 @@ Debug mode enables on-the-fly changes to the app as well as additional logging s
 ## Containerization
 Install Docker and docker-compose.  
 Current containerization supports an empty PostgreSQL database on TCP/5432 as well as the Flask app on TCP/5000.  
+TODO: Write docker-compose for MySQL  
 Create container: `docker compose up --build`  
 Run container: `docker compose up -d`  
 Remove container: `docker compose down`  
@@ -27,10 +28,10 @@ Remove container: `docker compose down`
 Create these files and fill them with data.  
 ### .env
 ```
-PSQL_USER=  
-PSQL_PASSWORD=
-PSQL_DB=
-PSQL_HOST=
+SQL_USER=
+SQL_PASSWORD=
+SQL_DB=
+SQL_HOST=
 ```
 
 ## OpenStreetMap
@@ -45,3 +46,4 @@ As of right now, it is possible to render a high-resolution PNG image of a chose
 [Python Docker image documentation](https://hub.docker.com/_/python/)  
 Boeing, G. (2025). [Modeling and Analyzing Urban Networks and Amenities with OSMnx.](https://doi.org/10.1111/gean.70009) Geographical Analysis 57 (4), 567-577. doi:10.1111/gean.70009  
 [Creating beautiful maps with Python](https://towardsdatascience.com/creating-beautiful-maps-with-python-6e1aae54c55c/)
+[MySQL doc](https://dev.mysql.com/doc/connector-python/en/connector-python-example-ddl.html)
