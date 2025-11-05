@@ -4,7 +4,7 @@
 app/
 ├── database.py
 ├── main.py
-├── map.py
+├── geography.py
 ├── static
 │   ├── *.css
 │   ├── *.ico
@@ -15,7 +15,7 @@ app/
 ```
 database.py defines the connection with PostgreSQL.  
 main.py is the Flask app.  
-map.py concerns Open Street Map API calls.  
+geography.py concerns Open Street Map API calls.  
 
 static/ serves CSS files.  
 static/images/ serves image files. Currently, map generation data gets stored here.  

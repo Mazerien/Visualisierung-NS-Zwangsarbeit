@@ -5,13 +5,13 @@ Also tries establishing connection with a pre-existing MySQL database.
 from flask import Flask, render_template, request
 from os import getenv
 from database import MySQL
-from map import draw_map_from_place
+from geography import draw_map_from_place
 
 
 app = Flask(__name__)
 
 #######################################################################################
-# MySQL Config                                                                   #
+# MySQL Config                                                                        #
 #######################################################################################
 SQL_DB = getenv("SQL_DB")
 SQL_USER = getenv("SQL_USER")
@@ -21,7 +21,7 @@ database = MySQL(
     user=SQL_USER, password=SQL_PASSWORD, host=SQL_HOST, db=SQL_DB
 )
 # TODO: Working MySQL database
-database.connect()
+#database.connect()
 
 
 #######################################################################################
@@ -53,3 +53,11 @@ def map():
     # TODO: Add it so if there is no POST request, no image is shown
     # TODO: Also check for lack of an image altogether (shows error image as of now)
     return render_template("map.html")
+
+
+@app.route("/data")
+def database():
+    """
+    TODO: Docstring
+    """
+    return render_template("database.html")

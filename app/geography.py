@@ -30,7 +30,7 @@ def draw_map_from_place(place: str = "Schwenningen, Villingen-Schwenningen, Germ
         data.append(ddata)
 
     bgcolor = "#101813"
-    fig, ax = ox.plot_graph(graph, node_size=0, figsize=(27, 40),
+    fig, _ = ox.plot_graph(graph, node_size=0, figsize=(27, 40),
                             dpi=300, bgcolor=bgcolor,
                             save=False, edge_color="#a6a6a6",
                             edge_linewidth=0.5, edge_alpha=1)

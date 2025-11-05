@@ -46,4 +46,5 @@ As of right now, it is possible to render a high-resolution PNG image of a chose
 [Python Docker image documentation](https://hub.docker.com/_/python/)  
 Boeing, G. (2025). [Modeling and Analyzing Urban Networks and Amenities with OSMnx.](https://doi.org/10.1111/gean.70009) Geographical Analysis 57 (4), 567-577. doi:10.1111/gean.70009  
 [Creating beautiful maps with Python](https://towardsdatascience.com/creating-beautiful-maps-with-python-6e1aae54c55c/)
-[MySQL doc](https://dev.mysql.com/doc/connector-python/en/connector-python-example-ddl.html)
+[MySQL doc](https://dev.mysql.com/doc/connector-python/en/connector-python-example-ddl.html)  
+[Understanding Connection Pooling for MySQL](https://medium.com/@havus.it/understanding-connection-pooling-for-mysql-28be6c9e2dc0)
