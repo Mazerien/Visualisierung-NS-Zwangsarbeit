@@ -8,6 +8,7 @@ Use the recommended extensions from `.vscode/extensions.json` if you use VSCode.
 Install dependencies: `pip install -r requirements.txt`  
 Add new module dependencies: `pip freeze > requirements.txt`  
 Add dependencies to pyproject.toml: `uv add -r requirements.txt`  
+[Create a local MySQL database for development](https://dev.mysql.com/doc/mysql-getting-started/en/). Store credentials in the .env schema shown below.  
 
 ## Run Flask
 Run with `flask --app app/main.py run`  
@@ -18,7 +19,7 @@ Debug mode enables on-the-fly changes to the app as well as additional logging s
 ## Containerization
 Install Docker and docker-compose.  
 Current containerization supports an empty PostgreSQL database on TCP/5432 as well as the Flask app on TCP/5000.  
-TODO: Write docker-compose for MySQL  
+TODO: Rewrite docker-compose for MySQL  
 Create container: `docker compose up --build`  
 Run container: `docker compose up -d`  
 Remove container: `docker compose down`  

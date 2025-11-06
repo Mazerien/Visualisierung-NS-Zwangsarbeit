@@ -29,8 +29,6 @@ dependencies = [
     "packaging==25.0",
     "pandas==2.3.3",
     "pillow==12.0.0",
-    "psycopg==3.2.12",
-    "psycopg-pool==3.2.7",
     "pyogrio==0.11.1",
     "pyparsing==3.2.5",
     "pyproj==3.7.2",
@@ -56,7 +54,7 @@ authors = [
   {name = "Mattis Depoorter", email = "mde45191@stud.hs-furtwangen.de"},
   {name = "Patrick Moser", email = "pmo47116@stud.hs-furtwangen.de"},
 ]
-keywords = ["python", "flask", "postgresql"]
+keywords = ["python", "flask", "mysql"]
 
 [tool.pylint.MAIN]
 init-hook = """

@@ -20,8 +20,8 @@ SQL_HOST = getenv("SQL_HOST")
 database = MySQL(
     user=SQL_USER, password=SQL_PASSWORD, host=SQL_HOST, db=SQL_DB
 )
-# TODO: Working MySQL database
-#database.connect()
+# Uncomment to create dummy data to play with
+#database.create_demo_data()
 
 
 #######################################################################################
@@ -56,8 +56,8 @@ def map():
 
 
 @app.route("/data")
-def database():
+def data():
     """
     TODO: Docstring
     """
-    return render_template("database.html")
+    return render_template("database.html", db=database.get_columns_in_table())

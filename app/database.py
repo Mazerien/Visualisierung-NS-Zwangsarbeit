@@ -28,10 +28,14 @@ class MySQL:
         cnx: MySQLConnectionPool.PooledMySQLConnection = self.pool.get_connection()
         cur = cnx.cursor()
         cur.execute(query)
-        if not is_read_only:
-            cnx.commit()
-            return
-        return cnx.fetchall()
+        match is_read_only:
+            case True:
+                cur = cur.fetchall()
+                cnx.close()
+                return cur
+            case False:
+                cnx.commit()
+                cnx.close()
 
     def connect(self):
         """
@@ -53,32 +57,22 @@ PRIMARY KEY (`id`)
         except mysql.connector.Error as e:
             print(e)
 
-    def create_table():
-        """
-        TODO: Docstring
-        """
-        # TODO: Proper DB tables, right now just used for testing
-        table: str = """
-CREATE TABLE 'person' (
-'id' int(11) NOT NULL AUTO_INCREMENT,
-'first_name' varchar(14) NOT NULL,
-'last_name' varchar(14) NOT NULL,
-'date_of_birth' date NOT NULL,
-'gender' enum('M', 'F', 'X')
-PRIMARY KEY ('id')
-) ENGINE=InnoDB"""
-        pass
-
     def create_demo_data(self):
         """
         Demo data for testing.
         """
-        pass
-        self.query_exec()
+        self.query_exec("""
+    INSERT INTO person (first_name, last_name, date_of_birth, gender) VALUES
+    ('Alice', 'Johnson', '1995-04-12', 'F'),
+    ('Bob', 'Smith', '1988-11-23', 'M'),
+    ('Charlie', 'Brown', '2000-06-05', 'X'),
+    ('Diana', 'White', '1992-01-30', 'F'),
+    ('Ethan', 'Williams', '1985-09-17', 'M');
+    """)
 
     def get_columns_in_table(self):
         """
         TODO: Docstrings"""
         pass
-        query: str = "SELECT count(*) FROM person;"
+        query: str = "SELECT * FROM person;"
         return self.query_exec(query, True)
