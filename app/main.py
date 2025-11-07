@@ -20,8 +20,6 @@ SQL_HOST = getenv("SQL_HOST")
 database = MySQL(
     user=SQL_USER, password=SQL_PASSWORD, host=SQL_HOST, db=SQL_DB
 )
-# Uncomment to create dummy data to play with
-#database.create_demo_data()
 
 
 #######################################################################################
@@ -48,16 +46,19 @@ def map():
         app.logger.info(
             f"Sending OSM API request about {city}, {area}, {country}...")
         draw_map_from_place(f"{city}, {area}, {country}")
-        return render_template("map.html")
 
     # TODO: Add it so if there is no POST request, no image is shown
     # TODO: Also check for lack of an image altogether (shows error image as of now)
     return render_template("map.html")
 
 
-@app.route("/data")
+@app.route("/data", methods=["GET", "POST"])
 def data():
     """
-    TODO: Docstring
+    Graphical interface for the MySQL database.
+    POST requests create new demo data.
     """
-    return render_template("database.html", db=database.get_columns_in_table())
+    # TODO: More interaction capabilities
+    if request.method == "POST":
+        database.create_demo_data()
+    return render_template("database.html", columns=database.get_columns_in_table("person"), rows=database.get_rows_in_table("person"))

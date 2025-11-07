@@ -46,16 +46,17 @@ class MySQL:
             print("Connected to MySQL database.")
             cur = cnx.cursor()
             cur.execute("""CREATE TABLE IF NOT EXISTS `person` (
-`id` int(11) NOT NULL AUTO_INCREMENT,
-`first_name` varchar(14) NOT NULL,
-`last_name` varchar(14) NOT NULL,
-`date_of_birth` date NOT NULL,
-`gender` enum('M', 'F', 'X'),
-PRIMARY KEY (`id`)
-) ENGINE=InnoDB""")
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `first_name` varchar(14) NOT NULL,
+    `last_name` varchar(14) NOT NULL,
+    `date_of_birth` date NOT NULL,
+    `gender` enum('M', 'F', 'X'),
+    PRIMARY KEY (`id`)
+    ) ENGINE=InnoDB""")
             cnx.commit()
         except mysql.connector.Error as e:
             print(e)
+            print("No MySQL database connection possible. Continuing without database.")
 
     def create_demo_data(self):
         """
@@ -70,9 +71,17 @@ PRIMARY KEY (`id`)
     ('Ethan', 'Williams', '1985-09-17', 'M');
     """)
 
-    def get_columns_in_table(self):
+    def get_columns_in_table(self, table_name: str):
         """
-        TODO: Docstrings"""
-        pass
-        query: str = "SELECT * FROM person;"
+        Gets the columns information of a specified table.
+        table_name: Name of the table.
+        """
+        query: str = f"SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '{table_name}';"
+        return self.query_exec(query, True)
+
+    def get_rows_in_table(self, table_name: str):
+        """
+        Gets all rows from a specified table.
+        """
+        query: str = f"SELECT * FROM {table_name};"
         return self.query_exec(query, True)

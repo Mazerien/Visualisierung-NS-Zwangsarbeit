@@ -3,6 +3,22 @@
 {% block title %} Database {% endblock title %}
 
 {% block body %}
-{{ db }}    
-{{ db | length }}
+<table>
+    <tr>
+        {% for col in columns %}
+        <th>{{ col }}</th>
+        {% endfor %}
+    </tr>
+    {% for row in rows %}
+    <tr>
+        {% for col in row %}
+        <th>{{ col }}</th>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+
+<form method="POST" action="{{ url_for('data') }}">
+    <button type="submit">Insert new demo data</button>
+</form>
 {% endblock body %}
