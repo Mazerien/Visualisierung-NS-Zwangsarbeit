@@ -1,9 +1,9 @@
 # Creates the Docker image from scratch.
 # Alpine has a much smaller OS size; more space for CRUD operations.
-FROM python:3-alpine
+FROM python
 
-RUN apk update
-RUN apk add --no-cache gcc musl-dev libffi-dev postgresql-dev   
+RUN apt-get -q -y update
+RUN apt-get install -y gdal-bin libgdal-dev
 # don't use dev in prod!
 
 ENV USERNAME=db
@@ -15,11 +15,12 @@ COPY requirements.txt .
 COPY script.sh .
 COPY .env .
 
+RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
-RUN addgroup -S ${USERNAME} && adduser -S -G ${USERNAME} ${USERNAME}
+RUN groupadd ${USERNAME} && useradd -g ${USERNAME} ${USERNAME}
 RUN chown -R ${USERNAME}:${USERNAME} ${WORKING_DIR}
-RUN chmod -R ug+rwx ${WORKING_DIR}
+RUN chmod -R u=rwx,g=rwx ${WORKING_DIR}
 
 USER ${USERNAME}
 ENV PATH "$PATH:/home/${USERNAME}/.local/bin"

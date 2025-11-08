@@ -1,18 +1,15 @@
 services:
   db:
-    image: postgres
+    image: mysql
     container_name: db
     restart: always
-    env_file:
-      - .env    
     volumes:
-      - ./pData:/var/lib/postgresql/
-    healthcheck:      
-      test: ["CMD-SHELL", "pg_isready -U $${PSQL_USER} -d $${PSQL_DB} -t 1"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
-      start_period: 10s
+      - ./data:/var/lib/mysql/
+    environment:
+      MYSQL_ROOT_PASSWORD: ${SQL_PASSWORD}
+      MYSQL_DATABASE: ${SQL_DB}
+      MYSQL_USER: ${SQL_USER}
+      MYSQL_PASSWORD: ${SQL_PASSWORD}
   
   flask:
     container_name: app

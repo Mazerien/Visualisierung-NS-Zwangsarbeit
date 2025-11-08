@@ -1,5 +1,6 @@
 app/static/images/map.png
 cache/
+data/
 # dotenv
 *.env
 
