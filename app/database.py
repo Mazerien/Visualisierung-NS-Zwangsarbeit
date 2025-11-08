@@ -16,8 +16,12 @@ class MySQL:
         """
         Starts a connection pool within the MySQL database. Allows for faster read/write.
         """
-        self.pool = MySQLConnectionPool(
-            pool_name="pool", pool_size=3, user=user, password=password, host=host, database=db)
+        try:
+            self.pool = MySQLConnectionPool(
+                pool_name="pool", pool_size=3, user=user, password=password, host=host, database=db)
+        except mysql.connector.errors.DatabaseError as e:
+            print(e)
+            print(f"Can't connect to MySQL. Continuing without database.")
 
     def query_exec(self, query: str, is_read_only: bool = False):
         """

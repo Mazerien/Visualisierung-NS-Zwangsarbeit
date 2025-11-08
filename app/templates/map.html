@@ -3,10 +3,9 @@
 {% block title %} Map {% endblock title %}
 
 {% block body %}
-<!-- TODO: Don't make in-line style. Think of something better. -->
-<p>
-    <img src="{{ url_for('static', filename='images/map.png') }}" style="max-height: 50em;">
-</p>
+{% if web_map %}
+    {{ web_map|safe }}
+{% endif %}
 
 <form method="POST" action="{{ url_for('map') }}">
     <input type="text" name="city" placeholder="Schwenningen">

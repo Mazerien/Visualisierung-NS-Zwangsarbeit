@@ -5,7 +5,8 @@ Also tries establishing connection with a pre-existing MySQL database.
 from flask import Flask, render_template, request
 from os import getenv
 from database import MySQL
-from geography import draw_map_from_place
+from geography import draw_map_from_place, web_map
+import folium
 
 
 app = Flask(__name__)
@@ -36,20 +37,21 @@ def index():
 @app.route("/map", methods=["GET", "POST"])
 def map():
     """
-    Handles map rendering. 
+    Handles map rendering through an embedded and rendered iframe. 
     Stores an image within static/images/ and displays it after finishing rendering.
     """
+    iframe = None
     if request.method == "POST":
         city = request.form["city"]
         area = request.form["area"]
         country = request.form["country"]
         app.logger.info(
             f"Sending OSM API request about {city}, {area}, {country}...")
-        draw_map_from_place(f"{city}, {area}, {country}")
-
-    # TODO: Add it so if there is no POST request, no image is shown
+        iframe = web_map(f"{city}, {area}, {country}")
+        iframe.get_root().width = "60%"
+        iframe = iframe.get_root()._repr_html_()
     # TODO: Also check for lack of an image altogether (shows error image as of now)
-    return render_template("map.html")
+    return render_template("map.html", web_map=iframe)
 
 
 @app.route("/data", methods=["GET", "POST"])
