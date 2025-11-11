@@ -21,6 +21,7 @@ SQL_HOST = getenv("SQL_HOST")
 database = MySQL(
     user=SQL_USER, password=SQL_PASSWORD, host=SQL_HOST, db=SQL_DB
 )
+database.check_tables()
 
 
 #######################################################################################

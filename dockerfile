@@ -19,7 +19,8 @@ RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
 
 RUN groupadd ${USERNAME} && useradd -g ${USERNAME} ${USERNAME}
-RUN chown -R ${USERNAME}:${USERNAME} ${WORKING_DIR}
+RUN mkdir -p ${WORKING_DIR}
+#RUN chown -R ${USERNAME}:${USERNAME} ${WORKING_DIR}
 RUN chmod -R u=rwx,g=rwx ${WORKING_DIR}
 
 USER ${USERNAME}
