@@ -38,15 +38,16 @@ SQL_HOST=
 ## OpenStreetMap
 OpenStreetMap has a public API.  
 This project uses the [OSMnx Python library](https://osmnx.readthedocs.io/en/stable/getting-started.html).  
-As of right now, it is possible to render a high-resolution PNG image of a chosen city's roads from OSM within the Flask app.
+As of right now, it is possible to render a high-resolution PNG image of a chosen city's roads from OSM within the Flask app.  
+It is also possible to query for interactive OSM maps.
 
 ## Sources
 [Writing your pyproject.toml](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/)  
 [Primer on Jinja Templating](https://realpython.com/primer-on-jinja-templating/)  
-[Dockerizing Flask App with Postgres: A Step-by-Step Guide](https://medium.com/@pooya.oladazimi/dockerizing-flask-app-with-postgres-a-step-by-step-guide-e9fc9939deff)  
 [Python Docker image documentation](https://hub.docker.com/_/python/)  
 Boeing, G. (2025). [Modeling and Analyzing Urban Networks and Amenities with OSMnx.](https://doi.org/10.1111/gean.70009) Geographical Analysis 57 (4), 567-577. doi:10.1111/gean.70009  
 [Creating beautiful maps with Python](https://towardsdatascience.com/creating-beautiful-maps-with-python-6e1aae54c55c/)
 [MySQL doc](https://dev.mysql.com/doc/connector-python/en/connector-python-example-ddl.html)  
 [Understanding Connection Pooling for MySQL](https://medium.com/@havus.it/understanding-connection-pooling-for-mysql-28be6c9e2dc0)  
-[How to Create Interactive Maps with GeoPandas’ explore() Method](https://www.statology.org/how-to-create-interactive-maps-with-geopandas-explore-method/)
+[How to Create Interactive Maps with GeoPandas’ explore() Method](https://www.statology.org/how-to-create-interactive-maps-with-geopandas-explore-method/)  
+[GET Request Query Parameters with Flask](https://www.geeksforgeeks.org/python/get-request-query-parameters-with-flask/)

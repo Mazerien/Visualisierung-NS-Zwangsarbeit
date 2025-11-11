@@ -5,8 +5,7 @@ Also tries establishing connection with a pre-existing MySQL database.
 from flask import Flask, render_template, request
 from os import getenv
 from database import MySQL
-from geography import draw_map_from_place, web_map
-import folium
+from geography import web_map
 
 
 app = Flask(__name__)
@@ -35,24 +34,25 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/map", methods=["GET", "POST"])
+@app.route("/map", methods=["GET"])
 def map():
     """
-    Handles map rendering through an embedded and rendered iframe. 
-    Stores an image within static/images/ and displays it after finishing rendering.
+    Handles map rendering through an embedded and rendered iframe using OpenStreetMap. 
+    Can be used with request parameters.
     """
-    iframe = None
-    if request.method == "POST":
-        city = request.form["city"]
-        area = request.form["area"]
-        country = request.form["country"]
+    osm_map = None
+    if request.args.get("city"):
+        city = request.args.get("city")
+        area = request.args.get("area")
+        country = request.args.get("country")
         app.logger.info(
             f"Sending OSM API request about {city}, {area}, {country}...")
-        iframe = web_map(f"{city}, {area}, {country}")
-        iframe.get_root().width = "60%"
-        iframe = iframe.get_root()._repr_html_()
+        osm_map = web_map(f"{city}, {area}, {country}")
+        # TODO: Think about way to style this
+        osm_map.get_root().width = "60%"
+        osm_map = osm_map.get_root()._repr_html_()
     # TODO: Also check for lack of an image altogether (shows error image as of now)
-    return render_template("map.html", web_map=iframe)
+    return render_template("map.html", web_map=osm_map)
 
 
 @app.route("/data", methods=["GET", "POST"])

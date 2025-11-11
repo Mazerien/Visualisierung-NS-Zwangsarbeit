@@ -54,7 +54,7 @@ class MySQL:
         Checks if all tables exist. Creates them if they don't.
         """
         try:
-            self.query_exec("SELECT * FROM person;")
+            self.query_exec("SELECT * FROM person;", is_read_only=True)
         except mysql.connector.errors.ProgrammingError as e:
             print(e)
             print("No tables exist in this DB. Creating them now.")
@@ -79,6 +79,7 @@ class MySQL:
     ) ENGINE=InnoDB"""
         )
         cnx.commit()
+        # NOTE: Comment this out if you don't want demo data in your tables.
         self.create_demo_data()
 
     def connect(self):
@@ -133,11 +134,11 @@ class MySQL:
         query: str = (
             f"SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '{table_name}';"
         )
-        return self.query_exec(query, True)
+        return self.query_exec(query, is_read_only=True)
 
     def get_rows_in_table(self, table_name: str):
         """
         Gets all rows from a specified table.
         """
         query: str = f"SELECT * FROM {table_name};"
-        return self.query_exec(query, True)
+        return self.query_exec(query, is_read_only=True)

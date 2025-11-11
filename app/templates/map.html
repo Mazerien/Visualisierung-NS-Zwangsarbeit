@@ -7,10 +7,10 @@
     {{ web_map|safe }}
 {% endif %}
 
-<form method="POST" action="{{ url_for('map') }}">
+<form method="GET" action="{{ url_for('map') }}">
     <input type="text" name="city" placeholder="Schwenningen">
     <input type="text" name="area" placeholder="Villingen-Schwenningen">
     <input type="text" name="country" placeholder="Germany">
-    <button type="submit">Render map of city (this may take a while)</button>
+    <button type="submit">Create map of city</button>
 </form>
 {% endblock body %}

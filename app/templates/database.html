@@ -6,7 +6,8 @@
 <table>
     <tr>
         {% for col in columns %}
-        <th>{{ col }}</th>
+        <!-- TODO: Doing this in Jinja for now. Shouldn't. -->
+        <th>{{ col[0].replace("_", " ")|title }}</th>
         {% endfor %}
     </tr>
     {% for row in rows %}
