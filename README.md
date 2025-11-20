@@ -7,7 +7,6 @@ Create a Python Virtual Environment using Python >=3.12.
 Use the recommended extensions from `.vscode/extensions.json` if you use VSCode.  
 Install dependencies: `pip install -r requirements.txt`  
 Add new module dependencies: `pip freeze > requirements.txt`  
-Add dependencies to pyproject.toml: `uv add -r requirements.txt`  
 [Create a local MySQL database for development](https://dev.mysql.com/doc/mysql-getting-started/en/). Store credentials in the .env schema shown below.  
 
 ## Run Flask
@@ -34,6 +33,7 @@ SQL_PASSWORD=
 SQL_DB=
 SQL_HOST=
 ```
+If MySQL is run from Docker container: `SQL_HOST=db`.
 
 ## OpenStreetMap
 OpenStreetMap has a public API.  

@@ -4,6 +4,7 @@ Also tries establishing connection with a pre-existing MySQL database.
 """
 from flask import Flask, render_template, request
 from os import getenv
+from dotenv import load_dotenv
 from database import MySQL
 from geography import web_map
 
@@ -13,6 +14,7 @@ app = Flask(__name__)
 #######################################################################################
 # MySQL Config                                                                        #
 #######################################################################################
+load_dotenv()
 SQL_DB = getenv("SQL_DB")
 SQL_USER = getenv("SQL_USER")
 SQL_PASSWORD = getenv("SQL_PASSWORD")
@@ -72,3 +74,7 @@ def data():
         database.create_demo_data()
     return render_template("database.html", columns=database.get_columns_in_table("person"),
                            rows=database.get_rows_in_table("person"))
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000, debug=True)
