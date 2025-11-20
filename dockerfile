@@ -1,9 +1,9 @@
 # Creates the Docker image from scratch.
-# Alpine has a much smaller OS size; more space for CRUD operations.
 FROM python
 
-RUN apt-get -q -y update
-RUN apt-get install -y gdal-bin libgdal-dev
+RUN apt -q -y update
+RUN apt upgrade
+RUN apt install -y libgdal-dev
 # don't use dev in prod!
 
 ENV USERNAME=db

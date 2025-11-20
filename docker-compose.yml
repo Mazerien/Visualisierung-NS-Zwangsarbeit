@@ -1,4 +1,9 @@
+#######################################################################
+### This file creates Docker containers for a MySQL database,       ###
+### the Cockpit headless CMS, and the Python backend with Flask.    ###
+#######################################################################
 services:
+  # MySQL
   db:
     image: mysql
     container_name: db
@@ -11,6 +16,7 @@ services:
       MYSQL_USER: ${SQL_USER}
       MYSQL_PASSWORD: ${SQL_PASSWORD}
   
+  # Python backend
   flask:
     container_name: app
     build:
@@ -18,5 +24,15 @@ services:
       dockerfile: dockerfile 
     ports:
       - "5000:5000"
+    depends_on:
+      - db
+  
+  # Cockpit CMS
+  cockpit:
+    image: cockpithq/cockpit:core-latest
+    container_name: cockpit
+    ports:
+      - 8080:80
+    restart: unless-stopped
     depends_on:
       - db
