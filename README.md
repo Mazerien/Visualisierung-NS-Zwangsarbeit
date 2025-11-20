@@ -17,8 +17,7 @@ Debug mode enables on-the-fly changes to the app as well as additional logging s
 
 ## Containerization
 Install Docker and docker-compose.  
-Current containerization supports a MySQL (MariaDB) database on TCP/3306 as well as the Flask app on TCP/5000.  
-TODO: Rewrite docker-compose for MySQL  
+Current containerization supports a MySQL (MariaDB) database on TCP/3306 as well as the Flask app on TCP/5000 and the Cockpit headless CMS on TCP/8080.  
 Create container: `docker compose up --build`  
 Run container: `docker compose up -d`  
 Remove container: `docker compose down`  
