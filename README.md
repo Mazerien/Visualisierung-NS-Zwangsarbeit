@@ -49,4 +49,5 @@ Boeing, G. (2025). [Modeling and Analyzing Urban Networks and Amenities with OSM
 [MySQL doc](https://dev.mysql.com/doc/connector-python/en/connector-python-example-ddl.html)  
 [Understanding Connection Pooling for MySQL](https://medium.com/@havus.it/understanding-connection-pooling-for-mysql-28be6c9e2dc0)  
 [How to Create Interactive Maps with GeoPandas’ explore() Method](https://www.statology.org/how-to-create-interactive-maps-with-geopandas-explore-method/)  
-[GET Request Query Parameters with Flask](https://www.geeksforgeeks.org/python/get-request-query-parameters-with-flask/)
+[GET Request Query Parameters with Flask](https://www.geeksforgeeks.org/python/get-request-query-parameters-with-flask/)  
+[OSMnx PDF](https://osmnx.readthedocs.io/_/downloads/en/stable/pdf/)

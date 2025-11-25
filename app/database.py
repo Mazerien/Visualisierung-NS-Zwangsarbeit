@@ -27,6 +27,7 @@ class MySQL:
                 host=host,
                 database=db,
             )
+
         except mysql.connector.errors.DatabaseError as e:
             print(e)
             print(f"Can't connect to MySQL. Continuing without database.")
@@ -37,6 +38,10 @@ class MySQL:
         query: Query string
         is_read_only: Commits a change only if one is given; defaults to false.
         """
+        if self.pool is None:
+            print(f"No DB connection. Query '{query}' not executed.")
+            return
+
         cnx: MySQLConnectionPool.PooledMySQLConnection = self.pool.get_connection()
         cur = cnx.cursor()
         cur.execute(query)

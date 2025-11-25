@@ -18,15 +18,9 @@ def web_map(place: str = "Schwenningen, Villingen-Schwenningen, Germany"):
     Returns a web map of a place.
     It can be turned into an iframe of an HTML template.
     """
-    graph = ox.graph.graph_from_place(place, network_type="drive")
+    graph = ox.graph.graph_from_place(place)
     # TODO: Figure out how to display routes interactively?
-    # weight = "length"
-    # orig = next(iter(G.nodes))
-    # dest = list(G.nodes)[-1]
-    # route: nx.MultiDiGraph = nx.MultiDiGraph(ox.routing.shortest_path(G, orig, dest, weight=weight))
-
     return ox.convert.graph_to_gdfs(graph, nodes=False).explore()
-    # draw_figure(route)
 
 
 def draw_map_from_place(place: str = "Schwenningen, Villingen-Schwenningen, Germany"):
