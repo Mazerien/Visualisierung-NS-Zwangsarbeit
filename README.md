@@ -41,7 +41,6 @@ As of right now, it is possible to render a high-resolution PNG image of a chose
 It is also possible to query for interactive OSM maps.
 
 ## Sources
-[Writing your pyproject.toml](https://packaging.python.org/en/latest/guides/writing-pyproject-toml/)  
 [Primer on Jinja Templating](https://realpython.com/primer-on-jinja-templating/)  
 [Python Docker image documentation](https://hub.docker.com/_/python/)  
 Boeing, G. (2025). [Modeling and Analyzing Urban Networks and Amenities with OSMnx.](https://doi.org/10.1111/gean.70009) Geographical Analysis 57 (4), 567-577. doi:10.1111/gean.70009  
@@ -50,4 +49,8 @@ Boeing, G. (2025). [Modeling and Analyzing Urban Networks and Amenities with OSM
 [Understanding Connection Pooling for MySQL](https://medium.com/@havus.it/understanding-connection-pooling-for-mysql-28be6c9e2dc0)  
 [How to Create Interactive Maps with GeoPandas’ explore() Method](https://www.statology.org/how-to-create-interactive-maps-with-geopandas-explore-method/)  
 [GET Request Query Parameters with Flask](https://www.geeksforgeeks.org/python/get-request-query-parameters-with-flask/)  
-[OSMnx PDF](https://osmnx.readthedocs.io/_/downloads/en/stable/pdf/)
+[OSMnx PDF](https://osmnx.readthedocs.io/_/downloads/en/stable/pdf/)  
+[OpenStreetMap Doc: Elements](https://wiki.openstreetmap.org/wiki/Elements)  
+[Leaflet Provider Demos](https://leaflet-extras.github.io/leaflet-providers/preview/)  
+[Beginner’s Guide to Folium: Your First Interactive Map with Python](https://archive.is/20251013175725/https://cityplannermo.medium.com/beginners-guide-your-first-interactive-map-with-python-folium-8f1c2ec20155#selection-811.18-831.11)  
+[Customizing Your Folium Maps: Tiles, Zoom, and Popups for Urban Analysis](https://archive.is/20250822085542/https://cityplannermo.medium.com/customizing-your-folium-maps-tiles-zoom-and-popups-for-urban-analysis-284e59d813ae)

@@ -6,7 +6,7 @@ from flask import Flask, render_template, request
 from os import getenv
 from dotenv import load_dotenv
 from database import MySQL
-from geography import web_map
+from geography import web_map, get_folium_map
 
 
 app = Flask(__name__)
@@ -55,7 +55,9 @@ def map():
         country = request.args.get("country")
         app.logger.info(
             f"Sending OSM API request about {city}, {area}, {country}...")
-        osm_map = web_map(f"{city}, {area}, {country}")
+        #osm_map = web_map(f"{city}, {area}, {country}")
+        osm_map = get_folium_map()
+
         # TODO: Think about way to style this
         osm_map.get_root().width = "60%"
         osm_map = osm_map.get_root()._repr_html_()
