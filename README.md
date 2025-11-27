@@ -86,11 +86,12 @@ TODO
 TODO
 ```
 
-## OpenStreetMap
-OpenStreetMap has a public API.  
+## OpenStreetMap & OpenHistoricalMap
+OpenStreetMap & OpenHistoricalMap have a public API.  
 This project uses the [OSMnx Python library](https://osmnx.readthedocs.io/en/stable/getting-started.html).  
 As of right now, it is possible to render a high-resolution PNG image of a chosen city's roads from OSM within the Flask app.  
-It is also possible to query for interactive OSM maps.
+It is also possible to query for interactive OSM maps.  
+[Note that OpenHistoricalMap's API differs slightly from that of OpenStreetMap.](https://wiki.openstreetmap.org/wiki/OpenHistoricalMap/Overpass) Certain queries need to be modified.
 
 ## Sources
 ### OSM / OHM

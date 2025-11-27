@@ -5,6 +5,7 @@ Credentials in dotenv.
 
 import mysql.connector
 from mysql.connector.pooling import MySQLConnectionPool
+from datetime import date
 
 
 class MySQL:
@@ -113,7 +114,7 @@ class MySQL:
         # NOTE: Comment this out if you don't want demo data in your tables.
         # self.create_demo_data()
 
-    def create_demo_data(self):
+    def insert_demo_data(self):
         """
         Demo data for testing purposes only.
         """
@@ -133,7 +134,24 @@ class MySQL:
     """
         )
 
-    def get_columns_in_table(self, table_name: str):
+    def insert_person(self, last_name: str, name: str, maiden_name: str, gender: chr, place_of_birth: str,
+                      date_of_birth: date, place_of_death: str, date_of_death: date, nationality: str,
+                      last_place_of_residence: str, marriage: str, father: str, mother: str, religion: str,
+                      profession: str):
+        """
+        Inserts a single Person with their respective data.
+        Refer to the MySQL schema for more information.
+        """
+        string = f"""INSERT INTO Person (LastName, Name, MaidenName, Gender, PlaceOfBirth, DateOfBirth, 
+        PlaceOfDeath, DateOfDeath, Nationality, LastPlaceOfResidence, Marriage, Father, Mother, Religion, Profession
+        ) VALUES
+    ({last_name}, {name}, {maiden_name}, {gender}, {place_of_birth}, {date_of_birth}, {place_of_death}, {date_of_death}, 
+    {nationality}, {last_place_of_residence}, {marriage}, {father}, {mother}, {religion}, {profession}
+    )
+    """
+        self.query_exec(string)
+
+    def select_columns_in_table(self, table_name: str):
         """
         Gets the columns information of a specified table.
         table_name: Name of the table.
@@ -143,7 +161,7 @@ class MySQL:
         )
         return self.query_exec(query, is_read_only=True)
 
-    def get_rows_in_table(self, table_name: str):
+    def select_rows_in_table(self, table_name: str):
         """
         Gets all rows from a specified table.
         """
