@@ -59,7 +59,7 @@ class MySQL:
         Checks if all tables exist. Creates them if they don't.
         """
         try:
-            self.query_exec("SELECT * FROM person;", is_read_only=True)
+            self.query_exec("SELECT * FROM Person;", is_read_only=True)
         except mysql.connector.errors.ProgrammingError as e:
             print(e)
             print("No tables exist in this DB. Creating them now.")
@@ -72,50 +72,52 @@ class MySQL:
         cnx = self.pool.get_connection()
         cur = cnx.cursor()
         cur.execute(
-            """CREATE TABLE IF NOT EXISTS `person` (
-    `id` int(11) NOT NULL AUTO_INCREMENT,
-    `first_name` varchar(14) NOT NULL,
-    `last_name` varchar(14) NOT NULL,
-    `date_of_birth` date NOT NULL,
-    `gender` enum('M', 'F', 'X'),
-    `city` varchar(14) NOT NULL,
-    `country` varchar(14) NOT NULL,
+            f"""CREATE TABLE IF NOT EXISTS `Person` (
+    `ID` int(11) NOT NULL AUTO_INCREMENT,
+
+    `LastName` varchar(255) NOT NULL,
+    `FirstName` varchar(255) NOT NULL,
+    `MaidenName` varchar(255) NOT NULL,
+    `Gender` enum('M', 'F', 'X') NOT NULL,
+
+    `PlaceOfBirth` varchar(255),
+    `DateOfBirth` date,
+    `PlaceOfDeath` varchar(255),
+    `DateOfDeath` date,
+    `Nationality` varchar(255) NOT NULL,
+    `LastPlaceOfResidence` date NOT NULL,
+
+    `Marriage` int,
+    `Father` int,
+    `Mother` int,
+    `Religion` varchar(255),
+    `Profession` varchar(255),
+
     PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB"""
-        )
+    ) ENGINE=InnoDB
+    """)
+        cnx.commit()
+
+        cur.execute(
+            f"""CREATE TABLE IF NOT EXISTS `Company` (
+    `ID` int(11) NOT NULL AUTO_INCREMENT,
+    `Name` varchar(255) NOT NULL,
+    `Person` int(11) NOT NULL,
+    `Job` varchar(255) NOT NULL,
+
+    PRIMARY KEY (`ID`),
+    FOREIGN KEY (`Person`) REFERENCES `Person`(`ID`)
+    ) Engine=InnoDB
+""")
         cnx.commit()
         # NOTE: Comment this out if you don't want demo data in your tables.
-        self.create_demo_data()
-
-    def connect(self):
-        """
-        TODO: Docstring
-        """
-        try:
-            cnx = self.pool.get_connection()
-            print("Connected to MySQL database.")
-            cur = cnx.cursor()
-            cur.execute(
-                """CREATE TABLE IF NOT EXISTS `person` (
-    `id` int(11) NOT NULL AUTO_INCREMENT,
-    `first_name` varchar(14) NOT NULL,
-    `last_name` varchar(14) NOT NULL,
-    `date_of_birth` date NOT NULL,
-    `gender` enum('M', 'F', 'X'),
-    `city` varchar(14) NOT NULL,
-    `country` varchar(14) NOT NULL
-    PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB"""
-            )
-            cnx.commit()
-        except mysql.connector.Error as e:
-            print(e)
-            print("No MySQL database connection possible. Continuing without database.")
+        # self.create_demo_data()
 
     def create_demo_data(self):
         """
         Demo data for testing purposes only.
         """
+        # TODO: Rewrite demo data for new DB schema
         self.query_exec(
             """INSERT INTO person (first_name, last_name, date_of_birth, gender, city, country) VALUES
     ('Alice', 'Johnson', '1995-04-12', 'F', 'New York', 'USA'),

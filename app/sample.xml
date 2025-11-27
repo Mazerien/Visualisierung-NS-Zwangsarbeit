@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<osm version="0.6" generator="openstreetmap-cgimap 2.0.1 (18 production-cgimap-deployment-765b78c7fb-7z96v)" copyright="OpenHistoricalMap is dedicated to the public domain except where otherwise noted." attribution="https://www.openhistoricalmap.org/copyright" license="https://creativecommons.org/public-domain/cc0/">
- <node id="2104140473" visible="true" version="1" changeset="85987" timestamp="2023-09-03T20:01:48Z" user="DAH112" uid="1645" lat="48.0636961" lon="8.5365480">
-  <tag k="end_date" v="1971"/>
-  <tag k="name" v="Schwenningen"/>
-  <tag k="place" v="town"/>
-  <tag k="start_date" v="0817"/>
- </node>
-</osm>

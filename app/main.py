@@ -74,8 +74,8 @@ def data():
     # TODO: More interaction capabilities
     if request.method == "POST":
         database.create_demo_data()
-    return render_template("database.html", columns=database.get_columns_in_table("person"),
-                           rows=database.get_rows_in_table("person"))
+    return render_template("database.html", columns=database.get_columns_in_table("Person"),
+                           rows=database.get_rows_in_table("Person"))
 
 
 if __name__ == "__main__":
