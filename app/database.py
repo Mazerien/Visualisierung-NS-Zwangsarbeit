@@ -33,10 +33,11 @@ class MySQL:
             print(e)
             print(f"Can't connect to MySQL. Continuing without database.")
 
-    def query_exec(self, query: str, is_read_only: bool = False):
+    def query_exec(self, query: str, values=None, is_read_only: bool = False):
         """
         Executes a given query string; immediately commits to DB.
         query: Query string
+        values: Value strings if given.
         is_read_only: Commits a change only if one is given; defaults to false.
         """
         if self.pool is None:
@@ -45,7 +46,7 @@ class MySQL:
 
         cnx: MySQLConnectionPool.PooledMySQLConnection = self.pool.get_connection()
         cur = cnx.cursor()
-        cur.execute(query)
+        cur.execute(query, values)
         match is_read_only:
             case True:
                 cur = cur.fetchall()
@@ -144,12 +145,12 @@ class MySQL:
         """
         string = f"""INSERT INTO Person (LastName, Name, MaidenName, Gender, PlaceOfBirth, DateOfBirth, 
         PlaceOfDeath, DateOfDeath, Nationality, LastPlaceOfResidence, Marriage, Father, Mother, Religion, Profession
-        ) VALUES
-    ({last_name}, {name}, {maiden_name}, {gender}, {place_of_birth}, {date_of_birth}, {place_of_death}, {date_of_death}, 
-    {nationality}, {last_place_of_residence}, {marriage}, {father}, {mother}, {religion}, {profession}
-    )
+        ) VALUES (
+        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
-        self.query_exec(string)
+        values = (last_name, name, maiden_name, gender, place_of_birth, date_of_birth, place_of_death, date_of_death,
+                  nationality, last_place_of_residence, marriage, father, mother, religion, profession)
+        self.query_exec(string, values)
 
     def select_columns_in_table(self, table_name: str):
         """

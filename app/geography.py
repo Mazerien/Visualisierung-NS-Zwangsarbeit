@@ -1,6 +1,6 @@
 """
 Right now, it is possible to either render a map or create a dynamic web map of a pre-set place.
-
+NOTE: All of this is incredibly WIP and likely to change.
 """
 import osmnx as ox
 import networkx as nx
