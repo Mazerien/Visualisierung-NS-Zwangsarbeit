@@ -15,7 +15,7 @@ class NormalizeData:
     """
     def get_replaced_string(s: str, replacement: dict[str]) -> str:
         """
-        TODO: Docstring
+        Replaces all given substrings with a given dict.
         """
         s = s.replace("(", "").replace(")", "")
         for old, new in replacement.items():
@@ -27,7 +27,7 @@ class NormalizeData:
         Checks if given date is in MM/DD/YYYY or DD.MM.JJJJ format.
         Returns a date object.
         """
-        d = str(d)
+        d = str(d).split()[0]
 
         for format in ("%d.%m.%Y", "%m/%d/%Y", "%Y-%m-%d"):
             try:
@@ -87,7 +87,6 @@ def main():
     )
     database.check_tables()
 
-    # TODO: Convert dates
     # TODO: Figure out marriage
     for _, row in file.iterrows():
         last_name = row["Nachname"].title()
