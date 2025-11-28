@@ -36,6 +36,9 @@ If MySQL is run from Docker container: `SQL_HOST=db`.
 
 ## MySQL Schema
 ![Image](app/static/images/db_schema.png)
+It is possible to fill the DB with real data through the `excel_migration.py` script. Note that this is still very WIP and due to change. Some features are still missing.  
+Run data migration: `python excel_migration.py`  
+Ensure MySQL is connected and .env has data.
 ### Person
 ```
 CREATE TABLE IF NOT EXISTS `Person` (
@@ -43,19 +46,19 @@ CREATE TABLE IF NOT EXISTS `Person` (
 
     `LastName` varchar(255) NOT NULL,
     `FirstName` varchar(255) NOT NULL,
-    `MaidenName` varchar(255) NOT NULL,
+    `MaidenName` varchar(255),
     `Gender` enum('M', 'F', 'X') NOT NULL,
 
     `PlaceOfBirth` varchar(255),
     `DateOfBirth` date,
     `PlaceOfDeath` varchar(255),
     `DateOfDeath` date,
-    `Nationality` varchar(255) NOT NULL,
-    `LastPlaceOfResidence` date NOT NULL,
+    `Nationality` varchar(255),
+    `LastPlaceOfResidence` varchar(255),
 
-    `Marriage` int,
-    `Father` int,
-    `Mother` int,
+    `Marriage` varchar(255),
+    `Father` varchar(255),
+    `Mother` varchar(255),
     `Religion` varchar(255),
     `Profession` varchar(255),
 

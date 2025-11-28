@@ -24,7 +24,7 @@ class NormalizeData:
 
     def set_date(d: str) -> dt.date:
         """
-        Checks if given date is in MM/DD/YYYY or DD.MM.JJJJ format.
+        Checks if given date is in YYYY-MM-DD, MM/DD/YYYY, or DD.MM.JJJJ format.
         Returns a date object.
         """
         d = str(d).split()[0]
@@ -64,6 +64,16 @@ class NormalizeData:
         }
         return NormalizeData.get_replaced_string(c, replacement)
 
+    def set_place_of_birth(uncorrected: str, corrected: str) -> str:
+        """
+        Returns the most accurate data available from two city strings.
+        """
+        if corrected and corrected != "?":
+            return corrected.title()
+        if uncorrected and not corrected:
+            return uncorrected.title()
+        return "Unknown"
+
 
 def main():
     """
@@ -89,17 +99,19 @@ def main():
 
     # TODO: Figure out marriage
     for _, row in file.iterrows():
-        last_name = row["Nachname"].title()
+        last_name = row["Nachname (korrigiert)"].title()
         gender = NormalizeData.set_gender(row["Geschlecht"])
         birthday = NormalizeData.set_date(row["Geburtsdatum"])
         nationality = NormalizeData.set_country(row["Nationalität"])
+        place_of_birth = NormalizeData.set_place_of_birth(
+            uncorrected=row["Geburt‏sort"], corrected=row["Geburtsort (aktuell/korrigiert)"])
 
-        database.insert_person(last_name=last_name, name=row["Vorname"], maiden_name=row["Geburtsname"], gender=gender,
-                               date_of_birth=birthday, place_of_birth=row[
-            "Geburtsort (aktuell/korrigiert)"], place_of_death=row["Sterbeort"],
-            date_of_death=row["Sterbeort"], nationality=nationality, last_place_of_residence=row[
-                "Letzter Wohnort (Land)"],
-            marriage="Maria", father=row["Name Vater"], mother=row["Name Mutter"], religion=row["Religion"],
+        database.insert_person(last_name=last_name, name=row["Vorname (korrigiert)"], maiden_name=row["Geburtsname"], gender=gender,
+                               date_of_birth=birthday, place_of_birth=place_of_birth, place_of_death=row[
+                                   "Sterbeort"],
+                               date_of_death=row["Sterbeort"], nationality=nationality, last_place_of_residence=row[
+            "Letzter Wohnort (Land)"],
+            marriage="None", father=row["Name Vater"], mother=row["Name Mutter"], religion=row["Religion"],
             profession=row["Berufsangabe"])
 
 
