@@ -37,8 +37,8 @@ def main():
         "app/data/Gefangenenbuch.xlsx", skiprows=4, usecols="F:N,P:R,AD,AF,AK:AN")
     file = file.replace({np.nan: None})
 
-    file = file.head(1)
-    file = file.iloc[0]
+    #file = file.head(1)
+    
     # file = file[0]
 
     # TODO: Clean and normalize Excel data
@@ -101,13 +101,19 @@ def main():
     database = MySQL(
         user=SQL_USER, password=SQL_PASSWORD, host=SQL_HOST, db=SQL_DB
     )
-    database.insert_person(last_name=file["Nachname"], name=file["Vorname"], maiden_name=file["Geburtsname"], gender=file["Geschlecht"],
-                           date_of_birth=file["Geburtsdatum"], place_of_birth=file[
-                               "Geburtsort (aktuell/korrigiert)"], place_of_death=file["Sterbeort"],
-                           date_of_death=file["Sterbeort"], nationality=file[
-        "Nationalität"], last_place_of_residence=file["Letzter Wohnort (Land)"],
-        marriage="Maria", father=file["Name Vater"], mother=file["Name Mutter"], religion=file["Religion"],
-        profession=file["Berufsangabe"])
+    database.check_tables()
+
+    #file = file.iloc[0]
+    # TODO: Gender too long
+
+    for index, row in file.iterrows():
+        database.insert_person(last_name=row["Nachname"], name=row["Vorname"], maiden_name=row["Geburtsname"], gender=row["Geschlecht"],
+                            date_of_birth=row["Geburtsdatum"], place_of_birth=row[
+                                "Geburtsort (aktuell/korrigiert)"], place_of_death=row["Sterbeort"],
+                            date_of_death=row["Sterbeort"], nationality=row[
+            "Nationalität"], last_place_of_residence=row["Letzter Wohnort (Land)"],
+            marriage="Maria", father=row["Name Vater"], mother=row["Name Mutter"], religion=row["Religion"],
+            profession=row["Berufsangabe"])
 
 
 if __name__ == "__main__":

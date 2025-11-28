@@ -79,7 +79,7 @@ class MySQL:
 
     `LastName` varchar(255) NOT NULL,
     `FirstName` varchar(255) NOT NULL,
-    `MaidenName` varchar(255) NOT NULL,
+    `MaidenName` varchar(255),
     `Gender` enum('M', 'F', 'X') NOT NULL,
 
     `PlaceOfBirth` varchar(255),
@@ -87,11 +87,11 @@ class MySQL:
     `PlaceOfDeath` varchar(255),
     `DateOfDeath` date,
     `Nationality` varchar(255) NOT NULL,
-    `LastPlaceOfResidence` date NOT NULL,
+    `LastPlaceOfResidence` varchar(255),
 
-    `Marriage` int,
-    `Father` int,
-    `Mother` int,
+    `Marriage` varchar(255),
+    `Father` varchar(255),
+    `Mother` varchar(255),
     `Religion` varchar(255),
     `Profession` varchar(255),
 
@@ -120,20 +120,21 @@ class MySQL:
         Demo data for testing purposes only.
         """
         # TODO: Rewrite demo data for new DB schema
-        self.query_exec(
-            """INSERT INTO person (first_name, last_name, date_of_birth, gender, city, country) VALUES
-    ('Alice', 'Johnson', '1995-04-12', 'F', 'New York', 'USA'),
-    ('Bob', 'Smith', '1988-11-23', 'M', 'London', 'UK'),
-    ('Charlie', 'Brown', '2000-06-05', 'X', 'Toronto', 'Canada'),
-    ('Diana', 'White', '1992-01-30', 'F', 'Sydney', 'Australia'),
-    ('Ethan', 'Williams', '1985-09-17', 'M', 'Schwenningen', 'Germany'),
-    ('Fiona', 'Martinez', '1998-03-22', 'F', 'Madrid', 'Spain'),
-    ('George', 'Kim', '1991-07-09', 'M', 'Seoul', 'South Korea'),
-    ('Hana', 'Tanaka', '1999-12-14', 'F', 'Tokyo', 'Japan'),
-    ('Isaac', 'Olsen', '1983-10-02', 'M', 'Oslo', 'Norway'),
-    ('Julia', 'Rossi', '1996-05-27', 'F', 'Rome', 'Italy');
-    """
-        )
+    #     self.query_exec(
+    #         """INSERT INTO person (first_name, last_name, date_of_birth, gender, city, country) VALUES
+    # ('Alice', 'Johnson', '1995-04-12', 'F', 'New York', 'USA'),
+    # ('Bob', 'Smith', '1988-11-23', 'M', 'London', 'UK'),
+    # ('Charlie', 'Brown', '2000-06-05', 'X', 'Toronto', 'Canada'),
+    # ('Diana', 'White', '1992-01-30', 'F', 'Sydney', 'Australia'),
+    # ('Ethan', 'Williams', '1985-09-17', 'M', 'Schwenningen', 'Germany'),
+    # ('Fiona', 'Martinez', '1998-03-22', 'F', 'Madrid', 'Spain'),
+    # ('George', 'Kim', '1991-07-09', 'M', 'Seoul', 'South Korea'),
+    # ('Hana', 'Tanaka', '1999-12-14', 'F', 'Tokyo', 'Japan'),
+    # ('Isaac', 'Olsen', '1983-10-02', 'M', 'Oslo', 'Norway'),
+    # ('Julia', 'Rossi', '1996-05-27', 'F', 'Rome', 'Italy');
+    # """
+    #     )
+        pass
 
     def insert_person(self, last_name: str, name: str, maiden_name: str, gender: chr, place_of_birth: str,
                       date_of_birth: date, place_of_death: str, date_of_death: date, nationality: str,
@@ -143,7 +144,7 @@ class MySQL:
         Inserts a single Person with their respective data.
         Refer to the MySQL schema for more information.
         """
-        string = f"""INSERT INTO Person (LastName, Name, MaidenName, Gender, PlaceOfBirth, DateOfBirth, 
+        string = f"""INSERT INTO Person (LastName, FirstName, MaidenName, Gender, PlaceOfBirth, DateOfBirth, 
         PlaceOfDeath, DateOfDeath, Nationality, LastPlaceOfResidence, Marriage, Father, Mother, Religion, Profession
         ) VALUES (
         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -151,6 +152,7 @@ class MySQL:
         values = (last_name, name, maiden_name, gender, place_of_birth, date_of_birth, place_of_death, date_of_death,
                   nationality, last_place_of_residence, marriage, father, mother, religion, profession)
         self.query_exec(string, values)
+        print("Did it!")
 
     def select_columns_in_table(self, table_name: str):
         """
