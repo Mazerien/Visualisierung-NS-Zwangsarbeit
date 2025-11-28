@@ -3,28 +3,37 @@ Script for the data migration from Excel to the MySQL database.
 """
 import pandas as pd
 import numpy as np
+import datetime as dt
 from app.database import MySQL
-from datetime import date
 from dotenv import load_dotenv
 from os import getenv
 
 
 class NormalizeData:
     """
-    TODO: Docstring
+    Heloer class for migrating xlsx data into MySQL by transforming the data.
     """
-    def date_conversion(dt: str) -> date:
+    def set_date(d: str) -> dt.date:
         """
-        TODO: Docstring
+        Checks if given date is in MM/DD/YYYY or DD.MM.JJJJ format.
+        Returns a date object.
         """
-        pass
-        return None
+        d = str(d)
 
-    def clean_nan():
+        for fmt in ("%d.%m.%Y", "%m/%d/%Y", "%Y-%m-%d"):
+            try:
+                return dt.datetime.strptime(d, fmt).date()
+            except ValueError:
+                continue
+
+    def set_gender(s: str) -> chr:
         """
         TODO: Docstring
         """
-        pass
+        s = s.replace("w", "f")
+        s = s.replace("m/w", "x")
+        s = s.replace("m/f", "x")
+        return s
 
 
 def main():
@@ -37,61 +46,7 @@ def main():
         "app/data/Gefangenenbuch.xlsx", skiprows=4, usecols="F:N,P:R,AD,AF,AK:AN")
     file = file.replace({np.nan: None})
 
-    #file = file.head(1)
-    
-    # file = file[0]
-
     # TODO: Clean and normalize Excel data
-    # TODO: Convert cleaned data into CSV file
-    # TODO: Insert data into MySQL DB
-
-    # print(file)
-    # print(file.dtypes)
-    # print(file["Nachname"])
-    # for item in file:
-    #     print(item)
-    #     print(type(item))
-    #     # print(item)
-
-    #     dict = {
-    #         "last_name": item,
-    #         "name": item["Vorname"],
-    #         "maiden_name": item["Geburtsname"],
-    #         "gender": item["Geschlecht"],
-    #         "date_of_birth": item["Geburtsdatum"],
-    #         "place_of_birth": item["Geburtsort (aktuell/korrigiert)"],
-    #         "place_of_death": item["Sterbeort"],
-    #         "date_of_death": item["Sterbedatum"],
-    #         "nationality": item["Nationalität"],
-    #         "last_place_of_residence": item["Letzter Wohnort (Land)"],
-    #         "marriage": "Maria",
-    #         "father": item["Name Vater"],
-    #         "mother": item["Name Mutter"],
-    #         "religion": item["Religion"],
-    #         "profession": item["Berufsangabe"]
-    #     }
-    #     for key, value in dict:
-    #         if np.isnan(value):
-    #             dict[key] = None
-
-#     print(
-#     "DEBUG: Inserting person with values:\n"
-#     f"  last_name: {file['Nachname'][0]!r} ({type(file['Nachname'][0])})\n"
-#     f"  name: {file['Vorname']!r} ({type(file['Vorname'])})\n"
-#     f"  maiden_name: {file['Geburtsname']!r} ({type(file['Geburtsname'])})\n"
-#     f"  gender: {file['Geschlecht']!r} ({type(file['Geschlecht'])})\n"
-#     f"  date_of_birth: {file['Geburtsdatum']!r} ({type(file['Geburtsdatum'])})\n"
-#     f"  place_of_birth: {file['Geburtsort (aktuell/korrigiert)']!r} ({type(file['Geburtsort (aktuell/korrigiert)'])})\n"
-#     f"  place_of_death: {file['Sterbeort']!r} ({type(file['Sterbeort'])})\n"
-#     f"  date_of_death: {file['Sterbedatum']!r} ({type(file['Sterbedatum'])})\n"
-#     f"  nationality: {file['Nationalität']!r} ({type(file['Nationalität'])})\n"
-#     f"  last_place_of_residence: {file['Letzter Wohnort (Land)']!r} ({type(file['Letzter Wohnort (Land)'])})\n"
-#     f"  marriage: {'Maria'!r}\n"
-#     f"  father: {file['Name Vater']!r} ({type(file['Name Vater'])})\n"
-#     f"  mother: {file['Name Mutter']!r} ({type(file['Name Mutter'])})\n"
-#     f"  religion: {file['Religion']!r} ({type(file['Religion'])})\n"
-#     f"  profession: {file['Berufsangabe']!r} ({type(file['Berufsangabe'])})"
-# )
 
     load_dotenv()
     SQL_DB = getenv("SQL_DB")
@@ -103,14 +58,16 @@ def main():
     )
     database.check_tables()
 
-    #file = file.iloc[0]
-    # TODO: Gender too long
+    # TODO: Convert dates
+    # TODO: Figure out marriage
+    for _, row in file.iterrows():
+        gender = NormalizeData.set_gender(row["Geschlecht"])
+        birthday = NormalizeData.set_date(row["Geburtsdatum"])
 
-    for index, row in file.iterrows():
-        database.insert_person(last_name=row["Nachname"], name=row["Vorname"], maiden_name=row["Geburtsname"], gender=row["Geschlecht"],
-                            date_of_birth=row["Geburtsdatum"], place_of_birth=row[
-                                "Geburtsort (aktuell/korrigiert)"], place_of_death=row["Sterbeort"],
-                            date_of_death=row["Sterbeort"], nationality=row[
+        database.insert_person(last_name=row["Nachname"], name=row["Vorname"], maiden_name=row["Geburtsname"], gender=gender,
+                               date_of_birth=birthday, place_of_birth=row[
+            "Geburtsort (aktuell/korrigiert)"], place_of_death=row["Sterbeort"],
+            date_of_death=row["Sterbeort"], nationality=row[
             "Nationalität"], last_place_of_residence=row["Letzter Wohnort (Land)"],
             marriage="Maria", father=row["Name Vater"], mother=row["Name Mutter"], religion=row["Religion"],
             profession=row["Berufsangabe"])

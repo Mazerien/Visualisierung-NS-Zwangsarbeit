@@ -86,7 +86,7 @@ class MySQL:
     `DateOfBirth` date,
     `PlaceOfDeath` varchar(255),
     `DateOfDeath` date,
-    `Nationality` varchar(255) NOT NULL,
+    `Nationality` varchar(255),
     `LastPlaceOfResidence` varchar(255),
 
     `Marriage` varchar(255),
@@ -152,7 +152,6 @@ class MySQL:
         values = (last_name, name, maiden_name, gender, place_of_birth, date_of_birth, place_of_death, date_of_death,
                   nationality, last_place_of_residence, marriage, father, mother, religion, profession)
         self.query_exec(string, values)
-        print("Did it!")
 
     def select_columns_in_table(self, table_name: str):
         """
