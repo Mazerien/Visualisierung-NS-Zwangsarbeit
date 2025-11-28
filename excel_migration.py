@@ -11,8 +11,17 @@ from os import getenv
 
 class NormalizeData:
     """
-    Heloer class for migrating xlsx data into MySQL by transforming the data.
+    Helper class for migrating xlsx data into MySQL by transforming the data.
     """
+    def get_replaced_string(s: str, replacement: dict[str]) -> str:
+        """
+        TODO: Docstring
+        """
+        s = s.replace("(", "").replace(")", "")
+        for old, new in replacement.items():
+            s = s.replace(old, new)
+        return s
+
     def set_date(d: str) -> dt.date:
         """
         Checks if given date is in MM/DD/YYYY or DD.MM.JJJJ format.
@@ -20,20 +29,40 @@ class NormalizeData:
         """
         d = str(d)
 
-        for fmt in ("%d.%m.%Y", "%m/%d/%Y", "%Y-%m-%d"):
+        for format in ("%d.%m.%Y", "%m/%d/%Y", "%Y-%m-%d"):
             try:
-                return dt.datetime.strptime(d, fmt).date()
+                return dt.datetime.strptime(d, format).date()
             except ValueError:
                 continue
 
-    def set_gender(s: str) -> chr:
+    def set_gender(g: str) -> chr:
         """
-        TODO: Docstring
+        Converts gender markers to an international standard.
         """
-        s = s.replace("w", "f")
-        s = s.replace("m/w", "x")
-        s = s.replace("m/f", "x")
-        return s
+        g = g.replace("w", "f")
+        g = g.replace("m/w", "x")
+        g = g.replace("m/f", "x")
+        return g
+
+    def set_country(c: str) -> str:
+        """
+        Standardizes and cleans country names or codes.
+        """
+        if c is None or c == "?":
+            return "Unknown"
+
+        replacement = {
+            "Kroatien": "Croatia",
+            "PL": "Poland",
+            "NL": "The Netherlands",
+            "CZ": "Czechia",
+            "FRA": "France",
+            "OST": "Soviet Union",
+            "BEL": "Belgium",
+            "ESP": "Spain",
+            "GB": "United Kingdom"
+        }
+        return NormalizeData.get_replaced_string(c, replacement)
 
 
 def main():
@@ -61,14 +90,16 @@ def main():
     # TODO: Convert dates
     # TODO: Figure out marriage
     for _, row in file.iterrows():
+        last_name = row["Nachname"].title()
         gender = NormalizeData.set_gender(row["Geschlecht"])
         birthday = NormalizeData.set_date(row["Geburtsdatum"])
+        nationality = NormalizeData.set_country(row["Nationalität"])
 
-        database.insert_person(last_name=row["Nachname"], name=row["Vorname"], maiden_name=row["Geburtsname"], gender=gender,
+        database.insert_person(last_name=last_name, name=row["Vorname"], maiden_name=row["Geburtsname"], gender=gender,
                                date_of_birth=birthday, place_of_birth=row[
             "Geburtsort (aktuell/korrigiert)"], place_of_death=row["Sterbeort"],
-            date_of_death=row["Sterbeort"], nationality=row[
-            "Nationalität"], last_place_of_residence=row["Letzter Wohnort (Land)"],
+            date_of_death=row["Sterbeort"], nationality=nationality, last_place_of_residence=row[
+                "Letzter Wohnort (Land)"],
             marriage="Maria", father=row["Name Vater"], mother=row["Name Mutter"], religion=row["Religion"],
             profession=row["Berufsangabe"])
 
