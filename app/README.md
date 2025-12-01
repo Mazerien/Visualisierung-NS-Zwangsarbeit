@@ -2,7 +2,6 @@
 ## Directory Structure
 ```
 app/
-├── excel_migration.py
 ├── database.py
 ├── main.py
 ├── geography.py
@@ -17,7 +16,6 @@ app/
 └── templates
     └── *.html
 ```
-excel_migration.py is a script for the migration from Excel files to the MySQL DB.  
 database.py defines the connection with MySQL.  
 main.py is the Flask app.  
 geography.py concerns Open Street Map API calls.  

@@ -115,27 +115,6 @@ class MySQL:
         # NOTE: Comment this out if you don't want demo data in your tables.
         # self.create_demo_data()
 
-    def insert_demo_data(self):
-        """
-        Demo data for testing purposes only.
-        """
-        # TODO: Rewrite demo data for new DB schema
-    #     self.query_exec(
-    #         """INSERT INTO person (first_name, last_name, date_of_birth, gender, city, country) VALUES
-    # ('Alice', 'Johnson', '1995-04-12', 'F', 'New York', 'USA'),
-    # ('Bob', 'Smith', '1988-11-23', 'M', 'London', 'UK'),
-    # ('Charlie', 'Brown', '2000-06-05', 'X', 'Toronto', 'Canada'),
-    # ('Diana', 'White', '1992-01-30', 'F', 'Sydney', 'Australia'),
-    # ('Ethan', 'Williams', '1985-09-17', 'M', 'Schwenningen', 'Germany'),
-    # ('Fiona', 'Martinez', '1998-03-22', 'F', 'Madrid', 'Spain'),
-    # ('George', 'Kim', '1991-07-09', 'M', 'Seoul', 'South Korea'),
-    # ('Hana', 'Tanaka', '1999-12-14', 'F', 'Tokyo', 'Japan'),
-    # ('Isaac', 'Olsen', '1983-10-02', 'M', 'Oslo', 'Norway'),
-    # ('Julia', 'Rossi', '1996-05-27', 'F', 'Rome', 'Italy');
-    # """
-    #     )
-        pass
-
     def insert_person(self, last_name: str, name: str, maiden_name: str, gender: chr, place_of_birth: str,
                       date_of_birth: date, place_of_death: str, date_of_death: date, nationality: str,
                       last_place_of_residence: str, marriage: str, father: str, mother: str, religion: str,
@@ -169,3 +148,28 @@ class MySQL:
         """
         query: str = f"SELECT * FROM {table_name};"
         return self.query_exec(query, is_read_only=True)
+    
+    def drop_tables(self, reset_db: bool = True):
+        """
+        Gets rid of all tables.
+        Also re-creates data if reset_db.
+        """
+        queries = [
+            #"SET FOREIGN_KEY_CHECKS = 0",
+            "DROP TABLE IF EXISTS Company",
+            "DROP TABLE IF EXISTS Person",
+            #"SET FOREIGN_KEY_CHECKS = 1"
+        ]
+        for query in queries:
+            self.query_exec(query)
+        if reset_db:
+            self.create_tables()
+    
+    def get_person_by_name(self, first_name: str, maiden_name: str, last_name: str):
+        """
+        TODO: Docstring
+        """
+        query: str = "SELECT * FROM Person WHERE FirstName = %s AND MaidenName = %s AND LastName = %s"
+        values = (first_name, maiden_name, last_name)
+        return self.query_exec(query, values, is_read_only=True)
+

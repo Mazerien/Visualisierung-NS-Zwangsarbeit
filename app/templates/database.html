@@ -5,8 +5,9 @@
 {% block body %}
 <table>
     <tr>
-        {% for col in columns %}
         <!-- TODO: Doing this in Jinja for now. Shouldn't. -->
+        {% for col in columns %}
+        
             <th>
                 {%- set header = col[0] | replace("_", " ") -%}
                 <!-- TODO: Incredibly badly written code. Supposed to change PascalCase into human readable. -->
@@ -23,14 +24,14 @@
     {% for row in rows %}
     <tr>
         {% for col in row %}
-        <th>{{ col }}</th>
+        <td>{{ col }}</td>
         {% endfor %}
     </tr>
     {% endfor %}
 </table>
 
-<!-- NOTE: Not needed for the time being. Might again.
+
 <form method="POST" action="{{ url_for('data') }}">
-    <button type="submit">Insert new demo data</button>
-</form>-->
+    <button type="submit">Reset DB</button>
+</form>
 {% endblock body %}

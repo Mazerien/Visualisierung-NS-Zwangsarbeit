@@ -73,7 +73,7 @@ def data():
     """
     # TODO: More interaction capabilities
     if request.method == "POST":
-        database.insert_demo_data()
+        database.drop_tables()
     return render_template("database.html", columns=database.select_columns_in_table("Person"),
                            rows=database.select_rows_in_table("Person"))
 

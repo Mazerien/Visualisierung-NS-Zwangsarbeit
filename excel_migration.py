@@ -106,6 +106,11 @@ def main():
         place_of_birth = NormalizeData.set_place_of_birth(
             uncorrected=row["Geburt‏sort"], corrected=row["Geburtsort (aktuell/korrigiert)"])
 
+        # Checks if person already exists in DB. If they do, skips it to avoid duplicate entries.
+        people: list[tuple] = database.get_person_by_name(first_name=row["Vorname (korrigiert)"], maiden_name=row["Geburtsname"], last_name=last_name)
+        if len(people) > 0:
+            print(people)
+
         database.insert_person(last_name=last_name, name=row["Vorname (korrigiert)"], maiden_name=row["Geburtsname"], gender=gender,
                                date_of_birth=birthday, place_of_birth=place_of_birth, place_of_death=row[
                                    "Sterbeort"],
