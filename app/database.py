@@ -62,6 +62,8 @@ class MySQL:
         """
         try:
             self.query_exec("SELECT * FROM Person;", is_read_only=True)
+            self.query_exec("SELECT * FROM Company;", is_read_only=True)
+            self.query_exec("SELECT * FROM Employment;", is_read_only=True)
         except mysql.connector.errors.ProgrammingError as e:
             print(e)
             print("No tables exist in this DB. Creating them now.")
@@ -69,7 +71,7 @@ class MySQL:
 
     def create_tables(self):
         """
-        Creates the tables. Right now, only does the person demo data.
+        Creates the tables as specified by the DB schema in the README.
         """
         cnx = self.pool.get_connection()
         cur = cnx.cursor()
@@ -104,11 +106,8 @@ class MySQL:
             f"""CREATE TABLE IF NOT EXISTS `Company` (
     `ID` int(11) NOT NULL AUTO_INCREMENT,
     `Name` varchar(255) NOT NULL,
-    `Person` int(11) NOT NULL,
-    `Job` varchar(255) NOT NULL,
 
-    PRIMARY KEY (`ID`),
-    FOREIGN KEY (`Person`) REFERENCES `Person`(`ID`)
+    PRIMARY KEY (`ID`)
     ) Engine=InnoDB
 """)
         cnx.commit()
@@ -144,6 +143,22 @@ class MySQL:
                   nationality, last_place_of_residence, marriage, father, mother, religion, profession)
         self.query_exec(string, values)
 
+    def insert_company(self, name: str):
+        """
+        TODO: Docstring
+        """
+        string = f"""INSERT INTO Company (Name) VALUES (%s)"""
+        values = (name,)
+        self.query_exec(string, values)
+    
+    def insert_employment(self, name: str, company_id: int, person_id: int):
+        """
+        TODO: Docstring
+        """
+        string = f"""INSERT INTO Employment (Name, Company, Person) VALUES (%s, %s, %s)"""
+        values = (name, company_id, person_id)
+        self.query_exec(string, values)
+
     def select_columns_in_table(self, table_name: str):
         """
         Gets the columns information of a specified table.
@@ -160,28 +175,36 @@ class MySQL:
         """
         query: str = f"SELECT * FROM {table_name};"
         return self.query_exec(query, is_read_only=True)
-    
+
     def drop_tables(self, reset_db: bool = True):
         """
         Gets rid of all tables.
         Also re-creates data if reset_db.
         """
         queries = [
-            #"SET FOREIGN_KEY_CHECKS = 0",
+            # "SET FOREIGN_KEY_CHECKS = 0",
+            "DROP TABLE IF EXISTS Employment",
             "DROP TABLE IF EXISTS Company",
             "DROP TABLE IF EXISTS Person",
-            #"SET FOREIGN_KEY_CHECKS = 1"
+            # "SET FOREIGN_KEY_CHECKS = 1"
         ]
         for query in queries:
             self.query_exec(query)
         if reset_db:
             self.create_tables()
-    
+
     def get_person_by_name(self, first_name: str, maiden_name: str, last_name: str):
         """
-        TODO: Docstring
+        Checks if a person by that exact name exists in the DB.
         """
         query: str = "SELECT * FROM Person WHERE FirstName = %s AND MaidenName = %s AND LastName = %s"
-        values = (first_name, maiden_name, last_name)
+        values: tuple[str, str, str] = (first_name, maiden_name, last_name)
         return self.query_exec(query, values, is_read_only=True)
 
+    def get_company_by_name(self, name: str):
+        """
+        Checks if a company by that exact name exists in the DB.
+        """
+        query: str = "SELECT * FROM Company WHERE Name = %s"
+        values: tuple[str] = (name,)
+        return self.query_exec(query, values, is_read_only=True)

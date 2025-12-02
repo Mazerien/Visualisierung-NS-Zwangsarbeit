@@ -82,6 +82,7 @@ class InsertData:
     def insert_person(row: pd.Series, database: MySQL):
         """
         Inserts a person from a given DataFrame row into the database.
+        Also returns the person's key ID for later use.
         """
         last_name = row["Nachname (korrigiert)"].title()
         gender = NormalizeData.set_gender(row["Geschlecht"])
@@ -91,10 +92,10 @@ class InsertData:
             uncorrected=row["Geburt‏sort"], corrected=row["Geburtsort (aktuell/korrigiert)"])
 
         # Checks if person already exists in DB. If they do, skips it to avoid duplicate entries.
-        people: list[tuple] = database.get_person_by_name(
-            first_name=row["Vorname (korrigiert)"], maiden_name=row["Geburtsname"], last_name=last_name)
+        # people: list[tuple] = database.get_person_by_name(
+        #    first_name=row["Vorname (korrigiert)"], maiden_name=row["Geburtsname"], last_name=last_name)
         # TODO: Maybe fuzzy matching?
-        #if len(people) > 0:
+        # if len(people) > 0:
         #    print(people)
 
         database.insert_person(last_name=last_name, name=row["Vorname (korrigiert)"], maiden_name=row["Geburtsname"], gender=gender,
@@ -104,6 +105,42 @@ class InsertData:
             "Letzter Wohnort (Land)"],
             marriage="None", father=row["Name Vater"], mother=row["Name Mutter"], religion=row["Religion"],
             profession=row["Berufsangabe"])
+        return database.get_person_by_name(first_name=row["Vorname (korrigiert)"], maiden_name=row["Geburtsname"], last_name=last_name)
+
+    def insert_employment(row: pd.Series, person: tuple, database: MySQL):
+        """
+        Inserts employment data from a given DataFrame row into the database.
+
+        row: The specified row of the Excel file.
+        person: A tuple of the Person as they are in the DB (database.get_person_by_name()).
+        database: The MySQL database connection.
+
+        If no employment data is given, returns.
+        """
+        companies: list[str] = [row["Unternehmen"], row["Unternehmen2"]]
+        companies_corrected: list[str] = []
+
+        # Checks if either Company have a string in the Excel; discards if it is empty or erroneous.
+        for c in companies:
+            if c is not None and len(c) > 0 and c != "?":
+                companies_corrected.append(c)
+        if len(companies_corrected) == 0:
+            return
+
+        print(companies_corrected)
+        # if len(companies) == 0 or companies == []:
+        #     print("This one has no companies listed.")
+        #     return
+
+        # # Checks if either Company is already in the DB. Creates an entry if not.
+        # for c in companies:
+        #     print(c)
+        #     company = database.get_company_by_name(c)
+        #     print("Somehow I get here. ",companies)
+
+        # Now on to the Employment at the Companies
+        # Checks if respective Person already has Employment at Company in DB.
+        # Creates a new Employment if not.
 
 
 def main():
@@ -113,7 +150,7 @@ def main():
     # NOTE: skiprows and usecols attempt to fix the weird header/data structure of the given Excel file.
     # Should the Excel file change, this probably won't be needed any more.
     file: pd.DataFrame = pd.read_excel(
-        "app/data/Gefangenenbuch.xlsx", skiprows=4, usecols="F:N,P:R,AD,AF,AK:AN")
+        "app/data/Gefangenenbuch.xlsx", skiprows=4, usecols="F:N,P:R,AD,AF,AB:AN")
     file = file.replace({np.nan: None})
 
     # TODO: Clean and normalize Excel data
@@ -130,7 +167,9 @@ def main():
 
     # TODO: Figure out marriage
     for _, row in file.iterrows():
-        InsertData.insert_person(row=row, database=database)
+        person = InsertData.insert_person(row=row, database=database)
+        employment = InsertData.insert_employment(
+            row=row, database=database, person=person)
 
 
 if __name__ == "__main__":
