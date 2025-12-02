@@ -127,16 +127,12 @@ class InsertData:
         if len(companies_corrected) == 0:
             return
 
-        print(companies_corrected)
-        # if len(companies) == 0 or companies == []:
-        #     print("This one has no companies listed.")
-        #     return
-
-        # # Checks if either Company is already in the DB. Creates an entry if not.
-        # for c in companies:
-        #     print(c)
-        #     company = database.get_company_by_name(c)
-        #     print("Somehow I get here. ",companies)
+        # Checks if either Company is already in the DB. Creates an entry if not.
+        for c in companies_corrected:
+            company = database.get_company_by_name(c)
+            if len(company) == 0:
+                print(f"New company {c} added to DB.")
+                database.insert_company(c)
 
         # Now on to the Employment at the Companies
         # Checks if respective Person already has Employment at Company in DB.
