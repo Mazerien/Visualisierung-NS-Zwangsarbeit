@@ -66,16 +66,27 @@ CREATE TABLE IF NOT EXISTS `Person` (
     ) ENGINE=InnoDB
 ```
 
+### Employment
+```
+CREATE TABLE IF NOT EXISTS `Employment` (
+    `ID` int(11) NOT NULL AUTO_INCREMENT,
+    `Name` varchar(255),
+    `Company` int(11) NOT NULL,
+    `Person` int(11) NOT NULL,
+
+    PRIMARY KEY (`ID`),
+    FOREIGN KEY (`Person`) REFERENCES `Person`(`ID`),
+    FOREIGN KEY (`Company`) REFERENCES `Company`(`ID`)
+    ) Engine=InnoDB
+```
+
 ### Company
 ```
 CREATE TABLE IF NOT EXISTS `Company` (
     `ID` int(11) NOT NULL AUTO_INCREMENT,
     `Name` varchar(255) NOT NULL,
-    `Person` int(11) NOT NULL,
-    `Job` varchar(255) NOT NULL,
 
-    PRIMARY KEY (`ID`),
-    FOREIGN KEY (`Person`) REFERENCES `Person`(`ID`)
+    PRIMARY KEY (`ID`)
     ) Engine=InnoDB
 ```
 
