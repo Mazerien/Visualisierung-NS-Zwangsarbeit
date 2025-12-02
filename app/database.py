@@ -112,8 +112,20 @@ class MySQL:
     ) Engine=InnoDB
 """)
         cnx.commit()
-        # NOTE: Comment this out if you don't want demo data in your tables.
-        # self.create_demo_data()
+
+        cur.execute(
+            f"""CREATE TABLE IF NOT EXISTS `Employment` (
+    `ID` int(11) NOT NULL AUTO_INCREMENT,
+    `Name` varchar(255) NOT NULL,
+    `Company` int(11) NOT NULL,
+    `Person` int(11) NOT NULL,
+
+    PRIMARY KEY (`ID`),
+    FOREIGN KEY (`Person`) REFERENCES `Person`(`ID`),
+    FOREIGN KEY (`Company`) REFERENCES `Company`(`ID`)
+    ) Engine=InnoDB
+""")
+        cnx.commit()
 
     def insert_person(self, last_name: str, name: str, maiden_name: str, gender: chr, place_of_birth: str,
                       date_of_birth: date, place_of_death: str, date_of_death: date, nationality: str,

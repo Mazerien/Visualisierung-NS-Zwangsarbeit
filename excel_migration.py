@@ -75,9 +75,40 @@ class NormalizeData:
         return "Unknown"
 
 
+class InsertData:
+    """
+    Helper class for inserting data into the MySQL database.
+    """
+    def insert_person(row: pd.Series, database: MySQL):
+        """
+        Inserts a person from a given DataFrame row into the database.
+        """
+        last_name = row["Nachname (korrigiert)"].title()
+        gender = NormalizeData.set_gender(row["Geschlecht"])
+        birthday = NormalizeData.set_date(row["Geburtsdatum"])
+        nationality = NormalizeData.set_country(row["Nationalität"])
+        place_of_birth = NormalizeData.set_place_of_birth(
+            uncorrected=row["Geburt‏sort"], corrected=row["Geburtsort (aktuell/korrigiert)"])
+
+        # Checks if person already exists in DB. If they do, skips it to avoid duplicate entries.
+        people: list[tuple] = database.get_person_by_name(
+            first_name=row["Vorname (korrigiert)"], maiden_name=row["Geburtsname"], last_name=last_name)
+        # TODO: Maybe fuzzy matching?
+        #if len(people) > 0:
+        #    print(people)
+
+        database.insert_person(last_name=last_name, name=row["Vorname (korrigiert)"], maiden_name=row["Geburtsname"], gender=gender,
+                               date_of_birth=birthday, place_of_birth=place_of_birth, place_of_death=row[
+                                   "Sterbeort"],
+                               date_of_death=row["Sterbeort"], nationality=nationality, last_place_of_residence=row[
+            "Letzter Wohnort (Land)"],
+            marriage="None", father=row["Name Vater"], mother=row["Name Mutter"], religion=row["Religion"],
+            profession=row["Berufsangabe"])
+
+
 def main():
     """
-    TODO: Docstring
+    Main function for migrating Excel data into the MySQL database.
     """
     # NOTE: skiprows and usecols attempt to fix the weird header/data structure of the given Excel file.
     # Should the Excel file change, this probably won't be needed any more.
@@ -99,25 +130,7 @@ def main():
 
     # TODO: Figure out marriage
     for _, row in file.iterrows():
-        last_name = row["Nachname (korrigiert)"].title()
-        gender = NormalizeData.set_gender(row["Geschlecht"])
-        birthday = NormalizeData.set_date(row["Geburtsdatum"])
-        nationality = NormalizeData.set_country(row["Nationalität"])
-        place_of_birth = NormalizeData.set_place_of_birth(
-            uncorrected=row["Geburt‏sort"], corrected=row["Geburtsort (aktuell/korrigiert)"])
-
-        # Checks if person already exists in DB. If they do, skips it to avoid duplicate entries.
-        people: list[tuple] = database.get_person_by_name(first_name=row["Vorname (korrigiert)"], maiden_name=row["Geburtsname"], last_name=last_name)
-        if len(people) > 0:
-            print(people)
-
-        database.insert_person(last_name=last_name, name=row["Vorname (korrigiert)"], maiden_name=row["Geburtsname"], gender=gender,
-                               date_of_birth=birthday, place_of_birth=place_of_birth, place_of_death=row[
-                                   "Sterbeort"],
-                               date_of_death=row["Sterbeort"], nationality=nationality, last_place_of_residence=row[
-            "Letzter Wohnort (Land)"],
-            marriage="None", father=row["Name Vater"], mother=row["Name Mutter"], religion=row["Religion"],
-            profession=row["Berufsangabe"])
+        InsertData.insert_person(row=row, database=database)
 
 
 if __name__ == "__main__":
