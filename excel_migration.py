@@ -82,7 +82,7 @@ class InsertData:
     def insert_person(row: pd.Series, database: MySQL):
         """
         Inserts a person from a given DataFrame row into the database.
-        Also returns the person's key ID for later use.
+        Also returns the Person within the DB.
         """
         last_name = row["Nachname (korrigiert)"].title()
         gender = NormalizeData.set_gender(row["Geschlecht"])
@@ -107,15 +107,10 @@ class InsertData:
             profession=row["Berufsangabe"])
         return database.get_person_by_name(first_name=row["Vorname (korrigiert)"], maiden_name=row["Geburtsname"], last_name=last_name)
 
-    def insert_employment(row: pd.Series, person: tuple, database: MySQL):
+    def insert_company(row: pd.Series, database: MySQL):
         """
-        Inserts employment data from a given DataFrame row into the database.
-
-        row: The specified row of the Excel file.
-        person: A tuple of the Person as they are in the DB (database.get_person_by_name()).
-        database: The MySQL database connection.
-
-        If no employment data is given, returns.
+        Inserts one or more companies from a given DataFrame row into the database.
+        Also returns the company within the DB.
         """
         companies: list[str] = [row["Unternehmen"], row["Unternehmen2"]]
         companies_corrected: list[str] = []
@@ -128,15 +123,27 @@ class InsertData:
             return
 
         # Checks if either Company is already in the DB. Creates an entry if not.
+        companies = []
         for c in companies_corrected:
             company = database.get_company_by_name(c)
             if len(company) == 0:
-                print(f"New company {c} added to DB.")
+                print(f"New Company {c} added to DB.")
                 database.insert_company(c)
+            companies.append(database.get_company_by_name(c)[0])
+        return companies
 
-        # Now on to the Employment at the Companies
-        # Checks if respective Person already has Employment at Company in DB.
-        # Creates a new Employment if not.
+    def insert_employment(name: str, companies: tuple, person: tuple, database: MySQL):
+        """
+        Inserts employment data from a given DataFrame row into the database.
+
+        If no employment data is given, returns.
+        """
+        for company in companies:
+            employment = database.get_employment_by_id(
+                company_id=company[0], person_id=person[0])
+            if len(employment) == 0:
+                employment = database.insert_employment(
+                    name=name, company_id=company[0], person_id=person[0])
 
 
 def main():
@@ -164,8 +171,15 @@ def main():
     # TODO: Figure out marriage
     for _, row in file.iterrows():
         person = InsertData.insert_person(row=row, database=database)
-        employment = InsertData.insert_employment(
-            row=row, database=database, person=person)
+        companies = InsertData.insert_company(row=row, database=database)
+
+        if companies is not None:
+            print(
+                f"Inserted Person {person[0][:4]} with Employment Data at Company/Companies {companies}.")
+            InsertData.insert_employment(
+                name=row["Berufsangabe"], companies=companies, person=person[0], database=database)
+        else:
+            print(f"Inserted Person {person[0][:4]} without Employment Data.")
 
 
 if __name__ == "__main__":

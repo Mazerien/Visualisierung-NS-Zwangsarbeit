@@ -115,7 +115,7 @@ class MySQL:
         cur.execute(
             f"""CREATE TABLE IF NOT EXISTS `Employment` (
     `ID` int(11) NOT NULL AUTO_INCREMENT,
-    `Name` varchar(255) NOT NULL,
+    `Name` varchar(255),
     `Company` int(11) NOT NULL,
     `Person` int(11) NOT NULL,
 
@@ -150,10 +150,10 @@ class MySQL:
         string = f"""INSERT INTO Company (Name) VALUES (%s)"""
         values = (name,)
         self.query_exec(string, values)
-    
+
     def insert_employment(self, name: str, company_id: int, person_id: int):
         """
-        TODO: Docstring
+        Inserts into the Employment table. An Emploment has a Person, a Company, and optionally, a job title.
         """
         string = f"""INSERT INTO Employment (Name, Company, Person) VALUES (%s, %s, %s)"""
         values = (name, company_id, person_id)
@@ -197,8 +197,12 @@ class MySQL:
         """
         Checks if a person by that exact name exists in the DB.
         """
-        query: str = "SELECT * FROM Person WHERE FirstName = %s AND MaidenName = %s AND LastName = %s"
-        values: tuple[str, str, str] = (first_name, maiden_name, last_name)
+        if maiden_name:
+            query: str = "SELECT * FROM Person WHERE FirstName = %s AND MaidenName = %s AND LastName = %s"
+            values: tuple[str, str, str] = (first_name, maiden_name, last_name)
+        else:
+            query: str = "SELECT * FROM Person WHERE FirstName = %s AND LastName = %s"
+            values: tuple[str, str] = (first_name, last_name)
         return self.query_exec(query, values, is_read_only=True)
 
     def get_company_by_name(self, name: str):
@@ -207,4 +211,12 @@ class MySQL:
         """
         query: str = "SELECT * FROM Company WHERE Name = %s"
         values: tuple[str] = (name,)
+        return self.query_exec(query, values, is_read_only=True)
+
+    def get_employment_by_id(self, company_id: int, person_id: int):
+        """
+        Gets an Employment with a given Company and Person key pair.
+        """
+        query: str = "SELECT * FROM Employment WHERE Company = %s AND Person = %s"
+        values: tuple[int, int] = (company_id, person_id)
         return self.query_exec(query, values, is_read_only=True)
