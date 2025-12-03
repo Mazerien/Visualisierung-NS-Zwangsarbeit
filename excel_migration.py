@@ -144,28 +144,31 @@ class InsertData:
             if len(employment) == 0:
                 employment = database.insert_employment(
                     name=name, company_id=company[0], person_id=person[0])
-    
+
     def insert_housing(row: pd.Series, database: MySQL):
         """
         Inserts new housing data.
         """
-        housing: list[str] = [row["Unterkunft (Adresse Kriegszeit)"], row["Unterkunft2"]]
+        housing: list[str] = [
+            row["Unterkunft (Adresse Kriegszeit)"], row["Unterkunft2"]]
         housing_corrected: list[str] = []
         for h in housing:
             if h is not None and len(h) > 0 and h != "?":
                 housing_corrected.append(h)
         if len(housing_corrected) == 0:
             return
-        
+
         housing = []
         for h in housing_corrected:
             house = database.get_housing_by_adress(h)
             if len(house) == 0:
-                print(f"New Housing {h} added to DB.")
-                #database.insert_company(c)
-            #companies.append(database.get_company_by_name(c)[0])
-        #return companies
-    
+                database.insert_housing(name="", adress=h, housing_type="Schwenningen")
+                house = database.get_housing_by_adress(h)
+                print(f"Housing {h} added to DB.")
+                # database.insert_company(c)
+            # companies.append(database.get_company_by_name(c)[0])
+        # return companies
+
     def insert_tenancy():
         """
         TODO: Docstring
@@ -194,18 +197,20 @@ def main():
     database.check_tables()
 
     # TODO: Figure out marriage for Person
+    # dict = {"Person": 0, "Company": 0, "Employment": 0, "Housing": 0, "Tenancy": 0}
     for _, row in file.iterrows():
         person = InsertData.insert_person(row=row, database=database)
         companies = InsertData.insert_company(row=row, database=database)
         housing = InsertData.insert_housing(row=row, database=database)
 
         if companies is not None:
-            print(
-                f"Inserted Person {person[0][:4]} with Employment Data at Company/Companies {companies}.")
+            # print(
+            #    f"Inserted Person {person[0][:4]} with Employment Data at Company/Companies {companies}.")
             InsertData.insert_employment(
                 name=row["Berufsangabe"], companies=companies, person=person[0], database=database)
         else:
-            print(f"Inserted Person {person[0][:4]} without Employment Data.")
+            #print(f"Inserted Person {person[0][:4]} without Employment Data.")
+            pass
 
 
 if __name__ == "__main__":

@@ -14,6 +14,8 @@ class MySQL:
     """
 
     pool: MySQLConnectionPool = None
+    tables: list[str] = ["Person", "Company",
+                         "Employment", "Housing", "Tenancy"]
 
     def __init__(self, user: str, password: str, host: str, db: str):
         """
@@ -36,7 +38,7 @@ class MySQL:
     def query_exec(self, query: str, values=None, is_read_only: bool = False):
         """
         Executes a given query query; immediately commits to DB.
-        query: Query query
+        query: Query string
         values: Value strings if given.
         is_read_only: Commits a change only if one is given; defaults to false.
         """
@@ -61,12 +63,9 @@ class MySQL:
         Checks if all tables exist. Creates them if they don't.
         """
         try:
-            self.query_exec("SELECT * FROM Person;", is_read_only=True)
-            self.query_exec("SELECT * FROM Company;", is_read_only=True)
-            self.query_exec("SELECT * FROM Employment;", is_read_only=True)
-            self.query_exec("SELECT * FROM Housing;", is_read_only=True)
-        except mysql.connector.errors.ProgrammingError as e:
-            print(e)
+            for table in self.tables:
+                self.query_exec(f"SELECT * FROM {table}", is_read_only=True)
+        except mysql.connector.errors.ProgrammingError:
             print("No tables exist in this DB. Creating them now.")
             self.create_tables()
 
@@ -100,7 +99,7 @@ class MySQL:
     `Religion` varchar(255),
     `Profession` varchar(255),
 
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`ID`)
     ) ENGINE=InnoDB
             """,
             """
@@ -132,6 +131,19 @@ class MySQL:
 
     PRIMARY KEY (`ID`)
     ) Engine=InnoDB
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS `Tenancy` (
+    `ID` int(11) NOT NULL AUTO_INCREMENT,
+    `Housing` int(11) NOT NULL,
+    `Person` int(11) NOT NULL,
+    `StartDate` date,
+    `EndDate` date,
+
+    PRIMARY KEY (`ID`),
+    FOREIGN KEY (`Housing`) REFERENCES `Housing`(`ID`),
+    FOREIGN KEY (`Person`) REFERENCES `Person`(`ID`)
+    ) Engine=InnoDB   
             """
         ]
         for table in table_queries:
@@ -165,7 +177,7 @@ class MySQL:
 
     def insert_employment(self, name: str, company_id: int, person_id: int):
         """
-        Inserts into the Employment table. An Emploment has a Person, a Company, and optionally, a job title.
+        Inserts into the Employment table. An Employment has a Person, a Company, and optionally, a job title.
         """
         query = f"""INSERT INTO Employment (Name, Company, Person) VALUES (%s, %s, %s)"""
         values = (name, company_id, person_id)
@@ -173,16 +185,15 @@ class MySQL:
 
     def insert_housing(self, name: str, adress: str, housing_type: str):
         """
-        TODO: Docstring
+        Inserts a house with its respective housing type.
         """
-        query: str = f"""INSERT INTO Housing VALUES (%s, %s, %s)"""
+        query: str = f"""INSERT INTO Housing (Name, Adress, Type) VALUES (%s, %s, %s)"""
         values = (name, adress, housing_type)
         self.query_exec(query, values)
 
     def select_columns_in_table(self, table_name: str):
         """
         Gets the columns information of a specified table.
-        table_name: Name of the table.
         """
         query: str = (
             f"SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '{table_name}';"
@@ -198,19 +209,12 @@ class MySQL:
 
     def drop_tables(self, reset_db: bool = True):
         """
-        Gets rid of all tables.
-        Also re-creates data if reset_db.
+        Deletes all tables and associated data.
+        Also re-creates tables if reset_db.
         """
-        queries = [
-            # "SET FOREIGN_KEY_CHECKS = 0",
-            "DROP TABLE IF EXISTS Employment",
-            "DROP TABLE IF EXISTS Company",
-            "DROP TABLE IF EXISTS Person",
-            "DROP TABLE IF EXISTS Housing"
-            # "SET FOREIGN_KEY_CHECKS = 1"
-        ]
-        for query in queries:
-            self.query_exec(query)
+        # List reversed because later tables are dependent on former ones
+        for table in reversed(self.tables):
+            self.query_exec(f"DROP TABLE IF EXISTS {table}")
         if reset_db:
             self.create_tables()
 
@@ -248,4 +252,12 @@ class MySQL:
         """
         query: str = "SELECT * FROM Housing WHERE Adress = %s"
         values = (adress,)
+        return self.query_exec(query, values, is_read_only=True)
+
+    def get_tenancy_by_id(self, housing_id: int, person_id: int):
+        """
+        TODO: Docstring
+        """
+        query: str = "SELECT * FROM Tenancy WHERE Housing = %s AND Person = %s"
+        values = (housing_id, person_id)
         return self.query_exec(query, values, is_read_only=True)

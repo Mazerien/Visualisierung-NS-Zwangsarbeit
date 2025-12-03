@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS `Person` (
     `Religion` varchar(255),
     `Profession` varchar(255),
 
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`ID`)
     ) ENGINE=InnoDB
 ```
 
@@ -99,6 +99,21 @@ CREATE TABLE IF NOT EXISTS `Housing` (
     `Type` enum('Schwenningen', 'Imprisonment', 'Living') NOT NULL,
 
     PRIMARY KEY (`ID`)
+    ) Engine=InnoDB
+```
+
+### Tenancy
+```
+CREATE TABLE IF NOT EXISTS `Tenancy` (
+    `ID` int(11) NOT NULL AUTO_INCREMENT,
+    `Housing` int(11) NOT NULL,
+    `Person` int(11) NOT NULL,
+    `StartDate` date,
+    `EndDate` date,
+
+    PRIMARY KEY (`ID`),
+    FOREIGN KEY (`Housing`) REFERENCES `Housing`(`ID`),
+    FOREIGN KEY (`Person`) REFERENCES `Person`(`ID`)
     ) Engine=InnoDB
 ```
 
