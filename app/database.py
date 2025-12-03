@@ -15,7 +15,7 @@ class MySQL:
 
     pool: MySQLConnectionPool = None
     tables: list[str] = ["Person", "Company",
-                         "Employment", "Housing", "Tenancy"]
+                         "Employment", "Housing", "Tenancy", "Imprisonment"]
 
     def __init__(self, user: str, password: str, host: str, db: str):
         """
@@ -147,6 +147,21 @@ class MySQL:
     FOREIGN KEY (`Housing`) REFERENCES `Housing`(`ID`),
     FOREIGN KEY (`Person`) REFERENCES `Person`(`ID`)
     ) Engine=InnoDB   
+            """,
+
+            """
+            CREATE TABLE IF NOT EXISTS `Imprisonment` (
+    `ID` int(11) NOT NULL AUTO_INCREMENT,
+    `PrisonerID` int(11),
+    `StartDate` date,
+    `EndDate` date,
+    `AgeAtImprisonment` int(11),
+    `PrisonerOfWar` bool,
+    `CourtOfLaw` varchar(255),
+
+    PRIMARY KEY (`ID`),
+    FOREIGN KEY (`Person`) REFERENCES `Person`(`ID`)
+    ) Engine=InnoDB
             """
         ]
         for table in table_queries:

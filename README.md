@@ -118,7 +118,18 @@ CREATE TABLE IF NOT EXISTS `Tenancy` (
 
 ### Imprisonment
 ```
-TODO
+CREATE TABLE IF NOT EXISTS `Imprisonment` (
+    `ID` int(11) NOT NULL AUTO_INCREMENT,
+    `PrisonerID` int(11),
+    `StartDate` date,
+    `EndDate` date,
+    `AgeAtImprisonment` int(11),
+    `PrisonerOfWar` bool,
+    `CourtOfLaw` varchar(255),
+
+    PRIMARY KEY (`ID`),
+    FOREIGN KEY (`Person`) REFERENCES `Person`(`ID`)
+    ) Engine=InnoDB
 ```
 
 ## OpenStreetMap & OpenHistoricalMap
