@@ -118,6 +118,9 @@ class InsertData:
         # Checks if either Company have a string in the Excel; discards if it is empty or erroneous.
         for c in companies:
             if c is not None and len(c) > 0 and c != "?":
+                # TODO: Think of a unified algorithm for correcting these human data insertion errors?
+                c = c.replace("... Ziegelwerk Mühlacker u.a.",
+                              "Ziegelwerk Mühlacker")
                 companies_corrected.append(c)
         if len(companies_corrected) == 0:
             return
@@ -135,7 +138,6 @@ class InsertData:
     def insert_employment(name: str, companies: tuple, person: tuple, database: MySQL):
         """
         Inserts employment data from a given DataFrame row into the database.
-
         If no employment data is given, returns.
         """
         for company in companies:
@@ -154,6 +156,7 @@ class InsertData:
         housing_corrected: list[str] = []
         for h in housing:
             if h is not None and len(h) > 0 and h != "?":
+                h = h.replace("Wohnsitz unbek.", "")
                 housing_corrected.append(h)
         if len(housing_corrected) == 0:
             return
@@ -161,8 +164,9 @@ class InsertData:
         housing = []
         for h in housing_corrected:
             house = database.get_housing_by_adress(h)
-            if len(house) == 0:
-                database.insert_housing(name="", adress=h, housing_type="Schwenningen")
+            if h and len(house) == 0:
+                database.insert_housing(
+                    name="", adress=h, housing_type="Schwenningen")
                 house = database.get_housing_by_adress(h)
                 print(f"Housing {h} added to DB.")
                 # database.insert_company(c)
@@ -209,7 +213,7 @@ def main():
             InsertData.insert_employment(
                 name=row["Berufsangabe"], companies=companies, person=person[0], database=database)
         else:
-            #print(f"Inserted Person {person[0][:4]} without Employment Data.")
+            # print(f"Inserted Person {person[0][:4]} without Employment Data.")
             pass
 
 
