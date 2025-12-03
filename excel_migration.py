@@ -166,18 +166,23 @@ class InsertData:
             house = database.get_housing_by_adress(h)
             if h and len(house) == 0:
                 database.insert_housing(
-                    name="", adress=h, housing_type="Schwenningen")
+                    adress=h, housing_type="Schwenningen")
                 house = database.get_housing_by_adress(h)
                 print(f"Housing {h} added to DB.")
-                # database.insert_company(c)
-            # companies.append(database.get_company_by_name(c)[0])
-        # return companies
+                housing.append(house)
+        return housing
 
-    def insert_tenancy():
+    def insert_tenancy(housing: tuple, person: tuple, start_date: dt.date, end_date: dt.date, database: MySQL):
         """
         TODO: Docstring
         """
-        pass
+        if not housing:
+            return
+        # TODO: Maybe do pre-processing in another function for the tuples if len(tuple) == 1?
+        housing = housing[0][0]
+        person = person[0][0]
+        database.insert_tenancy(housing_id=housing[0], person_id=person, start_date=start_date, end_date=end_date)
+        return database.get_tenancy_by_id(housing_id=housing[0], person_id=person)
 
 
 def main():
@@ -187,7 +192,7 @@ def main():
     # NOTE: skiprows and usecols attempt to fix the weird header/data structure of the given Excel file.
     # Should the Excel file change, this probably won't be needed any more.
     file: pd.DataFrame = pd.read_excel(
-        "app/data/Gefangenenbuch.xlsx", skiprows=4, usecols="F:N,P:R,Z:AD,AF,AB:AN")
+        "app/data/Gefangenenbuch.xlsx", skiprows=4, usecols="F:N,P:R,X:AD,AF,AB:AN")
     file = file.replace({np.nan: None})
 
     load_dotenv()
@@ -206,6 +211,8 @@ def main():
         person = InsertData.insert_person(row=row, database=database)
         companies = InsertData.insert_company(row=row, database=database)
         housing = InsertData.insert_housing(row=row, database=database)
+        tenancy = InsertData.insert_tenancy(
+            housing, person, start_date=NormalizeData.set_date(row["Aufenthalt ab"]), end_date=NormalizeData.set_date(row["Aufenthalt bis"]), database=database)
 
         if companies is not None:
             # print(

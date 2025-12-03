@@ -102,6 +102,7 @@ class MySQL:
     PRIMARY KEY (`ID`)
     ) ENGINE=InnoDB
             """,
+
             """
             CREATE TABLE IF NOT EXISTS `Company` (
     `ID` int(11) NOT NULL AUTO_INCREMENT,
@@ -110,6 +111,7 @@ class MySQL:
     PRIMARY KEY (`ID`)
     ) Engine=InnoDB
             """,
+
             """
             CREATE TABLE IF NOT EXISTS `Employment` (
     `ID` int(11) NOT NULL AUTO_INCREMENT,
@@ -122,16 +124,17 @@ class MySQL:
     FOREIGN KEY (`Company`) REFERENCES `Company`(`ID`)
     ) Engine=InnoDB
             """,
+
             """
             CREATE TABLE IF NOT EXISTS `Housing` (
     `ID` int(11) NOT NULL AUTO_INCREMENT,
-    `Name` varchar(255),
     `Adress` varchar(255) NOT NULL,
     `Type` enum('Schwenningen', 'Imprisonment', 'Living') NOT NULL,
 
     PRIMARY KEY (`ID`)
     ) Engine=InnoDB
             """,
+
             """
             CREATE TABLE IF NOT EXISTS `Tenancy` (
     `ID` int(11) NOT NULL AUTO_INCREMENT,
@@ -147,8 +150,7 @@ class MySQL:
             """
         ]
         for table in table_queries:
-            cur.execute(table)
-            cnx.commit()
+            self.query_exec(table)
 
     def insert_person(self, last_name: str, name: str, maiden_name: str, gender: chr, place_of_birth: str,
                       date_of_birth: date, place_of_death: str, date_of_death: date, nationality: str,
@@ -158,7 +160,7 @@ class MySQL:
         Inserts a single Person with their respective data.
         Refer to the MySQL schema for more information.
         """
-        query = f"""INSERT INTO Person (LastName, FirstName, MaidenName, Gender, PlaceOfBirth, DateOfBirth, 
+        query = """INSERT INTO Person (LastName, FirstName, MaidenName, Gender, PlaceOfBirth, DateOfBirth, 
         PlaceOfDeath, DateOfDeath, Nationality, LastPlaceOfResidence, Marriage, Father, Mother, Religion, Profession
         ) VALUES (
         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
@@ -171,7 +173,7 @@ class MySQL:
         """
         Inserts into the Company table.
         """
-        query = f"""INSERT INTO Company (Name) VALUES (%s)"""
+        query = "INSERT INTO Company (Name) VALUES (%s)"
         values = (name,)
         self.query_exec(query, values)
 
@@ -179,16 +181,24 @@ class MySQL:
         """
         Inserts into the Employment table. An Employment has a Person, a Company, and optionally, a job title.
         """
-        query = f"""INSERT INTO Employment (Name, Company, Person) VALUES (%s, %s, %s)"""
+        query = "INSERT INTO Employment (Name, Company, Person) VALUES (%s, %s, %s)"
         values = (name, company_id, person_id)
         self.query_exec(query, values)
 
-    def insert_housing(self, name: str, adress: str, housing_type: str):
+    def insert_housing(self, adress: str, housing_type: str):
         """
         Inserts a house with its respective housing type.
         """
-        query: str = f"""INSERT INTO Housing (Name, Adress, Type) VALUES (%s, %s, %s)"""
-        values = (name, adress, housing_type)
+        query: str = "INSERT INTO Housing (Adress, Type) VALUES (%s, %s)"
+        values = (adress, housing_type)
+        self.query_exec(query, values)
+
+    def insert_tenancy(self, housing_id: int, person_id: int, start_date: date, end_date: date):
+        """
+        TODO: Docstring
+        """
+        query: str = "INSERT INTO Tenancy (Housing, Person, StartDate, EndDate) VALUES (%s, %s, %s, %s)"
+        values = (housing_id, person_id, start_date, end_date)
         self.query_exec(query, values)
 
     def select_columns_in_table(self, table_name: str):
