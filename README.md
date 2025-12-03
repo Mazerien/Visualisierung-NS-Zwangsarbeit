@@ -92,7 +92,14 @@ CREATE TABLE IF NOT EXISTS `Company` (
 
 ### Housing
 ```
-TODO
+CREATE TABLE IF NOT EXISTS `Housing` (
+    `ID` int(11) NOT NULL AUTO_INCREMENT,
+    `Name` varchar(255),
+    `Adress` varchar(255) NOT NULL,
+    `Type` enum('Schwenningen', 'Imprisonment', 'Living') NOT NULL,
+
+    PRIMARY KEY (`ID`)
+    ) Engine=InnoDB
 ```
 
 ### Imprisonment

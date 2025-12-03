@@ -144,6 +144,33 @@ class InsertData:
             if len(employment) == 0:
                 employment = database.insert_employment(
                     name=name, company_id=company[0], person_id=person[0])
+    
+    def insert_housing(row: pd.Series, database: MySQL):
+        """
+        Inserts new housing data.
+        """
+        housing: list[str] = [row["Unterkunft (Adresse Kriegszeit)"], row["Unterkunft2"]]
+        housing_corrected: list[str] = []
+        for h in housing:
+            if h is not None and len(h) > 0 and h != "?":
+                housing_corrected.append(h)
+        if len(housing_corrected) == 0:
+            return
+        
+        housing = []
+        for h in housing_corrected:
+            house = database.get_housing_by_adress(h)
+            if len(house) == 0:
+                print(f"New Housing {h} added to DB.")
+                #database.insert_company(c)
+            #companies.append(database.get_company_by_name(c)[0])
+        #return companies
+    
+    def insert_tenancy():
+        """
+        TODO: Docstring
+        """
+        pass
 
 
 def main():
@@ -153,10 +180,8 @@ def main():
     # NOTE: skiprows and usecols attempt to fix the weird header/data structure of the given Excel file.
     # Should the Excel file change, this probably won't be needed any more.
     file: pd.DataFrame = pd.read_excel(
-        "app/data/Gefangenenbuch.xlsx", skiprows=4, usecols="F:N,P:R,AD,AF,AB:AN")
+        "app/data/Gefangenenbuch.xlsx", skiprows=4, usecols="F:N,P:R,Z:AD,AF,AB:AN")
     file = file.replace({np.nan: None})
-
-    # TODO: Clean and normalize Excel data
 
     load_dotenv()
     SQL_DB = getenv("SQL_DB")
@@ -168,10 +193,11 @@ def main():
     )
     database.check_tables()
 
-    # TODO: Figure out marriage
+    # TODO: Figure out marriage for Person
     for _, row in file.iterrows():
         person = InsertData.insert_person(row=row, database=database)
         companies = InsertData.insert_company(row=row, database=database)
+        housing = InsertData.insert_housing(row=row, database=database)
 
         if companies is not None:
             print(

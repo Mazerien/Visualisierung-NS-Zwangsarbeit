@@ -35,8 +35,8 @@ class MySQL:
 
     def query_exec(self, query: str, values=None, is_read_only: bool = False):
         """
-        Executes a given query string; immediately commits to DB.
-        query: Query string
+        Executes a given query query; immediately commits to DB.
+        query: Query query
         values: Value strings if given.
         is_read_only: Commits a change only if one is given; defaults to false.
         """
@@ -64,6 +64,7 @@ class MySQL:
             self.query_exec("SELECT * FROM Person;", is_read_only=True)
             self.query_exec("SELECT * FROM Company;", is_read_only=True)
             self.query_exec("SELECT * FROM Employment;", is_read_only=True)
+            self.query_exec("SELECT * FROM Housing;", is_read_only=True)
         except mysql.connector.errors.ProgrammingError as e:
             print(e)
             print("No tables exist in this DB. Creating them now.")
@@ -145,30 +146,38 @@ class MySQL:
         Inserts a single Person with their respective data.
         Refer to the MySQL schema for more information.
         """
-        string = f"""INSERT INTO Person (LastName, FirstName, MaidenName, Gender, PlaceOfBirth, DateOfBirth, 
+        query = f"""INSERT INTO Person (LastName, FirstName, MaidenName, Gender, PlaceOfBirth, DateOfBirth, 
         PlaceOfDeath, DateOfDeath, Nationality, LastPlaceOfResidence, Marriage, Father, Mother, Religion, Profession
         ) VALUES (
         %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
     """
         values = (last_name, name, maiden_name, gender, place_of_birth, date_of_birth, place_of_death, date_of_death,
                   nationality, last_place_of_residence, marriage, father, mother, religion, profession)
-        self.query_exec(string, values)
+        self.query_exec(query, values)
 
     def insert_company(self, name: str):
         """
-        TODO: Docstring
+        Inserts into the Company table.
         """
-        string = f"""INSERT INTO Company (Name) VALUES (%s)"""
+        query = f"""INSERT INTO Company (Name) VALUES (%s)"""
         values = (name,)
-        self.query_exec(string, values)
+        self.query_exec(query, values)
 
     def insert_employment(self, name: str, company_id: int, person_id: int):
         """
         Inserts into the Employment table. An Emploment has a Person, a Company, and optionally, a job title.
         """
-        string = f"""INSERT INTO Employment (Name, Company, Person) VALUES (%s, %s, %s)"""
+        query = f"""INSERT INTO Employment (Name, Company, Person) VALUES (%s, %s, %s)"""
         values = (name, company_id, person_id)
-        self.query_exec(string, values)
+        self.query_exec(query, values)
+
+    def insert_housing(self, name: str, adress: str, housing_type: str):
+        """
+        TODO: Docstring
+        """
+        query: str = f"""INSERT INTO Housing VALUES (%s, %s, %s)"""
+        values = (name, adress, housing_type)
+        self.query_exec(query, values)
 
     def select_columns_in_table(self, table_name: str):
         """
@@ -197,6 +206,7 @@ class MySQL:
             "DROP TABLE IF EXISTS Employment",
             "DROP TABLE IF EXISTS Company",
             "DROP TABLE IF EXISTS Person",
+            "DROP TABLE IF EXISTS Housing"
             # "SET FOREIGN_KEY_CHECKS = 1"
         ]
         for query in queries:
@@ -230,4 +240,12 @@ class MySQL:
         """
         query: str = "SELECT * FROM Employment WHERE Company = %s AND Person = %s"
         values: tuple[int, int] = (company_id, person_id)
+        return self.query_exec(query, values, is_read_only=True)
+
+    def get_housing_by_adress(self, adress: str):
+        """
+        TODO: Docstring
+        """
+        query: str = "SELECT * FROM Housing WHERE Adress = %s"
+        values = (adress,)
         return self.query_exec(query, values, is_read_only=True)
