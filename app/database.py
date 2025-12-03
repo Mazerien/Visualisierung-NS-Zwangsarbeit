@@ -75,8 +75,10 @@ class MySQL:
         """
         cnx = self.pool.get_connection()
         cur = cnx.cursor()
-        cur.execute(
-            f"""CREATE TABLE IF NOT EXISTS `Person` (
+
+        table_queries = [
+            """
+            CREATE TABLE IF NOT EXISTS `Person` (
     `ID` int(11) NOT NULL AUTO_INCREMENT,
 
     `LastName` varchar(255) NOT NULL,
@@ -99,21 +101,17 @@ class MySQL:
 
     PRIMARY KEY (`id`)
     ) ENGINE=InnoDB
-    """)
-        cnx.commit()
-
-        cur.execute(
-            f"""CREATE TABLE IF NOT EXISTS `Company` (
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS `Company` (
     `ID` int(11) NOT NULL AUTO_INCREMENT,
     `Name` varchar(255) NOT NULL,
 
     PRIMARY KEY (`ID`)
     ) Engine=InnoDB
-""")
-        cnx.commit()
-
-        cur.execute(
-            f"""CREATE TABLE IF NOT EXISTS `Employment` (
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS `Employment` (
     `ID` int(11) NOT NULL AUTO_INCREMENT,
     `Name` varchar(255),
     `Company` int(11) NOT NULL,
@@ -123,8 +121,21 @@ class MySQL:
     FOREIGN KEY (`Person`) REFERENCES `Person`(`ID`),
     FOREIGN KEY (`Company`) REFERENCES `Company`(`ID`)
     ) Engine=InnoDB
-""")
-        cnx.commit()
+            """,
+            """
+            CREATE TABLE IF NOT EXISTS `Housing` (
+    `ID` int(11) NOT NULL AUTO_INCREMENT,
+    `Name` varchar(255),
+    `Adress` varchar(255) NOT NULL,
+    `Type` enum('Schwenningen', 'Imprisonment', 'Living') NOT NULL,
+
+    PRIMARY KEY (`ID`)
+    ) Engine=InnoDB
+            """
+        ]
+        for table in table_queries:
+            cur.execute(table)
+            cnx.commit()
 
     def insert_person(self, last_name: str, name: str, maiden_name: str, gender: chr, place_of_birth: str,
                       date_of_birth: date, place_of_death: str, date_of_death: date, nationality: str,
