@@ -12,7 +12,6 @@ class MySQL:
     """
     Handles all connections with the MySQL database.
     """
-
     pool: MySQLConnectionPool = None
     tables: list[str] = ["Person", "Company",
                          "Employment", "Housing", "Tenancy", "Imprisonment"]
@@ -210,7 +209,7 @@ class MySQL:
 
     def insert_tenancy(self, housing_id: int, person_id: int, start_date: date, end_date: date):
         """
-        TODO: Docstring
+        Inserts a tenancy record with housing, person, start date, and end date.
         """
         query: str = "INSERT INTO Tenancy (Housing, Person, StartDate, EndDate) VALUES (%s, %s, %s, %s)"
         values = (housing_id, person_id, start_date, end_date)
@@ -273,7 +272,7 @@ class MySQL:
 
     def get_housing_by_adress(self, adress: str):
         """
-        TODO: Docstring
+        Retrieve a housing record by its address.
         """
         query: str = "SELECT * FROM Housing WHERE Adress = %s"
         values = (adress,)
@@ -281,7 +280,7 @@ class MySQL:
 
     def get_tenancy_by_id(self, housing_id: int, person_id: int):
         """
-        TODO: Docstring
+        Retrieve a tenancy record by housing and person identifiers.
         """
         query: str = "SELECT * FROM Tenancy WHERE Housing = %s AND Person = %s"
         values = (housing_id, person_id)

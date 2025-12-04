@@ -150,6 +150,7 @@ class InsertData:
     def insert_housing(row: pd.Series, database: MySQL):
         """
         Inserts new housing data.
+        If no housing data is given, returns.
         """
         housing: list[str] = [
             row["Unterkunft (Adresse Kriegszeit)"], row["Unterkunft2"]]
@@ -174,14 +175,16 @@ class InsertData:
 
     def insert_tenancy(housing: tuple, person: tuple, start_date: dt.date, end_date: dt.date, database: MySQL):
         """
-        TODO: Docstring
+        Inserts tenancy data linking housing and person with start and end dates.
+        If no housing data is given, returns.
         """
         if not housing:
             return
         # TODO: Maybe do pre-processing in another function for the tuples if len(tuple) == 1?
         housing = housing[0][0]
         person = person[0][0]
-        database.insert_tenancy(housing_id=housing[0], person_id=person, start_date=start_date, end_date=end_date)
+        database.insert_tenancy(
+            housing_id=housing[0], person_id=person, start_date=start_date, end_date=end_date)
         return database.get_tenancy_by_id(housing_id=housing[0], person_id=person)
 
 
@@ -213,7 +216,7 @@ def main():
         housing = InsertData.insert_housing(row=row, database=database)
         tenancy = InsertData.insert_tenancy(
             housing, person, start_date=NormalizeData.set_date(row["Aufenthalt ab"]), end_date=NormalizeData.set_date(row["Aufenthalt bis"]), database=database)
-
+        # TODO: Imprisonment data
         if companies is not None:
             # print(
             #    f"Inserted Person {person[0][:4]} with Employment Data at Company/Companies {companies}.")
