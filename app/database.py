@@ -34,7 +34,7 @@ class MySQL:
             print(e)
             print(f"Can't connect to MySQL. Continuing without database.")
 
-    def query_exec(self, query: str, values=None, is_read_only: bool = False):
+    def query_exec(self, query: str, values = None, is_read_only: bool = False):
         """
         Executes a given query query; immediately commits to DB.
         query: Query string
@@ -151,6 +151,7 @@ class MySQL:
             """
             CREATE TABLE IF NOT EXISTS `Imprisonment` (
     `ID` int(11) NOT NULL AUTO_INCREMENT,
+    `Person` int(11) NOT NULL,
     `PrisonerID` int(11),
     `StartDate` date,
     `EndDate` date,

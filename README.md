@@ -36,9 +36,10 @@ If MySQL is run from Docker container: `SQL_HOST=db`.
 
 ## MySQL Schema
 ![Image](app/static/images/db_schema.png)
-It is possible to fill the DB with real data through the `excel_migration.py` script. Note that this is still very WIP and due to change. Some features are still missing.  
+It is possible to fill the DB with real data through the `excel_migration.py` script.  
 Run data migration: `python excel_migration.py`  
 Ensure MySQL is connected and .env has data.
+
 ### Person
 ```
 CREATE TABLE IF NOT EXISTS `Person` (
@@ -120,6 +121,7 @@ CREATE TABLE IF NOT EXISTS `Tenancy` (
 ```
 CREATE TABLE IF NOT EXISTS `Imprisonment` (
     `ID` int(11) NOT NULL AUTO_INCREMENT,
+    `Person` int(11) NOT NULL,
     `PrisonerID` int(11),
     `StartDate` date,
     `EndDate` date,
@@ -137,7 +139,7 @@ OpenStreetMap & OpenHistoricalMap have a public API.
 This project uses the [OSMnx Python library](https://osmnx.readthedocs.io/en/stable/getting-started.html).  
 As of right now, it is possible to render a high-resolution PNG image of a chosen city's roads from OSM within the Flask app.  
 It is also possible to query for interactive OSM maps.  
-[Note that OpenHistoricalMap's API differs slightly from that of OpenStreetMap.](https://wiki.openstreetmap.org/wiki/OpenHistoricalMap/Overpass) Certain queries need to be modified.
+[Note that OpenHistoricalMap's Overpass API differs slightly from that of OpenStreetMap.](https://wiki.openstreetmap.org/wiki/OpenHistoricalMap/Overpass) Certain queries need to be modified.
 
 ## Sources
 ### OSM / OHM

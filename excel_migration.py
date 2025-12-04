@@ -39,9 +39,9 @@ class NormalizeData:
         """
         Converts gender markers to an international standard.
         """
-        g = g.replace("w", "f")
         g = g.replace("m/w", "x")
         g = g.replace("m/f", "x")
+        g = g.replace("w", "f")
         return g
 
     def set_country(c: str) -> str:
@@ -119,8 +119,10 @@ class InsertData:
         for c in companies:
             if c is not None and len(c) > 0 and c != "?":
                 # TODO: Think of a unified algorithm for correcting these human data insertion errors?
-                c = c.replace("... Ziegelwerk Mühlacker u.a.",
-                              "Ziegelwerk Mühlacker")
+                replacement = {
+                    "... Ziegelwerk Mühlacker u.a.": "Ziegelwerk Mühlacker"
+                }
+                c = NormalizeData.get_replaced_string(c, replacement)
                 companies_corrected.append(c)
         if len(companies_corrected) == 0:
             return
@@ -186,6 +188,12 @@ class InsertData:
         database.insert_tenancy(
             housing_id=housing[0], person_id=person, start_date=start_date, end_date=end_date)
         return database.get_tenancy_by_id(housing_id=housing[0], person_id=person)
+    
+    def insert_imprisonment():
+        """
+        TODO: Docstring
+        """
+        pass
 
 
 def main():
