@@ -12,7 +12,7 @@ WORKDIR ${WORKING_DIR}
 
 COPY app app
 COPY requirements.txt .
-COPY script.sh .
+#COPY script.sh .
 COPY .env .
 
 RUN pip install --upgrade pip

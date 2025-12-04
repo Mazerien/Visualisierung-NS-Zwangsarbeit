@@ -46,7 +46,10 @@ services:
     container_name: cockpit
     ports:
       - 8080:80
-    restart: unless-stopped
+    volumes:
+      - ./cockpit/storage:/var/www/html/storage
+      - ./cockpit/config:/var/www/html/config
+
     depends_on:
       - db
     networks:

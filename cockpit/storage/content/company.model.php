@@ -1,0 +1,76 @@
+<?php
+ return [
+  'name' => 'company',
+  'label' => 'Unternehmen',
+  'info' => '',
+  'type' => 'collection',
+  'fields' => [
+    0 => [
+      'name' => 'name',
+      'type' => 'text',
+      'label' => 'Name',
+      'info' => '',
+      'group' => '',
+      'i18n' => false,
+      'required' => false,
+      'multiple' => false,
+      'meta' => [
+      ],
+      'opts' => [
+        'multiline' => false,
+        'showCount' => true,
+        'readonly' => false,
+        'placeholder' => NULL,
+        'minlength' => NULL,
+        'maxlength' => NULL,
+        'list' => NULL,
+      ],
+    ],
+    1 => [
+      'name' => 'person',
+      'type' => 'contentItemLink',
+      'label' => 'Zwangsarbeiter',
+      'info' => 'Zu welcher Person gehört dieser Eintrag',
+      'group' => '',
+      'i18n' => false,
+      'required' => false,
+      'multiple' => false,
+      'meta' => [
+      ],
+      'opts' => [
+        'link' => 'person',
+        'filter' => NULL,
+        'display' => NULL,
+      ],
+    ],
+    2 => [
+      'name' => 'job',
+      'type' => 'text',
+      'label' => 'Beruf',
+      'info' => 'Was musste die Person hier arbeiten',
+      'group' => '',
+      'i18n' => false,
+      'required' => false,
+      'multiple' => false,
+      'meta' => [
+      ],
+      'opts' => [
+        'multiline' => false,
+        'showCount' => true,
+        'readonly' => false,
+        'placeholder' => NULL,
+        'minlength' => NULL,
+        'maxlength' => NULL,
+        'list' => NULL,
+      ],
+    ],
+  ],
+  'preview' => [
+  ],
+  'group' => 'Unternehmen',
+  'meta' => NULL,
+  '_created' => 1764673260,
+  '_modified' => 1764674887,
+  'color' => NULL,
+  'revisions' => false,
+];
