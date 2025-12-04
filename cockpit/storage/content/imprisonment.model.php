@@ -102,23 +102,6 @@
       ],
     ],
     6 => [
-      'name' => 'next_imprisonment',
-      'type' => 'contentItemLink',
-      'label' => 'Weitere Inhaftierungen',
-      'info' => '',
-      'group' => 'Referenz',
-      'i18n' => false,
-      'required' => false,
-      'multiple' => false,
-      'meta' => [
-      ],
-      'opts' => [
-        'filter' => NULL,
-        'link' => 'imprisonment',
-        'display' => NULL,
-      ],
-    ],
-    7 => [
       'name' => 'court_of_law',
       'type' => 'text',
       'label' => 'Gerichtshof',
@@ -139,7 +122,7 @@
         'list' => NULL,
       ],
     ],
-    8 => [
+    7 => [
       'name' => 'prison',
       'type' => 'contentItemLink',
       'label' => 'Gefängsnis',
@@ -162,7 +145,7 @@
   'group' => 'Gefangenschaft',
   'meta' => NULL,
   '_created' => 1764674179,
-  '_modified' => 1764675112,
+  '_modified' => 1764890326,
   'color' => NULL,
   'revisions' => false,
 ];
