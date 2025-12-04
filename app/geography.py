@@ -1,9 +1,71 @@
 """
 Right now, it is possible to either render a map or create a dynamic web map of a pre-set place.
-
+NOTE: All of this is incredibly WIP and likely to change.
 """
 import osmnx as ox
 import networkx as nx
+
+
+from folium.plugins import VectorGridProtobuf
+import folium
+from datetime import datetime
+
+
+def get_folium_map():
+    """
+    TODO: Docstring
+    """
+    pass
+    # NOTE: This is VERY WIP!
+    # Convert date to decimal year
+    d = datetime(1945, 4, 14)
+    next_new_year = datetime(d.year + 1, 1, 1)
+    last_new_year = datetime(d.year, 1, 1)
+    year_len = next_new_year.toordinal() - last_new_year.toordinal()
+    dec_date = int(d.year) + (d.toordinal() - last_new_year.toordinal()) / year_len
+    print(dec_date)
+
+    options = f'''{{
+        "vectorTileLayerStyles": {{
+            "land_ohm_lines": function(f) {{
+                if ((!f.start_decdate || f.start_decdate <= {dec_date}) && (!f.end_decdate || f.end_decdate >= {dec_date})) {{
+                    return {{
+                        "weight": 1,
+                        "fillColor": "pink",
+                        "color": "pink",
+                        "fillOpacity": 0.2,
+                        "opacity": 0.4
+                    }};
+                }}
+            }}
+        }}
+    }}'''
+
+    m = folium.Map(tiles="Esri.WorldPhysical", location=[50, 15], zoom_start=4, attr="OpenHistoricalMap")
+    #url = "https://vtiles.openhistoricalmap.org/maps/osm/{z}/{x}/{y}.pbf"
+    
+    html=f"""
+        <h1> Schwenningen </h1>
+        <p><img src="https://www.leo-bw.de/media/labw_wappen/current/generated/fromurl/13957_2010_1030.jpg.tm.png" style="width: 50%"/> 
+        <p>Lorem Ipsum:
+        <ul>
+            <li>Dolor Sit Amet</li>
+            <li>Lorem Ipsum</li>
+        </ul>
+        </p>
+        """
+    iframe = folium.IFrame(html=html, width=400, height=200)
+    popup = folium.Popup(iframe, max_width=2650)
+    folium.Marker(
+        location=[48, 10],
+        popup=popup,
+        tooltip="Test"
+    ).add_to(m)
+
+    graph = ox.graph_from_place("Schwenningen, Villingen-Schwenningen, Germany")
+    folium.LayerControl().add_to(m)
+    #VectorGridProtobuf("folium_layer_name").add_to(m)
+    return m
 
 
 def get_place_features(place: str = "Schwenningen, Villingen-Schwenningen, Germany"):
@@ -19,8 +81,11 @@ def web_map(place: str = "Schwenningen, Villingen-Schwenningen, Germany"):
     It can be turned into an iframe of an HTML template.
     """
     graph = ox.graph.graph_from_place(place)
+    #ox.settings.nominatim_url = 
+    #graph = ox.features_from_xml("app/sample.xml")
     # TODO: Figure out how to display routes interactively?
-    return ox.convert.graph_to_gdfs(graph, nodes=False).explore()
+    #return ox.convert.graph_to_gdfs(graph, nodes=False).explore()
+    return graph.explore(attr="© OpenHistoricalMap contributors")
 
 
 def draw_map_from_place(place: str = "Schwenningen, Villingen-Schwenningen, Germany"):

@@ -12,7 +12,6 @@ WORKDIR ${WORKING_DIR}
 
 COPY app app
 COPY requirements.txt .
-#COPY script.sh .
 COPY .env .
 
 RUN pip install --upgrade pip
@@ -24,8 +23,6 @@ RUN chown -R ${USERNAME}:${USERNAME} ${WORKING_DIR}
 RUN chmod -R u=rwx,g=rwx ${WORKING_DIR}
 
 USER ${USERNAME}
-#ENV PATH "$PATH:/home/${USERNAME}/.local/bin"
 
 EXPOSE 5000
 CMD ["python", "app/main.py"]
-#ENTRYPOINT [ "./script.sh" ]

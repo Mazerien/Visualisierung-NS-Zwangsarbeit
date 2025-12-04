@@ -5,6 +5,7 @@ Credentials in dotenv.
 
 import mysql.connector
 from mysql.connector.pooling import MySQLConnectionPool
+from datetime import date
 
 
 class MySQL:
@@ -13,6 +14,8 @@ class MySQL:
     """
 
     pool: MySQLConnectionPool = None
+    tables: list[str] = ["Person", "Company",
+                         "Employment", "Housing", "Tenancy", "Imprisonment"]
 
     def __init__(self, user: str, password: str, host: str, db: str):
         """
@@ -32,10 +35,11 @@ class MySQL:
             print(e)
             print(f"Can't connect to MySQL. Continuing without database.")
 
-    def query_exec(self, query: str, is_read_only: bool = False):
+    def query_exec(self, query: str, values=None, is_read_only: bool = False):
         """
-        Executes a given query string; immediately commits to DB.
+        Executes a given query query; immediately commits to DB.
         query: Query string
+        values: Value strings if given.
         is_read_only: Commits a change only if one is given; defaults to false.
         """
         if self.pool is None:
@@ -44,7 +48,7 @@ class MySQL:
 
         cnx: MySQLConnectionPool.PooledMySQLConnection = self.pool.get_connection()
         cur = cnx.cursor()
-        cur.execute(query)
+        cur.execute(query, values)
         match is_read_only:
             case True:
                 cur = cur.fetchall()
@@ -59,91 +63,226 @@ class MySQL:
         Checks if all tables exist. Creates them if they don't.
         """
         try:
-            self.query_exec("SELECT * FROM person;", is_read_only=True)
-        except mysql.connector.errors.ProgrammingError as e:
-            print(e)
+            for table in self.tables:
+                self.query_exec(f"SELECT * FROM {table}", is_read_only=True)
+        except mysql.connector.errors.ProgrammingError:
             print("No tables exist in this DB. Creating them now.")
             self.create_tables()
 
     def create_tables(self):
         """
-        Creates the tables. Right now, only does the person demo data.
+        Creates the tables as specified by the DB schema in the README.
         """
         cnx = self.pool.get_connection()
         cur = cnx.cursor()
-        cur.execute(
-            """CREATE TABLE IF NOT EXISTS `person` (
-    `id` int(11) NOT NULL AUTO_INCREMENT,
-    `first_name` varchar(14) NOT NULL,
-    `last_name` varchar(14) NOT NULL,
-    `date_of_birth` date NOT NULL,
-    `gender` enum('M', 'F', 'X'),
-    `city` varchar(14) NOT NULL,
-    `country` varchar(14) NOT NULL,
-    PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB"""
-        )
-        cnx.commit()
-        # NOTE: Comment this out if you don't want demo data in your tables.
-        self.create_demo_data()
 
-    def connect(self):
+        table_queries = [
+            """
+            CREATE TABLE IF NOT EXISTS `Person` (
+    `ID` int(11) NOT NULL AUTO_INCREMENT,
+
+    `LastName` varchar(255) NOT NULL,
+    `FirstName` varchar(255) NOT NULL,
+    `MaidenName` varchar(255),
+    `Gender` enum('M', 'F', 'X') NOT NULL,
+
+    `PlaceOfBirth` varchar(255),
+    `DateOfBirth` date,
+    `PlaceOfDeath` varchar(255),
+    `DateOfDeath` date,
+    `Nationality` varchar(255),
+    `LastPlaceOfResidence` varchar(255),
+
+    `Marriage` varchar(255),
+    `Father` varchar(255),
+    `Mother` varchar(255),
+    `Religion` varchar(255),
+    `Profession` varchar(255),
+
+    PRIMARY KEY (`ID`)
+    ) ENGINE=InnoDB
+            """,
+
+            """
+            CREATE TABLE IF NOT EXISTS `Company` (
+    `ID` int(11) NOT NULL AUTO_INCREMENT,
+    `Name` varchar(255) NOT NULL,
+
+    PRIMARY KEY (`ID`)
+    ) Engine=InnoDB
+            """,
+
+            """
+            CREATE TABLE IF NOT EXISTS `Employment` (
+    `ID` int(11) NOT NULL AUTO_INCREMENT,
+    `Name` varchar(255),
+    `Company` int(11) NOT NULL,
+    `Person` int(11) NOT NULL,
+
+    PRIMARY KEY (`ID`),
+    FOREIGN KEY (`Person`) REFERENCES `Person`(`ID`),
+    FOREIGN KEY (`Company`) REFERENCES `Company`(`ID`)
+    ) Engine=InnoDB
+            """,
+
+            """
+            CREATE TABLE IF NOT EXISTS `Housing` (
+    `ID` int(11) NOT NULL AUTO_INCREMENT,
+    `Adress` varchar(255) NOT NULL,
+    `Type` enum('Schwenningen', 'Imprisonment', 'Living') NOT NULL,
+
+    PRIMARY KEY (`ID`)
+    ) Engine=InnoDB
+            """,
+
+            """
+            CREATE TABLE IF NOT EXISTS `Tenancy` (
+    `ID` int(11) NOT NULL AUTO_INCREMENT,
+    `Housing` int(11) NOT NULL,
+    `Person` int(11) NOT NULL,
+    `StartDate` date,
+    `EndDate` date,
+
+    PRIMARY KEY (`ID`),
+    FOREIGN KEY (`Housing`) REFERENCES `Housing`(`ID`),
+    FOREIGN KEY (`Person`) REFERENCES `Person`(`ID`)
+    ) Engine=InnoDB   
+            """,
+
+            """
+            CREATE TABLE IF NOT EXISTS `Imprisonment` (
+    `ID` int(11) NOT NULL AUTO_INCREMENT,
+    `PrisonerID` int(11),
+    `StartDate` date,
+    `EndDate` date,
+    `AgeAtImprisonment` int(11),
+    `PrisonerOfWar` bool,
+    `CourtOfLaw` varchar(255),
+
+    PRIMARY KEY (`ID`),
+    FOREIGN KEY (`Person`) REFERENCES `Person`(`ID`)
+    ) Engine=InnoDB
+            """
+        ]
+        for table in table_queries:
+            self.query_exec(table)
+
+    def insert_person(self, last_name: str, name: str, maiden_name: str, gender: chr, place_of_birth: str,
+                      date_of_birth: date, place_of_death: str, date_of_death: date, nationality: str,
+                      last_place_of_residence: str, marriage: str, father: str, mother: str, religion: str,
+                      profession: str):
+        """
+        Inserts a single Person with their respective data.
+        Refer to the MySQL schema for more information.
+        """
+        query = """INSERT INTO Person (LastName, FirstName, MaidenName, Gender, PlaceOfBirth, DateOfBirth, 
+        PlaceOfDeath, DateOfDeath, Nationality, LastPlaceOfResidence, Marriage, Father, Mother, Religion, Profession
+        ) VALUES (
+        %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """
+        values = (last_name, name, maiden_name, gender, place_of_birth, date_of_birth, place_of_death, date_of_death,
+                  nationality, last_place_of_residence, marriage, father, mother, religion, profession)
+        self.query_exec(query, values)
+
+    def insert_company(self, name: str):
+        """
+        Inserts into the Company table.
+        """
+        query = "INSERT INTO Company (Name) VALUES (%s)"
+        values = (name,)
+        self.query_exec(query, values)
+
+    def insert_employment(self, name: str, company_id: int, person_id: int):
+        """
+        Inserts into the Employment table. An Employment has a Person, a Company, and optionally, a job title.
+        """
+        query = "INSERT INTO Employment (Name, Company, Person) VALUES (%s, %s, %s)"
+        values = (name, company_id, person_id)
+        self.query_exec(query, values)
+
+    def insert_housing(self, adress: str, housing_type: str):
+        """
+        Inserts a house with its respective housing type.
+        """
+        query: str = "INSERT INTO Housing (Adress, Type) VALUES (%s, %s)"
+        values = (adress, housing_type)
+        self.query_exec(query, values)
+
+    def insert_tenancy(self, housing_id: int, person_id: int, start_date: date, end_date: date):
         """
         TODO: Docstring
         """
-        try:
-            cnx = self.pool.get_connection()
-            print("Connected to MySQL database.")
-            cur = cnx.cursor()
-            cur.execute(
-                """CREATE TABLE IF NOT EXISTS `person` (
-    `id` int(11) NOT NULL AUTO_INCREMENT,
-    `first_name` varchar(14) NOT NULL,
-    `last_name` varchar(14) NOT NULL,
-    `date_of_birth` date NOT NULL,
-    `gender` enum('M', 'F', 'X'),
-    `city` varchar(14) NOT NULL,
-    `country` varchar(14) NOT NULL
-    PRIMARY KEY (`id`)
-    ) ENGINE=InnoDB"""
-            )
-            cnx.commit()
-        except mysql.connector.Error as e:
-            print(e)
-            print("No MySQL database connection possible. Continuing without database.")
+        query: str = "INSERT INTO Tenancy (Housing, Person, StartDate, EndDate) VALUES (%s, %s, %s, %s)"
+        values = (housing_id, person_id, start_date, end_date)
+        self.query_exec(query, values)
 
-    def create_demo_data(self):
-        """
-        Demo data for testing purposes only.
-        """
-        self.query_exec(
-            """INSERT INTO person (first_name, last_name, date_of_birth, gender, city, country) VALUES
-    ('Alice', 'Johnson', '1995-04-12', 'F', 'New York', 'USA'),
-    ('Bob', 'Smith', '1988-11-23', 'M', 'London', 'UK'),
-    ('Charlie', 'Brown', '2000-06-05', 'X', 'Toronto', 'Canada'),
-    ('Diana', 'White', '1992-01-30', 'F', 'Sydney', 'Australia'),
-    ('Ethan', 'Williams', '1985-09-17', 'M', 'Schwenningen', 'Germany'),
-    ('Fiona', 'Martinez', '1998-03-22', 'F', 'Madrid', 'Spain'),
-    ('George', 'Kim', '1991-07-09', 'M', 'Seoul', 'South Korea'),
-    ('Hana', 'Tanaka', '1999-12-14', 'F', 'Tokyo', 'Japan'),
-    ('Isaac', 'Olsen', '1983-10-02', 'M', 'Oslo', 'Norway'),
-    ('Julia', 'Rossi', '1996-05-27', 'F', 'Rome', 'Italy');
-    """
-        )
-
-    def get_columns_in_table(self, table_name: str):
+    def select_columns_in_table(self, table_name: str):
         """
         Gets the columns information of a specified table.
-        table_name: Name of the table.
         """
         query: str = (
             f"SELECT column_name FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = '{table_name}';"
         )
         return self.query_exec(query, is_read_only=True)
 
-    def get_rows_in_table(self, table_name: str):
+    def select_rows_in_table(self, table_name: str):
         """
         Gets all rows from a specified table.
         """
         query: str = f"SELECT * FROM {table_name};"
         return self.query_exec(query, is_read_only=True)
+
+    def drop_tables(self, reset_db: bool = True):
+        """
+        Deletes all tables and associated data.
+        Also re-creates tables if reset_db.
+        """
+        # List reversed because later tables are dependent on former ones
+        for table in reversed(self.tables):
+            self.query_exec(f"DROP TABLE IF EXISTS {table}")
+        if reset_db:
+            self.create_tables()
+
+    def get_person_by_name(self, first_name: str, maiden_name: str, last_name: str):
+        """
+        Checks if a person by that exact name exists in the DB.
+        """
+        if maiden_name:
+            query: str = "SELECT * FROM Person WHERE FirstName = %s AND MaidenName = %s AND LastName = %s"
+            values: tuple[str, str, str] = (first_name, maiden_name, last_name)
+        else:
+            query: str = "SELECT * FROM Person WHERE FirstName = %s AND LastName = %s"
+            values: tuple[str, str] = (first_name, last_name)
+        return self.query_exec(query, values, is_read_only=True)
+
+    def get_company_by_name(self, name: str):
+        """
+        Checks if a company by that exact name exists in the DB.
+        """
+        query: str = "SELECT * FROM Company WHERE Name = %s"
+        values: tuple[str] = (name,)
+        return self.query_exec(query, values, is_read_only=True)
+
+    def get_employment_by_id(self, company_id: int, person_id: int):
+        """
+        Gets an Employment with a given Company and Person key pair.
+        """
+        query: str = "SELECT * FROM Employment WHERE Company = %s AND Person = %s"
+        values: tuple[int, int] = (company_id, person_id)
+        return self.query_exec(query, values, is_read_only=True)
+
+    def get_housing_by_adress(self, adress: str):
+        """
+        TODO: Docstring
+        """
+        query: str = "SELECT * FROM Housing WHERE Adress = %s"
+        values = (adress,)
+        return self.query_exec(query, values, is_read_only=True)
+
+    def get_tenancy_by_id(self, housing_id: int, person_id: int):
+        """
+        TODO: Docstring
+        """
+        query: str = "SELECT * FROM Tenancy WHERE Housing = %s AND Person = %s"
+        values = (housing_id, person_id)
+        return self.query_exec(query, values, is_read_only=True)
