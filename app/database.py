@@ -34,7 +34,7 @@ class MySQL:
             print(e)
             print(f"Can't connect to MySQL. Continuing without database.")
 
-    def query_exec(self, query: str, values = None, is_read_only: bool = False):
+    def query_exec(self, query: str, values=None, is_read_only: bool = False):
         """
         Executes a given query query; immediately commits to DB.
         query: Query string
@@ -214,6 +214,19 @@ class MySQL:
         """
         query: str = "INSERT INTO Tenancy (Housing, Person, StartDate, EndDate) VALUES (%s, %s, %s, %s)"
         values = (housing_id, person_id, start_date, end_date)
+        self.query_exec(query, values)
+
+    def insert_imprisonment(self, person_id: int, prisoner_id: int, start_date: date, end_date: date,
+                            age_at_imprisonment: int, prisoner_of_war: bool, court_of_law: str):
+        """
+        Inserts an imprisonment record with person, prisoner ID, start date, end date, age at imprisonment,
+        whether the person was a prisoner of war, and the court of law.
+        """
+        query: str = """
+        INSERT INTO Imprisonment (Person, PrisonerID, StartDate, EndDate, AgeAtImprisonment, PrisonerOfWar, CourtOfLaw)
+        VALUES (%s, %s, %s, %s, %s, %s, %s)"""
+        values = (person_id, prisoner_id, start_date, end_date,
+                  age_at_imprisonment, prisoner_of_war, court_of_law)
         self.query_exec(query, values)
 
     def select_columns_in_table(self, table_name: str):

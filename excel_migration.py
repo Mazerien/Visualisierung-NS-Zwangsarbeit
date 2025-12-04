@@ -74,6 +74,17 @@ class NormalizeData:
             return uncorrected.title()
         return "Unknown"
 
+    def set_age_at_date(birth_date: dt.date, target_date: dt.date) -> int:
+        """
+        Calculates age at a given date based on birth date.
+        """
+        if birth_date is None or target_date is None:
+            return None
+        age = target_date.year - birth_date.year
+        if (target_date.month, target_date.day) < (birth_date.month, birth_date.day):
+            age -= 1
+        return age
+
 
 class InsertData:
     """
@@ -188,12 +199,28 @@ class InsertData:
         database.insert_tenancy(
             housing_id=housing[0], person_id=person, start_date=start_date, end_date=end_date)
         return database.get_tenancy_by_id(housing_id=housing[0], person_id=person)
-    
-    def insert_imprisonment():
+
+    def insert_imprisonment(person: int, prisoner_id: int, start_date: dt.date, end_date: dt.date,
+                            prisoner_of_war: bool, court_of_law: str, database: MySQL):
         """
-        TODO: Docstring
+        Inserts imprisonment data into the database.
         """
-        pass
+        person = person[0]
+        date_of_birth = person[6]
+        age = NormalizeData.set_age_at_date(
+            birth_date=date_of_birth, target_date=start_date)
+        if type(prisoner_id) is not int:
+            prisoner_id = None
+
+        database.insert_imprisonment(
+            person_id=person[0],
+            prisoner_id=prisoner_id,
+            start_date=start_date,
+            end_date=end_date,
+            age_at_imprisonment=age,
+            prisoner_of_war=prisoner_of_war,
+            court_of_law=court_of_law
+        )
 
 
 def main():
@@ -203,7 +230,7 @@ def main():
     # NOTE: skiprows and usecols attempt to fix the weird header/data structure of the given Excel file.
     # Should the Excel file change, this probably won't be needed any more.
     file: pd.DataFrame = pd.read_excel(
-        "app/data/Gefangenenbuch.xlsx", skiprows=4, usecols="F:N,P:R,X:AD,AF,AB:AN")
+        "app/data/Gefangenenbuch.xlsx", skiprows=4, usecols="D,F:N,P:T,X:AD,AF,AB:AN,AT")
     file = file.replace({np.nan: None})
 
     load_dotenv()
@@ -224,7 +251,20 @@ def main():
         housing = InsertData.insert_housing(row=row, database=database)
         tenancy = InsertData.insert_tenancy(
             housing, person, start_date=NormalizeData.set_date(row["Aufenthalt ab"]), end_date=NormalizeData.set_date(row["Aufenthalt bis"]), database=database)
-        # TODO: Imprisonment data
+
+        imprisonment_start_date = NormalizeData.set_date(
+            row["Aufenthalt (von)"])
+        imprisonment_end_date = NormalizeData.set_date(row["Aufenthalt (bis)"])
+
+        imprisonment = InsertData.insert_imprisonment(
+            person=person,
+            prisoner_id=row["lfd.Nr."],
+            start_date=imprisonment_start_date,
+            end_date=imprisonment_end_date,
+            prisoner_of_war=row["Kgf./ex-Kgf./DV?"] == "Kgf.",
+            court_of_law=row["Gericht"],
+            database=database
+        )
         if companies is not None:
             # print(
             #    f"Inserted Person {person[0][:4]} with Employment Data at Company/Companies {companies}.")
