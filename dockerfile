@@ -2,7 +2,7 @@
 FROM python
 
 RUN apt -q -y update
-RUN apt upgrade
+#RUN apt upgrade
 RUN apt install -y libgdal-dev
 # don't use dev in prod!
 
@@ -11,6 +11,7 @@ ENV WORKING_DIR=/home/app
 WORKDIR ${WORKING_DIR}
 
 COPY app app
+COPY excel_migration.py .
 COPY requirements.txt .
 COPY .env .
 

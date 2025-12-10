@@ -1,6 +1,6 @@
 #######################################################################
 ### This file creates Docker containers for a MySQL database,       ###
-### the Cockpit headless CMS, and the Python backend with Flask.    ###
+### the Directus headless CMS, and the Python backend with Flask.   ###
 #######################################################################
 services:
   # MySQL
@@ -38,20 +38,25 @@ services:
           service_healthy
     networks:
       - app
+    command: python excel_migration.py
 
-  
-  # Cockpit CMS
-  cockpit:
-    image: cockpithq/cockpit:core-latest
-    container_name: cockpit
+# Directus
+  directus:
+    image: directus/directus:latest
+    container_name: directus
     ports:
-      - 8080:80
-    volumes:
-      - ./cockpit/storage:/var/www/html/storage
-      - ./cockpit/config:/var/www/html/config
-
+      - "8055:8055"
     depends_on:
-      - db
+      db:
+        condition: 
+          service_healthy
+    environment:
+      DB_CLIENT: "mysql"
+      DB_HOST: "db"
+      DB_PORT: "3306"
+      DB_DATABASE: "${SQL_DB}"
+      DB_USER: "${SQL_USER}"
+      DB_PASSWORD: "${SQL_PASSWORD}"
     networks:
       - app
 
