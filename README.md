@@ -10,14 +10,18 @@ Add new module dependencies: `pip freeze > requirements.txt`
 [Create a local MySQL database for development](https://dev.mysql.com/doc/mysql-getting-started/en/). Store credentials in the .env schema shown below.  
 
 ## Run Flask
-Run with `flask --app app/main.py run`  
-Debug mode with `flask --app app/main.py run --debug`  
+Run with `flask --app backend/main.py run`  
+Debug mode with `flask --app backend/main.py run --debug`  
 Open with: [http://127.0.0.1:5000](http://127.0.0.1:5000)  
 Debug mode enables on-the-fly changes to the app as well as additional logging statements through Flask.logger.info().  
 
+## Run React
+Change directory into `frontend/`.  
+Run React app: `npm start`
+
 ## Containerization
 Install Docker and docker-compose.  
-Current containerization supports a MySQL (MariaDB) database on TCP/3306 as well as the Flask app on TCP/5000 and the Cockpit headless CMS on TCP/8080.  
+Current containerization supports a MySQL (MariaDB) database on TCP/3306 as well as the Flask app on TCP/5000 and the Directus headless CMS on TCP/8080.  
 Create container: `docker compose up --build`  
 Run container: `docker compose up -d`  
 Remove container: `docker compose down`  
@@ -162,6 +166,9 @@ Boeing, G. (2025). [Modeling and Analyzing Urban Networks and Amenities with OSM
 ### MySQL
 [MySQL doc](https://dev.mysql.com/doc/connector-python/en/connector-python-example-ddl.html)  
 [Understanding Connection Pooling for MySQL](https://medium.com/@havus.it/understanding-connection-pooling-for-mysql-28be6c9e2dc0)  
+
+### React
+[Embark on Your Web Development Journey: A Beginner’s Guide to React and Flask](https://blog.stackademic.com/embark-on-your-web-development-journey-a-beginners-guide-to-react-and-flask-28d70deb15f9)
 
 
 

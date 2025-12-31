@@ -1,5 +1,0 @@
-{
-    "db_creation": [
-        "CREATE TABLE IF NOT EXISTS `person` (`ID` int(11) NOT NULL AUTO_INCREMENT,`LastName` varchar(255) NOT NULL,`FirstName` varchar(255) NOT NULL,`MaidenName` varchar(255) NOT NULL,`Gender` enum('M', 'F', 'X') NOT NULL,`PlaceOfBirth` varchar(255),`DateOfBirth` date,`PlaceOfDeath` varchar(255),`DateOfDeath` date,`Nationality` varchar(255) NOT NULL,`LastPlaceOfResidence` date NOT NULL,`Marriage` int,`Father` int,`Mother` int,`Religion` varchar(255),`Profession` varchar(255),PRIMARY KEY (`id`)) ENGINE=InnoDB"
-    ]
-}   

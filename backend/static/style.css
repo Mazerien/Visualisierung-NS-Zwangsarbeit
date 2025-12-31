@@ -1,0 +1,14 @@
+/*
+TODO: Add Docstring
+*/
+/*
+This styling is just to make the table less ugly.
+*/
+table, td {
+  font-size: small;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+th {
+    border-bottom: 0.1em solid rgb(10, 10, 10);
+}

@@ -6,11 +6,11 @@ RUN apt -q -y update
 RUN apt install -y libgdal-dev
 # don't use dev in prod!
 
-ENV USERNAME=app
-ENV WORKING_DIR=/home/app
+ENV USERNAME=backend
+ENV WORKING_DIR=/home/backend
 WORKDIR ${WORKING_DIR}
 
-COPY app app
+COPY backend backend
 COPY excel_migration.py .
 COPY requirements.txt .
 COPY .env .
