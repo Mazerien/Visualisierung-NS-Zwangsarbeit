@@ -161,7 +161,10 @@ Boeing, G. (2025). [Modeling and Analyzing Urban Networks and Amenities with OSM
 [OSMnx PDF](https://osmnx.readthedocs.io/_/downloads/en/stable/pdf/)  
 [Leaflet Provider Demos](https://leaflet-extras.github.io/leaflet-providers/preview/)  
 [Beginner’s Guide to Folium: Your First Interactive Map with Python](https://archive.is/20251013175725/https://cityplannermo.medium.com/beginners-guide-your-first-interactive-map-with-python-folium-8f1c2ec20155#selection-811.18-831.11)  
-[Customizing Your Folium Maps: Tiles, Zoom, and Popups for Urban Analysis](https://archive.is/20250822085542/https://cityplannermo.medium.com/customizing-your-folium-maps-tiles-zoom-and-popups-for-urban-analysis-284e59d813ae)
+[Customizing Your Folium Maps: Tiles, Zoom, and Popups for Urban Analysis](https://archive.is/20250822085542/https://cityplannermo.medium.com/customizing-your-folium-maps-tiles-zoom-and-popups-for-urban-analysis-284e59d813ae)  
+[https://stackoverflow.com/questions/52694838/python-folium-map-setting-prevent-zooming-and-panning](https://stackoverflow.com/questions/52694838/python-folium-map-setting-prevent-zooming-and-panning)  
+https://www.mapsofworld.com/lat_long/europe.html  
+https://www.geodatos.net/en/coordinates/germany/schwenningen
 
 ### MySQL
 [MySQL doc](https://dev.mysql.com/doc/connector-python/en/connector-python-example-ddl.html)  

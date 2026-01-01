@@ -5,12 +5,12 @@ Also tries establishing connection with a pre-existing MySQL database.
 from os import getenv
 from dotenv import load_dotenv
 
-from flask import Flask, render_template, request, Blueprint
+from flask import Flask, Blueprint
 from flask_cors import CORS
 
 from backend.database import MySQL
-from backend.geography import web_map, get_folium_map
 from backend.api.debug import DEBUG_API
+from backend.api.osm import OSM_API
 
 app = Flask(__name__)
 CORS(app=app)
@@ -33,57 +33,10 @@ database.check_tables()
 # Middleware                                                                          #
 #######################################################################################
 # TODO: Handle all DB CRUD requests here.
-middleware: list[Blueprint] = [DEBUG_API]
+middleware: list[Blueprint] = [DEBUG_API, OSM_API]
 with app.app_context():
     for api in middleware:
         app.register_blueprint(api)
-
-
-#######################################################################################
-# Routing                                                                             #
-#######################################################################################
-@app.route("/")
-def index():
-    """
-    TODO: Docstring
-    """
-    return render_template("index.html")
-
-
-@app.route("/map", methods=["GET"])
-def map():
-    """
-    Handles map rendering through an embedded and rendered iframe using OpenStreetMap. 
-    Can be used with request parameters.
-    """
-    osm_map = None
-    if request.args.get("city"):
-        city = request.args.get("city")
-        area = request.args.get("area")
-        country = request.args.get("country")
-        app.logger.info(
-            f"Sending OSM API request about {city}, {area}, {country}...")
-        #osm_map = web_map(f"{city}, {area}, {country}")
-        osm_map = get_folium_map()
-
-        # TODO: Think about way to style this
-        osm_map.get_root().width = "60%"
-        osm_map = osm_map.get_root()._repr_html_()
-    # TODO: Also check for lack of an image altogether (shows error image as of now)
-    return render_template("map.html", web_map=osm_map)
-
-
-@app.route("/data", methods=["GET", "POST"])
-def data():
-    """
-    Graphical interface for the MySQL database.
-    POST requests create new demo data.
-    """
-    # TODO: More interaction capabilities
-    if request.method == "POST":
-        database.drop_tables()
-    return render_template("database.html", columns=database.select_columns_in_table("Person"),
-                           rows=database.select_rows_in_table("Person"))
 
 
 if __name__ == "__main__":

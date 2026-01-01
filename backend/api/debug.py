@@ -21,4 +21,4 @@ def api_hello():
     """
     Basic function to ensure connectivity.
     """
-    return dumps("Hello, World!")
+    return dumps({"message": "Hello, World!"})
