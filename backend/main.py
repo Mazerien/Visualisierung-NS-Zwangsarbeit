@@ -5,11 +5,12 @@ Also tries establishing connection with a pre-existing MySQL database.
 from os import getenv
 from dotenv import load_dotenv
 
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, Blueprint
 from flask_cors import CORS
-from database import MySQL
-from geography import web_map, get_folium_map
 
+from backend.database import MySQL
+from backend.geography import web_map, get_folium_map
+from backend.api.debug import DEBUG_API
 
 app = Flask(__name__)
 CORS(app=app)
@@ -32,6 +33,10 @@ database.check_tables()
 # Middleware                                                                          #
 #######################################################################################
 # TODO: Handle all DB CRUD requests here.
+middleware: list[Blueprint] = [DEBUG_API]
+with app.app_context():
+    for api in middleware:
+        app.register_blueprint(api)
 
 
 #######################################################################################
