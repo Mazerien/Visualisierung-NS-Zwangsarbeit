@@ -22,7 +22,7 @@ class OSM:
     An OpenStreetMap map with the given zoom parameters.
     TODO Zoom parameters
     """
-    _tileset: str = "cartodbpositron"
+    _tileset: str = "Esri.WorldPhysical"
     _geo_json: folium.GeoJson = requests.get("https://raw.githubusercontent.com/python-visualization/folium-example-data/main/world_countries.json")
     _zoom_level: ZoomLevel
 
@@ -44,7 +44,7 @@ class OSM:
     
     @zoom_level.setter
     def zoom_level(self, val: int):
-        z = ZoomLevel(val)
+        z = ZoomLevel(int(val))
         self._zoom_level = z
     
     @property
@@ -56,18 +56,17 @@ class OSM:
         self._geo_json = requests.get(val)
 
     def get_map(self):
-        #zoom_start = zoom_level[self.zoom_level]
-        zoom_start = 5
-        location: list[int, int] = [48, 9]
+        zoom_start: int = 5
+        location: list[float, int] = [53, 9]    # Lat/Lon of central Europe
 
         match self.zoom_level:
             case ZoomLevel.MINIMUM:
                 zoom_start = 5
-                #location = [53, 9]
             case ZoomLevel.MEDIUM:
-                zoom_start = 7
+                zoom_start = 6
             case ZoomLevel.MAXIMUM:
-                zoom_start = 9
+                zoom_start = 16
+                location = [48.1, 9]    # Lat/Lon of Schwenningen
             case _:
                 zoom_start = 5
 

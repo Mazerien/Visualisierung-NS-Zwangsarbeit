@@ -17,5 +17,11 @@ def api_map():
     Can be used with request parameters.
     TODO Markers with people
     """
-    osm = OSM(tileset="cartodbpositron", zoom_level=0)
+    zoom_level = request.args.get("zoom_level")
+    try:
+        zoom_level = int(zoom_level)
+    except TypeError:
+        zoom_level = 0
+
+    osm = OSM(tileset="Esri.WorldPhysical", zoom_level=zoom_level)
     return osm.get_map()
