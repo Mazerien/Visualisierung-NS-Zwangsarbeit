@@ -14,7 +14,7 @@ Parameter:
 zoom_level: int
 ```
 
-TODO: Add historical and current-day borders of Europe
+TODO: Add current-day borders of Europe
 
 ### OHM
 TODO
