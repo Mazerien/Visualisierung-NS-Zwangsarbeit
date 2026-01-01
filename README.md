@@ -164,7 +164,8 @@ Boeing, G. (2025). [Modeling and Analyzing Urban Networks and Amenities with OSM
 [Customizing Your Folium Maps: Tiles, Zoom, and Popups for Urban Analysis](https://archive.is/20250822085542/https://cityplannermo.medium.com/customizing-your-folium-maps-tiles-zoom-and-popups-for-urban-analysis-284e59d813ae)  
 [https://stackoverflow.com/questions/52694838/python-folium-map-setting-prevent-zooming-and-panning](https://stackoverflow.com/questions/52694838/python-folium-map-setting-prevent-zooming-and-panning)  
 https://www.mapsofworld.com/lat_long/europe.html  
-https://www.geodatos.net/en/coordinates/germany/schwenningen
+https://www.geodatos.net/en/coordinates/germany/schwenningen  
+https://github.com/aourednik/historical-basemaps/tree/master
 
 ### MySQL
 [MySQL doc](https://dev.mysql.com/doc/connector-python/en/connector-python-example-ddl.html)  
