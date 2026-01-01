@@ -73,6 +73,9 @@ class OSM:
         m = folium.Map(tiles=self.tileset, location=location, zoom_start=zoom_start, zoom_control=False, scrollWheelZoom=False, dragging=False)
         #geojson_data = requests.get(
         #    "https://raw.githubusercontent.com/python-visualization/folium-example-data/main/world_countries.json").json()
-        #folium.GeoJson(geojson_data, name="hello, world").add_to(m)
-        #folium.LayerControl().add_to(m)
+        geojson_data = requests.get(
+            "https://raw.githubusercontent.com/aourednik/historical-basemaps/refs/heads/master/geojson/world_1938.geojson"
+        ).json()
+        folium.GeoJson(geojson_data, name="hello, world").add_to(m)
+        folium.LayerControl().add_to(m)
         return m.get_root()._repr_html_()
