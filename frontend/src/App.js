@@ -1,62 +1,42 @@
-// App.js
-import './App.css';
-import { useState } from 'react';
-import ZoomButton from './Components/ZoomButton';
-import Interactable from './Components/Interactable';
-import { interactablesData } from './Components/InteractablesData';
+import { useState } from "react";
+import ZoomControls from "./Components/ZoomControls";
+import MapIframe from "./Components/MapIFrame";
+import Interactable from "./Components/Interactable";
+import InfoPanel from "./Components/InfoPanel";
+import { interactablesData } from "./Components/InteractablesData";
 
 function App() {
-  const [zoom, setZoom] = useState(0); // initial zoom level
-
-  // List of zoom levels you want buttons for
+  const [zoom, setZoom] = useState(0);
+  const [selected, setSelected] = useState(null);
   const zoomLevels = [0, 1, 2];
+  const [interactables, setInteractables] = useState([]); // state for current zoom data
 
+  // For when switching to Backend Data
+  /*
+   useEffect(() => {
+    // Fetch interactables for the current zoom from your backend
+    fetch(`http://localhost:5000/api/interactables?zoom=${zoom}`)
+      .then((res) => res.json())
+      .then((data) => setInteractables(data))
+      .catch((err) => console.error("Failed to load interactables:", err));
+  }, [zoom]);*/ 
   return (
     <div>
-      {/* Buttons container */}
-      <div style={{
-        position: "fixed",
-        top: "40%",
-        left: "5%",
-        zIndex: 1000,
-        display: "flex",
-        flexDirection: "column",
-        gap: "10px"
-      }}>
-        {zoomLevels.map(level => (
-          <ZoomButton
-            key={level}
-            level={level}
-            isActive={zoom === level}
-            onClick={() => setZoom(level)}
-          />
-        ))}
-      </div>
+      <ZoomControls zoom={zoom} setZoom={setZoom} zoomLevels={zoomLevels} />
+      <MapIframe zoom={zoom} />
 
-      {/* Map iframe */}
-      <iframe
-        src={`http://localhost:5000/api/osm?zoom_level=${zoom}`}
-        title="OSM Map"
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100vw",
-          height: "100vh",
-          border: "none",
-          display: 'block',
-        }}
-      />
-    {/* Interactables for current zoom */}
-      {interactablesData[zoom].map(interactable => (
+      {/* Render interactables dynamically */}
+      {/*{interactables.map((item) => (  // use this when using Backend data */}
+      {interactablesData[zoom].map((item) => (
         <Interactable
-          key={interactable.id}
-          x={interactable.x}
-          y={interactable.y}
-          title={interactable.title}
-          content={interactable.content}
+          key={item.id}
+          x={item.x}
+          y={item.y}
+          onClick={() => setSelected(item)}
         />
       ))}
+
+      <InfoPanel selected={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }
