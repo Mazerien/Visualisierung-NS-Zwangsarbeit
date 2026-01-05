@@ -6,6 +6,10 @@ from enum import Enum
 import folium
 import requests
 import pandas as pd
+import random
+
+WORLD_1938: str = "https://raw.githubusercontent.com/aourednik/historical-basemaps/refs/heads/master/geojson/world_1938.geojson"
+WORLD_2026: str = "https://raw.githubusercontent.com/python-visualization/folium-example-data/main/world_countries.json"
 
 
 class ZoomLevel(Enum):
@@ -13,27 +17,19 @@ class ZoomLevel(Enum):
     MEDIUM = 1
     MAXIMUM = 2
 
-
-zoom_level = {
-    ZoomLevel.MINIMUM: {"location": [53, 9], "zoom_start": 5},
-    ZoomLevel.MEDIUM: {"location": [48, 9], "zoom_start": 7},
-    ZoomLevel.MAXIMUM: {"location": [48, 9], "zoom_start": 9}
-}
-
-
 # TODO: Figure out how to do read the GeoJSON to make a Chloropeth map out of it
-country_borders = pd.read_json(
-    requests.get(
-        "https://raw.githubusercontent.com/python-visualization/folium-example-data/main/world_countries.json").text
-)
-print(country_borders)
+# country_borders = pd.read_json(
+#     requests.get(
+#         "https://raw.githubusercontent.com/python-visualization/folium-example-data/main/world_countries.json").text
+# )
+# print(country_borders)
 
 
-def style_function(feature):
-    country_name = feature["properties"]["NAME"]
-    return {
-        "fillColor": country_borders.get(country_name, "gray")
-    }
+# def style_function(feature):
+#     country_name = feature["properties"]["NAME"]
+#     return {
+#         "fillColor": country_borders.get(country_name, "gray")
+#     }
 
 
 class OSM:
@@ -42,16 +38,17 @@ class OSM:
     TODO Zoom parameters
     """
     _tileset: str = "Esri.WorldPhysical"
-    _geo_json: folium.GeoJson = requests.get(
-        "https://raw.githubusercontent.com/python-visualization/folium-example-data/main/world_countries.json")
+    _geo_json: folium.GeoJson = requests.get(WORLD_1938)
     _zoom_level: ZoomLevel
 
-    def __init__(self, tileset: str, zoom_level: ZoomLevel):
+    def __init__(self, tileset: str, zoom_level: ZoomLevel, geo_json: str = WORLD_1938):
         self.tileset = tileset
         self.zoom_level = zoom_level
+        self.geo_json = geo_json
 
     @property
     def tileset(self) -> str:
+        """The tileset; OSM has many tilesets to use."""
         return self._tileset
 
     @tileset.setter
@@ -60,6 +57,7 @@ class OSM:
 
     @property
     def zoom_level(self) -> ZoomLevel:
+        """Three zoom levels."""
         return self._zoom_level
 
     @zoom_level.setter
@@ -72,8 +70,8 @@ class OSM:
         return self._geo_json
 
     @geo_json.setter
-    def geo_json(self, val: str = "https://raw.githubusercontent.com/python-visualization/folium-example-data/main/world_countries.json"):
-        self._geo_json = requests.get(val)
+    def geo_json(self, val: str = WORLD_1938):
+        self._geo_json = requests.get(val).json()
 
     def get_map(self):
         zoom_start: int = 5
@@ -92,18 +90,20 @@ class OSM:
 
         m = folium.Map(tiles=self.tileset, location=location, zoom_start=zoom_start,
                        zoom_control=False, scrollWheelZoom=False, dragging=False)
-        # geojson_data = requests.get(
-        #    "https://raw.githubusercontent.com/python-visualization/folium-example-data/main/world_countries.json").json()
-        geojson_data = requests.get(
-            "https://raw.githubusercontent.com/aourednik/historical-basemaps/refs/heads/master/geojson/world_1938.geojson"
-        ).json()
-        # folium.Choropleth(
-        #     geo_data=geojson_data,
-        #     # TODO: Figure out how to colour the countries in differently with the given json?
-        #     #style_function=style_function, TODO
-        #     nan_fill_color="red",
-        #     fill_opacity=0.9
-        # ).add_to(m)
-        folium.GeoJson(geojson_data, name="1938").add_to(m)
+
+        # TODO: Make this more modular
+        # TODO: Add given colours for the countries; not randomized.
+        def style_function(_):
+            return {
+                "fillColor": f'#{random.randint(0, 0xFFFFFF):06x}',
+                "color": "black",
+                "weight": 1,
+                "fillOpacity": 0.25,
+            }
+
+        folium.GeoJson(self.geo_json, name="1938", style_function=style_function).add_to(m)
         folium.LayerControl().add_to(m)
+
+        #self.geo_json = "https://raw.githubusercontent.com/aourednik/historical-basemaps/refs/heads/master/geojson/world_1938.geojson"
+        #folium.GeoJson(self.geo_json, name="2025").add_to(m)
         return m.get_root()._repr_html_()
