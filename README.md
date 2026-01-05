@@ -19,6 +19,9 @@ Debug mode enables on-the-fly changes to the app as well as additional logging s
 Change directory into `frontend/`.  
 Run React app: `npm start`
 
+## Directus
+Currently WIP: Integration of Directus into the backend.
+
 ## Containerization
 Install Docker and docker-compose.  
 Current containerization supports a MySQL (MariaDB) database on TCP/3306 as well as the Flask app on TCP/5000 and the Directus headless CMS on TCP/8080.  
@@ -35,6 +38,9 @@ SQL_USER=
 SQL_PASSWORD=
 SQL_DB=
 SQL_HOST=
+
+DIRECTUS_EMAIL=
+DIRECTUS_PASSWORD=
 ```
 If MySQL is run from Docker container: `SQL_HOST=db`.
 

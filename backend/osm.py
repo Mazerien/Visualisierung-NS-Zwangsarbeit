@@ -101,8 +101,7 @@ class OSM:
                        zoom_control=False, scrollWheelZoom=False, dragging=False)
 
         # TODO: Make this more modular
-        # TODO: Add given colours for the countries; not randomized.
-        def style_function(feature):
+        def style_function(feature) -> dict:
             country = feature["properties"]["NAME"]
             fill_color = f"#5BCEFA"
             color = "black"
@@ -116,7 +115,7 @@ class OSM:
                     "weight": weight,
                     "fillOpacity": fill_opacity,
                 }
-            #if country is not None:
+            # if country is not None:
             #    print(country)
             return {
                 "fillColor": f'#{random.randint(0, 0xFFFFFF):06x}',
