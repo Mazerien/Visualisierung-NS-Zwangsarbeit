@@ -4,6 +4,7 @@ import MapIframe from "./Components/MapIFrame";
 import Interactable from "./Components/Interactable";
 import InfoPanel from "./Components/InfoPanel";
 import { interactablesData } from "./Components/InteractablesData";
+import TimelineSlider from "./Components/TimelineSlider";
 
 function App() {
   const [zoom, setZoom] = useState(0);
@@ -35,6 +36,7 @@ function App() {
           onClick={() => setSelected(item)}
         />
       ))}
+      <TimelineSlider></TimelineSlider>
 
       <InfoPanel selected={selected} onClose={() => setSelected(null)} />
     </div>

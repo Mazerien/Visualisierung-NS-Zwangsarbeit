@@ -11,6 +11,7 @@ export default function MapIframe({ zoom }) {
         height: "100vh",
         border: "none",
       }}
+      scrolling="no"
     />
   );
 }
