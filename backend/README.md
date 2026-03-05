@@ -1,7 +1,8 @@
 # Backend
 ## Setup
 Create virtual environment, install requirements with `pip install -r requirements.txt`  
-Start with `flask run`; optionally with debug: `flask run --debug`  
+Start with `python app.py`.  
+Check if it works by going to: `localhost:5000/api/hello`  
 
 ## Directory structure
 ```

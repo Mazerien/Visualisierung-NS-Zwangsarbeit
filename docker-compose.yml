@@ -1,0 +1,23 @@
+#######################################################################
+### This file creates Docker containers for a MySQL database,       ###
+### the Directus headless CMS, and the Python backend with Flask.   ###
+#######################################################################
+services:
+  directus:
+    image: directus/directus:latest
+    ports:
+      - "8055:8055"
+  
+  flask:
+    build:
+      context: backend/
+    ports:
+    - "5000:5000"
+
+  mysql:
+    image: mysql
+    restart: always
+    volumes:
+       - ./data:/var/lib/mysql/
+    env_file:
+      - .env
