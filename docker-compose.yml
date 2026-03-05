@@ -7,12 +7,16 @@ services:
     image: directus/directus:latest
     ports:
       - "8055:8055"
+    networks:
+      - app
   
   flask:
     build:
       context: backend/
     ports:
     - "5000:5000"
+    networks:
+      - app
 
   mysql:
     image: mysql
@@ -21,3 +25,9 @@ services:
        - ./data:/var/lib/mysql/
     env_file:
       - .env
+    networks:
+      - app
+
+networks:
+  app:
+    driver: bridge
