@@ -10,3 +10,5 @@ docker exec -it visualisierung-ns-zwangsarbeit-mysql-1
 USE ${MYSQL_DATABASE};
 SELECT * FROM ${TABLE};
 ```
+
+## Sources

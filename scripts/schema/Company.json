@@ -1,0 +1,32 @@
+{
+    "collection": "Company",
+    "schema": {
+        "name": "Company"
+    },
+    "fields": [
+        {
+            "field": "ID",
+            "type": "integer",
+            "schema": {
+                "is_primary_key": true,
+                "has_auto_increment": true
+            },
+            "meta": {
+                "interface": "numeric",
+                "readonly": true
+            },
+            "required": true
+        },
+        {
+            "field": "Name",
+            "type": "string",
+            "schema": {
+                "is_nullable": false
+            },
+            "meta": {
+                "interface": "input"
+            },
+            "required": true
+        }
+    ]
+}

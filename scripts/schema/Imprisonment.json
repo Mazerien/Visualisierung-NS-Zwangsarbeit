@@ -1,0 +1,83 @@
+{
+    "collection": "Imprisonment",
+    "schema": {
+        "name": "Imprisonment"
+    },
+    "fields": [
+        {
+            "field": "ID",
+            "type": "integer",
+            "schema": {
+                "is_primary_key": true,
+                "has_auto_increment": true
+            },
+            "meta": {
+                "interface": "numeric",
+                "readonly": true
+            },
+            "required": true
+        },
+        {
+            "field": "Person",
+            "type": "integer",
+            "schema": {
+                "foreign_key_table": "Person",
+                "foreign_key_column": "id",
+                "is_nullable": false
+            },
+            "meta": {
+                "interface": "collection-item-dropdown",
+                "options": {
+                    "template": "{{FirstName}} {{LastName}}"
+                },
+                "display": "related-values",
+                "display_options": {
+                    "template": "{{FirstName}} {{LastName}}"
+                }
+            },
+            "required": true
+        },
+        {
+            "field": "PrisonerID",
+            "type": "integer",
+            "meta": {
+                "interface": "numeric"
+            }
+        },
+        {
+            "field": "StartDate",
+            "type": "date",
+            "meta": {
+                "interface": "datetime"
+            }
+        },
+        {
+            "field": "EndDate",
+            "type": "date",
+            "meta": {
+                "interface": "datetime"
+            }
+        },
+        {
+            "field": "AgeAtImprisonment",
+            "type": "integer",
+            "meta": {
+                "interface": "numeric"
+            }
+        },
+        {
+            "field": "PrisonerOfWar",
+            "type": "boolean",
+            "meta": {
+                "interface": "boolean"
+            }
+        },
+        {
+            "field": "CourtOfLaw",
+            "type": "string",
+            "meta": {
+                "interface": "input"
+            }
+        }
+    ]
+}

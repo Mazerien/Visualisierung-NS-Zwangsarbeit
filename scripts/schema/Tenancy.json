@@ -1,0 +1,75 @@
+{
+    "collection": "Tenancy",
+    "schema": {
+        "name": "Tenancy"
+    },
+    "fields": [
+        {
+            "field": "ID",
+            "type": "integer",
+            "schema": {
+                "is_primary_key": true,
+                "has_auto_increment": true
+            },
+            "meta": {
+                "interface": "numeric",
+                "readonly": true
+            },
+            "required": true
+        },
+        {
+            "field": "Housing",
+            "type": "integer",
+            "schema": {
+                "foreign_key_table": "Housing",
+                "foreign_key_column": "ID",
+                "is_nullable": false
+            },
+            "meta": {
+                "interface": "select-dropdown",
+                "options": {
+                    "template": "{{Adress}} ({{Type}})"
+                },
+                "display": "related-values",
+                "display_options": {
+                    "template": "{{Adress}} ({{Type}})"
+                }
+            },
+            "required": true
+        },
+        {
+            "field": "Person",
+            "type": "integer",
+            "schema": {
+                "foreign_key_table": "Person",
+                "foreign_key_column": "id",
+                "is_nullable": false
+            },
+            "meta": {
+                "interface": "collection-item-dropdown",
+                "options": {
+                    "template": "{{FirstName}} {{LastName}}"
+                },
+                "display": "related-values",
+                "display_options": {
+                    "template": "{{FirstName}} {{LastName}}"
+                }
+            },
+            "required": true
+        },
+        {
+            "field": "StartDate",
+            "type": "date",
+            "meta": {
+                "interface": "datetime"
+            }
+        },
+        {
+            "field": "EndDate",
+            "type": "date",
+            "meta": {
+                "interface": "datetime"
+            }
+        }
+    ]
+}
