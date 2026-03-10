@@ -1,0 +1,17 @@
+export default function MapIframe({ zoom }) {
+  return (
+    <iframe
+      src={`http://localhost:5000/api/osm?zoom_level=${zoom}`}
+      title="OSM Map"
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        height: "100vh",
+        border: "none",
+      }}
+      scrolling="no"
+    />
+  );
+}
