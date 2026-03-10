@@ -10,7 +10,6 @@ function App() {
   const [zoom, setZoom] = useState(0);
   const [selected, setSelected] = useState(null);
   const zoomLevels = [0, 1, 2];
-  const [interactables, setInteractables] = useState([]); // state for current zoom data
 
   // For when switching to Backend Data
   /*
@@ -26,7 +25,9 @@ function App() {
       <ZoomControls zoom={zoom} setZoom={setZoom} zoomLevels={zoomLevels} />
       <MapIframe zoom={zoom} />
 
-      {/* Render interactables dynamically */}
+      {/* Timeout for the Animation */}
+      {setTimeout(() => {
+      }, 150)}
       {/*{interactables.map((item) => (  // use this when using Backend data */}
       {interactablesData[zoom].map((item) => (
         <Interactable

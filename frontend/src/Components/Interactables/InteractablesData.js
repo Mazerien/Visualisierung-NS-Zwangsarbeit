@@ -1,4 +1,3 @@
-// interactablesData.js
 import markerImg1 from "./Placeholder_Media/pexels-jjagtenberg-103123.jpg";
 import markervid1 from "./Placeholder_Media/853889-hd_1920_1080_25fps.mp4"
 

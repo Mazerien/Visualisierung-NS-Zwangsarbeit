@@ -1,11 +1,11 @@
 .timeline-container {
-  position: absolute;   /* oder fixed */
+  position: absolute;
   bottom: 2%;
   left: 50%;
   transform: translateX(-50%);
   width: 40%;
 
-  z-index: 2000;        /* höher als die Map */
+  z-index: 2000;
   background: rgb(112, 223, 102);
   padding: 10px 16px;
   border-radius: 8px;
