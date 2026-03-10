@@ -16,24 +16,22 @@
  font-size: clamp(16px, 3vw, 24px);
 }
 
-/* Active button style */
 .zoom-button.active {
   background-color: #4CAF50;
   color: #fff;
   font-weight: bold;
 }
 
-/* Hover effect only for non-active buttons */
 .zoom-button:not(.active):hover {
-  background-color: #ffffff; /* light up */
-  transform: translateY(-3px); /* lift slightly */
-  box-shadow: 0 4px 6px rgba(0,0,0,0.2); /* subtle shadow for floating effect */
+  background-color: #ffffff; 
+  transform: translateY(-3px); 
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2); 
 }
 
 .zoom-button.active:hover {
-  background-color: #5dda61; /* light up */
-  transform: translateY(-3px); /* lift slightly */
-  box-shadow: 0 4px 6px rgba(0,0,0,0.2); /* subtle shadow for floating effect */
+  background-color: #5dda61; 
+  transform: translateY(-3px); 
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2); 
 }
 
 @keyframes pulse {
@@ -42,7 +40,6 @@
   100% { transform: scale(0.5); }
 }
 
-/* Use class instead of :active */
 .zoom-button.pulse {
   animation: pulse 0.3s ease-in-out;
 }
