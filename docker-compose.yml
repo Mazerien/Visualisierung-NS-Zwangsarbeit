@@ -5,6 +5,7 @@
 services:
   directus:
     image: directus/directus:latest
+    restart: always
     ports:
       - "8055:8055"
     environment:
@@ -27,6 +28,7 @@ services:
   flask:
     build:
       context: backend/
+    restart: always
     ports:
       - "5000:5000"
     depends_on:
