@@ -3,7 +3,8 @@
 import json
 import requests
 from os import listdir
-from __init__ import URL, ADMIN_TOKEN
+from __init__ import URL, AUTH_HEADER
+from migrate_data import MigrateData
 
 
 def test_connection() -> int:
@@ -13,7 +14,7 @@ def test_connection() -> int:
 
 def test_authentication() -> int:
     """Quick check if logging in with the admin token is possible. Refer to .env in project root."""
-    return requests.get(f"{URL}/collections", headers={"Authorization": f"Bearer {ADMIN_TOKEN}"}).status_code
+    return requests.get(f"{URL}/collections", headers=AUTH_HEADER).status_code
 
 
 def create_collections():
@@ -24,7 +25,7 @@ def create_collections():
         with open(f"{directory}/{collection}") as f:
             payload = json.load(f)
             req = requests.post(f"{URL}/collections", json=payload,
-                                headers={"Authorization": f"Bearer {ADMIN_TOKEN}"})
+                                headers=AUTH_HEADER)
             print(req.content)
 
 
@@ -38,7 +39,7 @@ def main():
         collections = input("Create Directus Collections? y/N\n")
         match collections.lower():
             case "" | "n": break
-            case "y" | "j": 
+            case "y" | "j":
                 create_collections()
                 break
 
@@ -47,8 +48,7 @@ def main():
         match items.lower():
             case "" | "n": break
             case "y" | "j":
-                # TODO
-                pass
+                MigrateData.migrate()
                 break
 
 

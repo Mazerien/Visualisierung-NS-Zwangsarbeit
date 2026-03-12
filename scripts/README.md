@@ -12,3 +12,4 @@ SELECT * FROM ${TABLE};
 ```
 
 ## Sources
+[How to filter the Directus API](https://learndirectus.com/how-to-filter-the-directus-api/)

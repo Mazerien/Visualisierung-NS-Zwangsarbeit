@@ -1,5 +1,10 @@
 """Script for the data migration from Excel to Directus collections."""
 import datetime as dt
+import json
+import numpy as np
+import pandas as pd
+import requests
+from __init__ import URL, ADMIN_TOKEN, AUTH_HEADER
 
 
 class NormalizeData:
@@ -27,7 +32,7 @@ class NormalizeData:
             "m/f": "x",
             "w": "f"
         }
-        return chr(NormalizeData.replace_string(g, dict))
+        return NormalizeData.replace_string(g, dict)
 
     def country(c: str) -> str:
         """Standardizes and cleans country names or codes."""
@@ -66,4 +71,112 @@ class NormalizeData:
 
 
 class MigrateData:
-    pass
+    """Helper class for inserting data into Directus."""
+    file: pd.DataFrame = pd.read_excel(
+        "Gefangenenbuch.xlsx", skiprows=4, usecols="D,F:N,P:T,X:AD,AF,AB:AN,AT")
+    file = file.replace({np.nan: None})
+    # TODO: Refactor this class. This is hell, but it *does* work.
+
+    def migrate():
+        """Main function for migrating Excel data into Directus."""
+        for _, row in MigrateData.file.iterrows():
+            person = MigrateData.person(row)
+            company = MigrateData.company(row)
+            housing = MigrateData.housing(row)
+            tenancy = MigrateData.tenancy(row)
+            imprisonment = MigrateData.imprisonment(row)
+
+    def company(row: pd.Series) -> requests.Response:
+        """Inserts one or more companies from a given DataFrame row into Directus."""
+        companies: list[str] = [row["Unternehmen"], row["Unternehmen2"]]
+        companies_corrected: list[str] = []
+
+        # Checks if either Company have a string in the Excel; discards if it is empty or erroneous.
+        for c in companies:
+            if c is not None and len(c) > 0 and c != "?":
+                # TODO: Think of a unified algorithm for correcting these human data insertion errors?
+                replacement = {
+                    "... Ziegelwerk Mühlacker u.a.": "Ziegelwerk Mühlacker"
+                }
+                c = NormalizeData.replace_string(c, replacement)
+                companies_corrected.append(c)
+        if len(companies_corrected) == 0:
+            return
+
+        # Checks if either Company is already in the DB. Creates an entry if not.
+        companies = []
+        for c in companies_corrected:
+            req = requests.get(
+                f"{URL}/items/Company", params={"filter[Name][_eq]": c}, headers=AUTH_HEADER)
+            req = json.loads(req.content)
+            if len(req["data"]) == 0:
+                print(f"New Company {c} added to Directus.")
+                payload = {
+                    "Name": c
+                }
+                req = requests.post(
+                    f"{URL}/items/Company", json=payload, headers=AUTH_HEADER)
+
+    def housing(row: pd.Series):
+        """Inserts new housing data. If no housing data is given, returns."""
+        houses = [
+            row["Unterkunft (Adresse Kriegszeit)"], row["Unterkunft2"]]
+        houses_corrected = []
+
+        for h in houses:
+            if h is not None and len(h) > 0 and h != "?":
+                h = h.replace("Wohnsitz unbek.", "")
+                houses_corrected.append(h)
+        if len(houses_corrected) == 0:
+            return
+
+        houses = []
+        for h in houses_corrected:
+            req = requests.get(
+                f"{URL}/items/Housing", params={"filter[Adress][_eq]": h}, headers=AUTH_HEADER)
+            req = json.loads(req.content)
+            if h and len(req["data"]) == 0:
+                print(f"New Housing Adress {h} added to Directus.")
+                payload = {
+                    "Adress": h,
+                    "Type": "Schwenningen"
+                }
+                req = requests.post(
+                    f"{URL}/items/Housing", json=payload, headers=AUTH_HEADER)
+    
+    def imprisonment(row: pd.Series):
+        # TODO
+        pass
+
+    def person(row: pd.Series) -> requests.Response:
+        """Inserts a person from a given DataFrame row into Directus."""
+        # TODO: Check if person already exists in DB. If they do, skips it to avoid duplicate entries.
+        # TODO: Maybe fuzzy matching?
+        try:
+            maiden_name = row["Geburtsname"].title()
+        except AttributeError:
+            maiden_name = None
+
+        payload = {
+            "LastName": row["Nachname (korrigiert)"].title(),
+            "FirstName": row["Vorname (korrigiert)"],
+            "MaidenName": maiden_name,
+            "Gender": NormalizeData.gender(row["Geschlecht"]),
+            "DateOfBirth": str(NormalizeData.date(row["Geburtsdatum"])),
+            "PlaceOfBirth": NormalizeData.place_of_birth(
+                uncorrected=row["Geburt‏sort"], corrected=row["Geburtsort (aktuell/korrigiert)"]),
+            "PlaceOfDeath": row["Sterbeort"],
+            "Nationality": NormalizeData.country(row["Nationalität"]),
+            "LastPlaceOfResidence": row["Letzter Wohnort (Land)"],
+            "Marriage": None,   # TODO
+            "Father": row["Name Vater"],    # TODO
+            "Mother": row["Name Mutter"],   # TODO
+            "Religion": row["Religion"],
+            "Profession": row["Berufsangabe"]
+        }
+        return requests.post(f"{URL}/items/Person",
+                             json=payload, headers=AUTH_HEADER)
+    
+    def tenancy(row: pd.Series):
+        # TODO
+        pass
