@@ -1,0 +1,77 @@
+import requests
+
+OVERPASS_URL = "https://overpass-api.openhistoricalmap.org/api/interpreter"
+
+
+def build_query(city_name, country=None, year=None):
+    if year:
+        return f"""
+        [out:json][timeout:25];
+        nwr["place"~"city|town|village"]["name"="{city_name}"](if:
+            t["start_date"] < "{year + 1}" &&
+            (!is_tag("end_date") || t["end_date"] >= "{year}")
+        );
+        out geom;
+        """
+
+    if country:
+        return f"""
+        [out:json][timeout:25];
+        area["name"="{country}"]["admin_level"="2"]->.searchArea;
+        nwr["place"~"city|town|village"]["name"="{city_name}"](area.searchArea);
+        out geom;
+        """
+
+    return f"""
+    [out:json][timeout:25];
+    nwr["place"~"city|town|village"]["name"="{city_name}"];
+    out geom;
+    """
+
+
+def fetch_data(query):
+    headers = {
+        "User-Agent": "OHM-Python-Flask/1.0"
+    }
+
+    response = requests.post(
+        OVERPASS_URL,
+        data={"data": query},
+        headers=headers,
+        timeout=60
+    )
+    response.raise_for_status()
+    return response.json()
+
+
+def process_results(data):
+    results = []
+
+    for el in data.get("elements", []):
+        tags = el.get("tags", {})
+
+        coords = {}
+
+        if "lat" in el and "lon" in el:
+            coords = {"lat": el["lat"], "lon": el["lon"]}
+
+        elif "geometry" in el and len(el["geometry"]) > 0:
+            coords = {
+                "lat": el["geometry"][0]["lat"],
+                "lon": el["geometry"][0]["lon"]
+            }
+
+        results.append({
+            "name": tags.get("name"),
+            "coordinates": coords,
+            "start_date": tags.get("start_date"),
+            "end_date": tags.get("end_date")
+        })
+
+    return results
+
+
+def get_ohm_city_data(city_name, country=None, year=None):
+    query = build_query(city_name, country, year)
+    data = fetch_data(query)
+    return process_results(data)
