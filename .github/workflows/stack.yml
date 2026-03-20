@@ -15,5 +15,5 @@ jobs:
         uses: mittwald/deploy-container-action@v1
         with:
           api_token: ${{ secrets.API_TOKEN }}
-          stack_id: "your-stack-id"
+          stack_id: ${{ secrets.STACK }}
           stack_file: "${{ github.workspace }}/configs/stack.yaml"
