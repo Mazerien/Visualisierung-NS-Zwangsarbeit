@@ -16,4 +16,4 @@ jobs:
         with:
           api_token: ${{ secrets.API_TOKEN }}
           stack_id: ${{ secrets.STACK }}
-          stack_file: "${{ github.workspace }}/configs/stack.yaml"
+          stack_file: "${{ github.workspace }}/stack.yaml"
