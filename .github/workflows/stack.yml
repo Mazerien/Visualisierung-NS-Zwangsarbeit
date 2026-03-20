@@ -1,0 +1,19 @@
+name: mittwald mStudio container deployment
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy to Mittwald
+        uses: mittwald/deploy-container-action@v1
+        with:
+          api_token: ${{ secrets.API_TOKEN }}
+          stack_id: "your-stack-id"
+          stack_file: "${{ github.workspace }}/configs/stack.yaml"
