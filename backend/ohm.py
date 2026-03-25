@@ -7,7 +7,7 @@ def build_query(city_name, country=None, year=None):
     if year:
         return f"""
         [out:json][timeout:25];
-        nwr["place"~"city|town|village"]["name"="{city_name}"](if:
+        nwr["place"]["name"~"^{city_name}$", i](if:
             t["start_date"] < "{year + 1}" &&
             (!is_tag("end_date") || t["end_date"] >= "{year}")
         );
@@ -18,13 +18,13 @@ def build_query(city_name, country=None, year=None):
         return f"""
         [out:json][timeout:25];
         area["name"="{country}"]["admin_level"="2"]->.searchArea;
-        nwr["place"~"city|town|village"]["name"="{city_name}"](area.searchArea);
+        nwr["place"]["name"~"^{city_name}$", i](area.searchArea);
         out geom;
         """
 
     return f"""
     [out:json][timeout:25];
-    nwr["place"~"city|town|village"]["name"="{city_name}"];
+    nwr["place"]["name"~"^{city_name}$", i];
     out geom;
     """
 
