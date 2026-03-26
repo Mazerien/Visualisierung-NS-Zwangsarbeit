@@ -4,27 +4,42 @@ OVERPASS_URL = "https://overpass-api.openhistoricalmap.org/api/interpreter"
 
 
 def build_query(city_name, country=None, year=None):
-    if year:
+    # Both country and year
+    if country and year:
         return f"""
         [out:json][timeout:25];
-        nwr["place"~"city|town|village"]["name"="{city_name}"](if:
+        area["name"="{country}"]["admin_level"="2"]->.searchArea;
+        nwr["place"]["name"~"^{city_name}$", i](area.searchArea)(if:
             t["start_date"] < "{year + 1}" &&
             (!is_tag("end_date") || t["end_date"] >= "{year}")
         );
         out geom;
         """
 
+    # Only year
+    if year:
+        return f"""
+        [out:json][timeout:25];
+        nwr["place"]["name"~"^{city_name}$", i](if:
+            t["start_date"] < "{year + 1}" &&
+            (!is_tag("end_date") || t["end_date"] >= "{year}")
+        );
+        out geom;
+        """
+
+    # Only country
     if country:
         return f"""
         [out:json][timeout:25];
         area["name"="{country}"]["admin_level"="2"]->.searchArea;
-        nwr["place"~"city|town|village"]["name"="{city_name}"](area.searchArea);
+        nwr["place"]["name"~"^{city_name}$", i](area.searchArea);
         out geom;
         """
 
+    # Default: no filters
     return f"""
     [out:json][timeout:25];
-    nwr["place"~"city|town|village"]["name"="{city_name}"];
+    nwr["place"]["name"~"^{city_name}$", i];
     out geom;
     """
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import ZoomControls from "./Components/ZoomControls";
+import ZoomControls from "./Components/ZoomButtons/ZoomControls";
 import MapIframe from "./Components/MapIFrame";
 import Interactable from "./Components/Interactables/Interactable";
 import InfoPanel from "./Components/InfoPanels/InfoPanelFrame/InfoPanel";
