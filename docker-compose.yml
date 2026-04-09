@@ -19,9 +19,9 @@ services:
       DB_DATABASE: ${MYSQL_DATABASE}
       DB_USER: ${MYSQL_USER}
       DB_PASSWORD: ${MYSQL_PASSWORD}
-    # depends_on:
-    #   mysql:
-    #     condition: service_healthy
+    depends_on:
+      mysql:
+        condition: service_healthy
     networks:
       - app
 
@@ -37,23 +37,24 @@ services:
     networks:
       - app
 
-  # mysql:
-  #   image: mysql:latest
-  #   restart: always
-  #   environment:
-  #     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-  #     MYSQL_DATABASE: ${MYSQL_DATABASE}
-  #     MYSQL_USER: ${MYSQL_USER}
-  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-  #   ports:
-  #     - "3306:3306"
-  #   healthcheck:
-  #     test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
-  #     timeout: 30s
-  #     retries: 5
-  #     start_period: 10s
-  #   networks:
-  #     - app
+  mysql:
+    image: mysql:latest
+    description: "The MySQL database that Directus and Flask depend on."
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    healthcheck:
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
+      timeout: 30s
+      retries: 5
+      start_period: 10s
+    networks:
+      - app
 
 networks:
   app:
