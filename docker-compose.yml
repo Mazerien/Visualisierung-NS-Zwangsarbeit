@@ -5,6 +5,7 @@
 services:
   directus:
     image: directus/directus:latest
+    description: "The Directus headless CMS."
     restart: always
     ports:
       - "8055:8055"
@@ -27,6 +28,7 @@ services:
 
   flask:
     image: python:slim
+    description: "A Flask app."
     build:
       context: backend/
       dockerfile: dockerfile
