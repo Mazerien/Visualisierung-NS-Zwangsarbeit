@@ -26,6 +26,7 @@ services:
       - app
 
   flask:
+    image: python:slim
     build:
       context: backend/
       dockerfile: dockerfile
