@@ -10,6 +10,14 @@ Copy and rename `.env.example` into `.env` and set the secrets you want.
 `frontend/`: React frontend. (WIP)  
 `scripts/`: Auxilliary scripts such as importing the data into the MySQL/Directus DB.  
 
+## mittwald deployment
+[Install mittwald CLI and authenticate with the project.](https://developer.mittwald.de/docs/v2/cli/usage/intro/)   
+Set default project: `mw context set --project-id <project-id>`  
+Enable autocomplete: `mw autocomplete`  
+[Image repo (private link)](hub.docker.com/repository/docker/dgeorghfu/nszw-hfu/general)  
+Check container registries: `mw registry list`  
+
+
 ## Sources
 ### Docker and docker-compose
 [Directus docker-compose](https://directus.io/docs/self-hosting/deploying)  

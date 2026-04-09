@@ -160,6 +160,12 @@
             "meta": {
                 "interface": "input"
             }
+        },
+        {
+            "field": "Source", "type": "string",
+            "meta": {
+                "interface": "input"
+            }
         }
     ]
 }
