@@ -5,7 +5,9 @@
 services:
   directus:
     image: directus/directus:latest
-    description: "The Directus headless CMS."
+    volumes:
+      - ./nszw/directus:/var/lib/directus
+    description: "Directus headless CMS"
     restart: always
     ports:
       - "8055:8055"
@@ -28,7 +30,9 @@ services:
 
   flask:
     image: python:slim
-    description: "A Flask app."
+    description: "Flask app"
+    volumes:
+      - ./nszw/flask:/var/lib/flask
     build:
       context: backend/
       dockerfile: dockerfile
@@ -43,7 +47,9 @@ services:
 
   mysql:
     image: mysql:latest
-    description: "The MySQL database that Directus and Flask depend on."
+    description: "MySQL database"
+    volumes:
+      - ./db/mysql:/var/lib/mysql
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -63,3 +69,9 @@ services:
 networks:
   app:
     driver: bridge
+  
+
+volumes:
+  nszw:
+  db:
+    
