@@ -3,20 +3,6 @@
 ### the Directus headless CMS, and the Python backend with Flask.   ###
 #######################################################################
 services:
-  directus:
-    image: directus/directus:latest
-    volumes:
-      - nszw:/var/lib/directus
-    description: "Directus headless CMS"
-    restart: always
-    ports:
-      - "8055:8055"
-    depends_on:
-      mysql:
-        condition: service_healthy
-    networks:
-      - app
-
   flask:
     image: python:slim
     description: "Flask app"
@@ -31,22 +17,6 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
-    networks:
-      - app
-
-  mysql:
-    image: mysql:latest
-    description: "MySQL database"
-    volumes:
-      - db:/var/lib/mysql
-    restart: always
-    ports:
-      - "3306:3306"
-    healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost" ]
-      timeout: 30s
-      retries: 5
-      start_period: 10s
     networks:
       - app
 
