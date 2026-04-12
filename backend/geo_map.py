@@ -88,7 +88,7 @@ class OSMGeoMap:
         zoom_start = 5
 
         if self.zoom_level == 1:
-            location = [50, 9]
+            location = [48, 9]
             zoom_start = 6
         elif self.zoom_level == 2:
             # Schwenningen: [48.0636961, 8.536548]
