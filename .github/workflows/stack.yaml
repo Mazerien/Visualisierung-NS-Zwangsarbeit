@@ -5,9 +5,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
 
@@ -16,4 +15,4 @@ jobs:
         with:
           api_token: ${{ secrets.API_TOKEN }}
           stack_id: ${{ secrets.STACK }}
-          stack_file: ".github/workflows/stack.yaml"
+          stack_file: "docker-compose.yml"

@@ -7,8 +7,11 @@ Copy and rename `.env.example` into `.env` and set the secrets you want.
 
 ## Directory structure
 `backend/`: Flask backend.  
-`frontend/`: React frontend. (WIP)  
+`frontend/`: React frontend.
 `scripts/`: Auxilliary scripts such as importing the data into the MySQL/Directus DB.  
+
+## mittwald deployment
+On commit, it immediately gets deployed to the mittwald container through a GitHub Action.
 
 ## Sources
 ### Docker and docker-compose

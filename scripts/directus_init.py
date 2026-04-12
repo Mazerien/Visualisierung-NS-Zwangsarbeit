@@ -29,11 +29,25 @@ def create_collections():
             print(req.content)
 
 
+def drop_tables():
+    """Optionally soft resets the Directus DB."""
+    req = requests.delete(f"{URL}/items/Person", params={"filter[FirstName][_nempty]": ""}, headers=AUTH_HEADER)
+    print(req.status_code)
+    print(req.reason)
+    print(req.content)
+
+
 def main():
     if test_connection() != 200:
         raise "No connection possible. Is Directus running?"
     elif test_authentication() != 200:
         raise "Directus cannot authenticate with the given admin token. Is the .env set correctly?"
+    
+    # while True:
+    #     reset = input("Reset Directus database? y/N\n")
+    #     match reset.lower():
+    #         case "" | "n": break
+    #         case "y" | "j": drop_tables()
 
     while True:
         collections = input("Create Directus Collections? y/N\n")

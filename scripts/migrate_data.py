@@ -27,19 +27,19 @@ class NormalizeData:
 
     def gender(g: str) -> chr:
         """Converts gender markers to an international standard."""
-        dict = {
+        codes = {
             "m/w": "x",
             "m/f": "x",
             "w": "f"
         }
-        return NormalizeData.replace_string(g, dict)
+        return NormalizeData.replace_string(g, codes)
 
     def country(c: str) -> str:
         """Standardizes and cleans country names or codes."""
         if c is None or c == "?":
             return "Unknown"
 
-        dict = {
+        codes = {
             "Kroatien": "Croatia",
             "PL": "Poland",
             "NL": "The Netherlands",
@@ -50,7 +50,7 @@ class NormalizeData:
             "ESP": "Spain",
             "GB": "United Kingdom"
         }
-        return NormalizeData.replace_string(c, dict)
+        return NormalizeData.replace_string(c, codes)
 
     def place_of_birth(uncorrected: str, corrected: str) -> str:
         """Returns the most accurate data available from two city strings."""
@@ -72,19 +72,27 @@ class NormalizeData:
 
 class MigrateData:
     """Helper class for inserting data into Directus."""
-    file: pd.DataFrame = pd.read_excel(
+    files = [pd.read_excel(
+        "Ostarbeitendenliste.xlsx", usecols="B:V"
+    ), pd.read_excel(
         "Gefangenenbuch.xlsx", skiprows=4, usecols="D,F:N,P:T,X:AD,AF,AB:AN,AT")
-    file = file.replace({np.nan: None})
+    
+    ]
     # TODO: Refactor this class. This is hell, but it *does* work.
 
     def migrate():
         """Main function for migrating Excel data into Directus."""
-        for _, row in MigrateData.file.iterrows():
-            person = MigrateData.person(row)
-            company = MigrateData.company(row)
-            housing = MigrateData.housing(row)
-            tenancy = MigrateData.tenancy(row)
-            imprisonment = MigrateData.imprisonment(row)
+        for file in MigrateData.files:
+            file = file.replace({np.nan: None})
+            for _, row in file.iterrows():
+                person = MigrateData.person(row)
+                try:
+                    company = MigrateData.company(row)
+                    housing = MigrateData.housing(row)
+                    tenancy = MigrateData.tenancy(row)
+                    imprisonment = MigrateData.imprisonment(row)
+                except KeyError, TypeError:
+                    continue
 
     def company(row: pd.Series) -> requests.Response:
         """Inserts one or more companies from a given DataFrame row into Directus."""
@@ -154,28 +162,64 @@ class MigrateData:
         # TODO: Maybe fuzzy matching?
         try:
             maiden_name = row["Geburtsname"].title()
+            maiden_name = NormalizeData.replace_string(maiden_name, {
+                "Ostaberiterin": ""
+            })
         except AttributeError:
             maiden_name = None
+        try:
+            gender = NormalizeData.gender(row["Geschlecht"])
+        except:
+            gender = "X"
+        try:
+            last_name = row["Nachname (korrigiert)"].title()
+            first_name = row["Vorname (korrigiert)"].title()
+            place_of_birth = NormalizeData.place_of_birth(
+                uncorrected=row["Geburt‏sort"], corrected=row["Geburtsort (aktuell/korrigiert)"])
+            place_of_death = row["Sterbeort"].replace("nan", "")
+            nationality = NormalizeData.country(row["Nationalität"])
+            father = row["Name Vater"]
+            mother = row["Name Mutter"]
+            profession = row["Berufsangabe"]
+            last_place_of_residence = row["Letzter Wohnort (Land)"]
+            religion = row["Religion"]
+        except KeyError, AttributeError:
+            last_name = row["Nachname"].title()
+            if last_name == "Nachname":
+                return
+            first_name = row["Vorname"].title()
+            place_of_birth = None
+            place_of_death = None
+            nationality = None
+            father = None
+            mother = None
+            profession = None
+            last_place_of_residence = None
+            religion = None
 
         payload = {
-            "LastName": row["Nachname (korrigiert)"].title(),
-            "FirstName": row["Vorname (korrigiert)"],
+            "LastName": last_name,
+            "FirstName": first_name,
             "MaidenName": maiden_name,
-            "Gender": NormalizeData.gender(row["Geschlecht"]),
+            "Gender": gender,
             "DateOfBirth": str(NormalizeData.date(row["Geburtsdatum"])),
-            "PlaceOfBirth": NormalizeData.place_of_birth(
-                uncorrected=row["Geburt‏sort"], corrected=row["Geburtsort (aktuell/korrigiert)"]),
-            "PlaceOfDeath": row["Sterbeort"],
-            "Nationality": NormalizeData.country(row["Nationalität"]),
-            "LastPlaceOfResidence": row["Letzter Wohnort (Land)"],
+            "PlaceOfBirth": place_of_birth,
+            "PlaceOfDeath": place_of_death,
+            "Nationality": nationality,
+            "LastPlaceOfResidence": last_place_of_residence,
             "Marriage": None,   # TODO
-            "Father": row["Name Vater"],    # TODO
-            "Mother": row["Name Mutter"],   # TODO
-            "Religion": row["Religion"],
-            "Profession": row["Berufsangabe"]
+            "Father": None,    # TODO
+            "Mother": None,   # TODO
+            "Religion": religion,
+            "Profession": profession
         }
-        return requests.post(f"{URL}/items/Person",
-                             json=payload, headers=AUTH_HEADER)
+        finalpayload = {}
+        for k, v in payload.items():
+            if v is not None and v != "None":
+                finalpayload[k] = v
+        
+        req = requests.post(f"{URL}/items/Person",
+                             json=finalpayload, headers=AUTH_HEADER)
     
     def tenancy(row: pd.Series):
         # TODO
