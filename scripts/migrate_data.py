@@ -82,17 +82,18 @@ class MigrateData:
 
     def migrate():
         """Main function for migrating Excel data into Directus."""
-        for file in MigrateData.files:
-            file = file.replace({np.nan: None})
+        for i in range(len(MigrateData.files)):
+            is_gefangenenbuch: bool = i == 1
+            file = MigrateData.files[i].replace({np.nan: None})
+
             for _, row in file.iterrows():
-                person = MigrateData.person(row)
-                try:
+                person = MigrateData.person(row, is_gefangenenbuch)
+                if is_gefangenenbuch:
+                    # TODO
                     company = MigrateData.company(row)
                     housing = MigrateData.housing(row)
                     tenancy = MigrateData.tenancy(row)
                     imprisonment = MigrateData.imprisonment(row)
-                except KeyError, TypeError:
-                    continue
 
     def company(row: pd.Series) -> requests.Response:
         """Inserts one or more companies from a given DataFrame row into Directus."""
@@ -156,7 +157,7 @@ class MigrateData:
         # TODO
         pass
 
-    def person(row: pd.Series) -> requests.Response:
+    def person(row: pd.Series, is_gefangenenbuch: bool) -> requests.Response:
         """Inserts a person from a given DataFrame row into Directus."""
         # TODO: Check if person already exists in DB. If they do, skips it to avoid duplicate entries.
         # TODO: Maybe fuzzy matching?
@@ -167,23 +168,29 @@ class MigrateData:
             })
         except AttributeError:
             maiden_name = None
+        
         try:
             gender = NormalizeData.gender(row["Geschlecht"])
         except:
             gender = "X"
-        try:
+        
+        if is_gefangenenbuch:
             last_name = row["Nachname (korrigiert)"].title()
             first_name = row["Vorname (korrigiert)"].title()
             place_of_birth = NormalizeData.place_of_birth(
                 uncorrected=row["Geburt‏sort"], corrected=row["Geburtsort (aktuell/korrigiert)"])
-            place_of_death = row["Sterbeort"].replace("nan", "")
+            try:
+                place_of_death = row["Sterbeort"].replace("nan", "")
+            except AttributeError:
+                place_of_death = None
             nationality = NormalizeData.country(row["Nationalität"])
             father = row["Name Vater"]
             mother = row["Name Mutter"]
             profession = row["Berufsangabe"]
             last_place_of_residence = row["Letzter Wohnort (Land)"]
             religion = row["Religion"]
-        except KeyError, AttributeError:
+            source = "Gefangenenbuch"
+        else:
             last_name = row["Nachname"].title()
             if last_name == "Nachname":
                 return
@@ -196,6 +203,7 @@ class MigrateData:
             profession = None
             last_place_of_residence = None
             religion = None
+            source = "Ostarbeiterliste"
 
         payload = {
             "LastName": last_name,
@@ -211,7 +219,8 @@ class MigrateData:
             "Father": None,    # TODO
             "Mother": None,   # TODO
             "Religion": religion,
-            "Profession": profession
+            "Profession": profession,
+            "Source": source
         }
         finalpayload = {}
         for k, v in payload.items():
