@@ -75,7 +75,8 @@ class MigrateData:
     files = [pd.read_excel(
         "Ostarbeitendenliste.xlsx", usecols="B:V"
     ), pd.read_excel(
-        "Gefangenenbuch.xlsx", skiprows=4, usecols="D,F:N,P:T,X:AD,AF,AB:AN,AT")
+        "Gefangenenbuch.xlsx", skiprows=4, usecols="D,F:N,P:T,X:AD,AF,AB:AN,AT"),
+        pd.read_excel("IMIs.xlsx", usecols="B:V")
     
     ]
     # TODO: Refactor this class. This is hell, but it *does* work.
@@ -84,10 +85,11 @@ class MigrateData:
         """Main function for migrating Excel data into Directus."""
         for i in range(len(MigrateData.files)):
             is_gefangenenbuch: bool = i == 1
+            is_imi_liste: bool = i == 2
             file = MigrateData.files[i].replace({np.nan: None})
 
             for _, row in file.iterrows():
-                person = MigrateData.person(row, is_gefangenenbuch)
+                person = MigrateData.person(row, is_gefangenenbuch, is_imi_liste)
                 if is_gefangenenbuch:
                     # TODO
                     company = MigrateData.company(row)
@@ -157,7 +159,7 @@ class MigrateData:
         # TODO
         pass
 
-    def person(row: pd.Series, is_gefangenenbuch: bool) -> requests.Response:
+    def person(row: pd.Series, is_gefangenenbuch: bool, is_imi_liste: bool) -> requests.Response:
         """Inserts a person from a given DataFrame row into Directus."""
         # TODO: Check if person already exists in DB. If they do, skips it to avoid duplicate entries.
         # TODO: Maybe fuzzy matching?
@@ -203,7 +205,10 @@ class MigrateData:
             profession = None
             last_place_of_residence = None
             religion = None
-            source = "Ostarbeiterliste"
+            if is_imi_liste:
+                source = "IMIliste"
+            else:
+                source = "Ostarbeiterliste"
 
         payload = {
             "LastName": last_name,
