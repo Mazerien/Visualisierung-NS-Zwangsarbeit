@@ -6,6 +6,8 @@ import math
 from folium.plugins import PolyLineTextPath
 from geo_cache import get_city_coords
 from draw_arrow import add_arrow
+from draw_circle import add_circle
+from api.person_data import get_nationality_counts
 
 WORLD_1938 = "https://raw.githubusercontent.com/aourednik/historical-basemaps/refs/heads/master/geojson/world_1938.geojson"
 
@@ -97,9 +99,25 @@ class OSMGeoMap:
 
         if self.zoom_level == 2:
             # Base tiles
-            m = folium.Map(location=location, zoom_start=zoom_start, tiles="OpenStreetMap")
+            m = folium.Map(
+                location=location, 
+                zoom_start=zoom_start, 
+                tiles="OpenStreetMap",zoom_control=False,
+                scrollWheelZoom=False,
+                dragging=False,
+                doubleClickZoom=False,
+                box_zoom=False,
+                keyboard=False)
         else:
-            m = folium.Map(location=location, zoom_start=zoom_start, tiles=self.tileset)
+            m = folium.Map(
+                location=location, 
+                zoom_start=zoom_start, 
+                tiles=self.tileset,zoom_control=False,
+                scrollWheelZoom=False,
+                dragging=False,
+                doubleClickZoom=False,
+                box_zoom=False,
+                keyboard=False)
 
         if self.zoom_level < 2:
 
@@ -139,6 +157,7 @@ class OSMGeoMap:
 
         # Arrows
         if self.zoom_level < 2:
+            persons = get_nationality_counts()
             for start_city, start_country, end_city, end_country, color, width, dash, opacity in self.arrows:
                 start_coords = get_city_coords(start_city, country=start_country)
                 end_coords = get_city_coords(end_city, country=end_country)
@@ -149,9 +168,17 @@ class OSMGeoMap:
                         end_coords,
                         color=color,
                         weight=width,
-                        arrow_size=0.5,
+                        size=0.5,
                         opacity=opacity,
                         dash=dash
+                    )
+                    people_count = persons.get(start_city, 0)
+                    add_circle(
+                        m,
+                        start_coords,
+                        color,
+                        size = max(10000, math.sqrt(people_count) * 10000),
+                        opacity=0.8,
                     )
 
         folium.LayerControl().add_to(m)

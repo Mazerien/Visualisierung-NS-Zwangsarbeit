@@ -8,7 +8,7 @@ def add_arrow(
     end,
     color="red",
     weight=3,
-    arrow_size=0.5,
+    size=0.5,
     opacity=0.8,
     dash=None
 ):
@@ -32,8 +32,8 @@ def add_arrow(
     angle1 = angle + math.pi / 8
     angle2 = angle - math.pi / 8
 
-    arrow1 = [lat2 - arrow_size * math.sin(angle1), lon2 - arrow_size * math.cos(angle1)]
-    arrow2 = [lat2 - arrow_size * math.sin(angle2), lon2 - arrow_size * math.cos(angle2)]
+    arrow1 = [lat2 - size * math.sin(angle1), lon2 - size * math.cos(angle1)]
+    arrow2 = [lat2 - size * math.sin(angle2), lon2 - size * math.cos(angle2)]
 
     folium.PolyLine(locations=[arrow1, [lat2, lon2]], color=color, weight=weight, opacity=opacity).add_to(m)
     folium.PolyLine(locations=[arrow2, [lat2, lon2]], color=color, weight=weight, opacity=opacity).add_to(m)

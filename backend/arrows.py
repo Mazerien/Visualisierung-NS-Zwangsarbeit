@@ -14,8 +14,17 @@ class Arrow:
     opacity: float = 0.8       # Transparency (0.0-1.0)
 
 DEFAULT_ARROWS: List[Arrow] = [
-    Arrow("Berlin", "Deutschland", color="red", width=10.5, dash=None, opacity=1.0),
-    Arrow("Paris", "France", color="blue", width=20.5, dash=None, opacity=0.3),
+    Arrow("Berlin", "Deutschland", color="#FF0000", width=4, dash=None, opacity=1.0),
+    Arrow("Paris", "France", color="#0000FF", width=4, dash=None, opacity=1.0),
+    Arrow("Antwerpen", None, color="#00FF00", width=4, dash=None, opacity=1.0),
+    Arrow("Zagreb", "Hrvatska", color="#FFA500", width=4, dash=None, opacity=1.0), #Kroatien
+    Arrow("Ostrau", None, color="#800080", width=4, dash=None, opacity=1.0), #Czechia
+    Arrow("Krakau", "Polska", color="#00FFFF", width=4, dash=None, opacity=1.0),
+    Arrow("Москва", None, color="#FFD700", width=4, dash=None, opacity=1.0), #Soviet Union
+    Arrow("Barcelona", None, color="#FF69B4", width=4, dash=None, opacity=1.0), #Spanien
+    Arrow("Rotterdam", None, color="#008080", width=4, dash=None, opacity=1.0), # Niederlande +1939
+    Arrow("Kiew", None, color="#A52A2A", width=4, dash=None, opacity=1.0), # Ukraine
+    Arrow("Gillingham", None, color="#808000", width=4, dash=None, opacity=1.0), # UK
 ]
 
 SECOND_ARROW_SET: List[Arrow] = [
