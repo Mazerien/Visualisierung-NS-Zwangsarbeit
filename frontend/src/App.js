@@ -10,6 +10,7 @@ function App() {
   const [zoom, setZoom] = useState(0);
   const [selected, setSelected] = useState(null);
   const zoomLevels = [0, 1, 2];
+  const [year, setYear] = useState(1938);
 
   // For when switching to Backend Data
   /*
@@ -23,7 +24,7 @@ function App() {
   return (
     <div>
       <ZoomControls zoom={zoom} setZoom={setZoom} zoomLevels={zoomLevels} />
-      <MapIframe zoom={zoom} />
+      <MapIframe zoom={zoom} year={year} />
 
       {/* Timeout for the Animation */}
       {setTimeout(() => {
@@ -37,7 +38,7 @@ function App() {
           onClick={() => setSelected(item)}
         />
       ))}
-      <TimelineSlider></TimelineSlider>
+      <TimelineSlider year={year} setYear={setYear} />
 
       <InfoPanel selected={selected} onClose={() => setSelected(null)} />
     </div>

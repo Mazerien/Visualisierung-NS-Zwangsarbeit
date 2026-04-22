@@ -1,10 +1,16 @@
 import { useState } from "react";
 import "./TimelineSlider.css";
 
-export default function TimelineSlider() {
-  const years = [1938, 1940, 1999, 2026];
+export default function TimelineSlider({ year, setYear }) {
+  const years = [1938, 2000, 2025];
 
-  const [index, setIndex] = useState(0);
+  const [index, setIndex] = useState(years.indexOf(year) || 0);
+
+  const handleChange = (e) => {
+    const newIndex = Number(e.target.value);
+    setIndex(newIndex);
+    setYear(years[newIndex]);
+  };
 
   return (
     <div className="timeline-container">
@@ -14,11 +20,11 @@ export default function TimelineSlider() {
 
       <input
         type="range"
-        min={years[0]}
-        max={years[years.length - 1]}
+        min="0"
+        max={years.length - 1}
         step="1"
         value={index}
-        onChange={(e) => setIndex(Number(e.target.value))}
+        onChange={handleChange}
         className="timeline-slider"
       />
 

@@ -23,18 +23,19 @@ def warm_cache(arrows):
 def get_map():
     # Get params
     zoom_level = int(request.args.get("zoom_level", 0))
+    year = int(request.args.get("year", 1938))
     arrow_set = request.args.get("arrows", "default")
 
     # Load arrows dynamically
     arrows = get_arrows(arrow_set)
 
-    # 🔥 Warm cache (only slow on first request)
     warm_cache(arrows)
 
     # Generate map
     html_map = OSMGeoMap(
         zoom_level=zoom_level,
-        arrows=arrows
+        arrows=arrows,
+        year=year
     ).get_map()
 
     return Response(html_map, mimetype="text/html")

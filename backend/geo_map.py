@@ -9,7 +9,11 @@ from draw_arrow import add_arrow
 from draw_circle import add_circle
 from api.person_data import get_nationality_counts
 
-WORLD_1938 = "https://raw.githubusercontent.com/aourednik/historical-basemaps/refs/heads/master/geojson/world_1938.geojson"
+WORLD_BY_YEAR = {
+    1938: "https://raw.githubusercontent.com/aourednik/historical-basemaps/refs/heads/master/geojson/world_1938.geojson",
+    2020: "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson",
+    2025: "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson"
+}
 
 COUNTRY_COLORS = {}
 
@@ -32,10 +36,11 @@ for s in COLOR_FIVE:
 
 
 class OSMGeoMap:
-    def __init__(self, tileset="Esri.WorldPhysical", zoom_level=0, geo_json_url=WORLD_1938, arrows=None):
+    def __init__(self, tileset="Esri.WorldPhysical", zoom_level=0, year=1938, arrows=None):
         self.tileset = tileset
-        self.geo_json = requests.get(geo_json_url).json()
         self.zoom_level = zoom_level
+        self.year = year
+        self.geo_json = requests.get(WORLD_BY_YEAR.get(year, WORLD_BY_YEAR[1938])).json()
         self.arrows = arrows or []
 
     def _fetch_ohm_streets(self, bbox):
@@ -47,7 +52,7 @@ class OSMGeoMap:
 
         # Overpass query: get all highways in the bounding box
         query = f"""
-        [out:json][timeout:25];
+        [out:json][timeout:25][date:"{self.year}-01-01T00:00:00Z"];
         (
           way["highway"]({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});
         );
@@ -144,7 +149,7 @@ class OSMGeoMap:
 
             folium.GeoJson(
                 self.geo_json,
-                name="Countries 1938",
+                name=f"Countries {self.year}",
                 style_function=style_function,
                 tooltip=tooltip
             ).add_to(m)
@@ -153,7 +158,7 @@ class OSMGeoMap:
             # Define bounding box around city (approx ±0.01°)
             lat, lon = location
             bbox = [lat - 0.01, lon - 0.01, lat + 0.01, lon + 0.01]
-            self._add_ohm_layer(m, bbox)
+            # self._add_ohm_layer(m, bbox)
 
         # Arrows
         if self.zoom_level < 2:
