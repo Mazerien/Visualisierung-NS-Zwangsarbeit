@@ -5,9 +5,12 @@ import random
 import math
 from folium.plugins import PolyLineTextPath
 from geo_cache import get_city_coords
+from geojson_cache import get_geojson
 from draw_arrow import add_arrow
 from draw_circle import add_circle
 from api.person_data import get_nationality_counts
+
+MAP_CACHE = {}
 
 WORLD_BY_YEAR = {
     1938: "https://raw.githubusercontent.com/aourednik/historical-basemaps/refs/heads/master/geojson/world_1938.geojson",
@@ -40,7 +43,8 @@ class OSMGeoMap:
         self.tileset = tileset
         self.zoom_level = zoom_level
         self.year = year
-        self.geo_json = requests.get(WORLD_BY_YEAR.get(year, WORLD_BY_YEAR[1938])).json()
+        url = WORLD_BY_YEAR.get(year, WORLD_BY_YEAR[1938])
+        self.geo_json = get_geojson(year, url)
         self.arrows = arrows or []
 
     def _fetch_ohm_streets(self, bbox):
@@ -90,6 +94,14 @@ class OSMGeoMap:
             folium.PolyLine(coords, color=color, weight=weight, opacity=0.7).add_to(m)
 
     def get_map(self) -> str:
+
+        cache_key = (self.zoom_level, self.year)
+
+        if cache_key in MAP_CACHE:
+            print(" Using cached map:", cache_key)
+            return MAP_CACHE[cache_key]
+
+        print(" Generating map:", cache_key)
         # Default location
         location = [44, 9]
         zoom_start = 5
@@ -187,4 +199,9 @@ class OSMGeoMap:
                     )
 
         folium.LayerControl().add_to(m)
-        return m.get_root()._repr_html_()
+
+        html = m.get_root()._repr_html_()
+
+        MAP_CACHE[cache_key] = html
+
+        return html
