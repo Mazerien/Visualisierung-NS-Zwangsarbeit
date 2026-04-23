@@ -42,4 +42,4 @@ jobs:
         with:
           api_token: ${{ secrets.API_TOKEN }}
           stack_id: ${{ secrets.STACK }}
-          stack_file: ".github/workflows/stack.yml"
+          stack_file: "stack.yml"
