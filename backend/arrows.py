@@ -18,7 +18,7 @@ DEFAULT_ARROWS: List[Arrow] = [
     Arrow("Paris", "France", color="#0000FF", width=4, dash=None, opacity=1.0),
     Arrow("Antwerpen", None, color="#00FF00", width=4, dash=None, opacity=1.0),
     Arrow("Zagreb", "Hrvatska", color="#FFA500", width=4, dash=None, opacity=1.0), #Kroatien
-    Arrow("Ostrau", None, color="#800080", width=4, dash=None, opacity=1.0), #Czechia
+    Arrow("Reichenberg", None, color="#800080", width=4, dash=None, opacity=1.0), #Czechia
     Arrow("Krakau", "Polska", color="#00FFFF", width=4, dash=None, opacity=1.0),
     Arrow("Москва", None, color="#FFD700", width=4, dash=None, opacity=1.0), #Soviet Union
     Arrow("Barcelona", None, color="#FF69B4", width=4, dash=None, opacity=1.0), #Spanien

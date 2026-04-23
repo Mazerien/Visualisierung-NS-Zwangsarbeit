@@ -38,7 +38,9 @@ function App() {
           onClick={() => setSelected(item)}
         />
       ))}
-      <TimelineSlider year={year} setYear={setYear} />
+      <div style={{ opacity: zoom === 2 ? 0 : 1, pointerEvents: zoom === 2 ? "none" : "auto" }}>
+        <TimelineSlider year={year} setYear={setYear} />
+      </div>
 
       <InfoPanel selected={selected} onClose={() => setSelected(null)} />
     </div>

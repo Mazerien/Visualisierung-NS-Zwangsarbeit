@@ -79,5 +79,4 @@ def preload_cities(cities: list[tuple]):
     for city, country in cities:
         get_city_coords(city, country)
 
-    # Save once after preloading (optional optimization)
     _save_cache()
