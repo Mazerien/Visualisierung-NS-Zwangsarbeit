@@ -1,8 +1,8 @@
 FROM python
 
-RUN useradd flask
-USER flask
-WORKDIR /home/flask
+RUN useradd backend
+USER backend
+WORKDIR /home/backend
 
 COPY . .
 
