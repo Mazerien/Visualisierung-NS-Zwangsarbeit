@@ -1,13 +1,13 @@
-FROM node
+FROM node:lts
 
-RUN useradd react
+RUN useradd -m react
 WORKDIR /home/react
 
-COPY . .
-RUN chown -R react:react .
-USER react
-
+COPY package*.json .
 RUN npm install
+
+COPY --chown=react:react . .
+USER react
 
 EXPOSE 3000
 CMD ["npm", "start"]
