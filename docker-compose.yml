@@ -1,6 +1,6 @@
 #######################################################################
-### This file creates Docker containers for a MySQL database,       ###
-### the Directus headless CMS, and the Python backend with Flask.   ###
+### This file creates Docker containers for the backend with Flask  ###
+### and the frontend with React.                                    ###
 #######################################################################
 services:
   flask:
@@ -16,6 +16,12 @@ services:
       - "5000:5000"
     networks:
       - app
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:5000/api/hello"]
+      interval: 1m30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
   
   react:
     image: node:latest
@@ -30,6 +36,9 @@ services:
       - "3000:3000"
     networks:
       - app
+    depends_on:
+      flask:
+        condition: service_healthy
 
 
 networks:

@@ -25,7 +25,8 @@ COUNTRY_MAP = {
 
 
 def get_nationality_counts():
-
+    """TODO: Docstring"""
+    load_dotenv("../.env")
     directus_url = os.getenv("DIRECTUS_URL")
     directus_token = os.getenv("DIRECTUS_TOKEN")
 
