@@ -3,11 +3,11 @@
 ### and the frontend with React.                                    ###
 #######################################################################
 services:
-  flask:
+  backend:
     image: dgeorghfu/nszw-backend:latest
     description: "Flask backend"
     volumes:
-      - nszw:/var/lib/flask
+      - nszw:/var/lib/backend
     restart: always
     ports:
       - "5000:5000"
@@ -20,18 +20,18 @@ services:
       retries: 5
       start_period: 30s
 
-  react:
-    image: node:latest
+  frontend:
+    image: dgeorghfu/nszw-frontend:latest
     description: "React frontend"
     volumes:
-      - nszw:/var/lib/react
+      - nszw:/var/lib/frontend
     restart: always
     ports:
       - "3000:3000"
     networks:
       - app
     depends_on:
-      flask:
+      backend:
         condition: service_healthy
 
 
