@@ -9,7 +9,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+      
+      # Gets ready for pushing and building an image to Docker Hub.
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+      
+      # Build Flask image.
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v7.1.0
+        with: 
+          context: backend/
+          push: true
+          tags: dgeorghfu/nszw-backend:latest
+      
+      # Deploys the final images to mittwald.
       - name: Deploy to Mittwald
         uses: mittwald/deploy-container-action@v1
         with:
