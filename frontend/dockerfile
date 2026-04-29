@@ -1,13 +1,13 @@
-FROM node
+FROM node:lts
 
-RUN useradd react
-WORKDIR /home/react
+RUN useradd -m frontend
+WORKDIR /home/frontend
 
-COPY . .
-RUN chown -R react:react .
-USER react
-
+COPY package*.json .
 RUN npm install
+
+COPY --chown=frontend:frontend . .
+USER frontend
 
 EXPOSE 3000
 CMD ["npm", "start"]

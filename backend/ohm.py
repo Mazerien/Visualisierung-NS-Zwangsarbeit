@@ -4,6 +4,7 @@ OVERPASS_URL = "https://overpass-api.openhistoricalmap.org/api/interpreter"
 
 
 def build_query(city_name, country=None, year=None):
+    """TODO: Docstring"""
     # Both country and year
     if country and year:
         return f"""
@@ -45,6 +46,7 @@ def build_query(city_name, country=None, year=None):
 
 
 def fetch_data(query):
+    """TODO: Docstring"""
     headers = {
         "User-Agent": "OHM-Python-Flask/1.0"
     }
@@ -60,6 +62,7 @@ def fetch_data(query):
 
 
 def process_results(data):
+    """TODO: Docstring"""
     results = []
 
     for el in data.get("elements", []):
@@ -87,6 +90,7 @@ def process_results(data):
 
 
 def get_ohm_city_data(city_name, country=None, year=None):
+    """TODO: Docstring"""
     query = build_query(city_name, country, year)
     data = fetch_data(query)
     return process_results(data)

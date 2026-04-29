@@ -6,11 +6,10 @@ import os
 # CONFIG
 # -------------------------
 
-OHM_URL = "http://localhost:5000/ohm"
-
 GEONAMES_URL = "http://api.geonames.org/searchJSON"
 GEONAMES_USERNAME = "PatrickProjekt"
 
+OHM_URL = "http://localhost:5000/api/ohm"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CACHE_DIR = os.path.join(BASE_DIR, "cache")
 CACHE_FILE = os.path.join(CACHE_DIR, "city_cache.json")
