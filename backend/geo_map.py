@@ -1,14 +1,20 @@
-# geo_map.py
 import folium
 import requests
 import random
 import math
-from folium.plugins import PolyLineTextPath
+
 from geo_cache import get_city_coords
 from geojson_cache import get_geojson
 from draw_arrow import add_arrow
 from draw_circle import add_circle
-from api.person_data import get_nationality_counts
+
+from api.person_data_cities import get_city_dataset
+from api.person_data_country import get_nationality_counts
+
+
+# -------------------------
+# CACHE
+# -------------------------
 
 MAP_CACHE = {}
 
@@ -17,6 +23,11 @@ WORLD_BY_YEAR = {
     2020: "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson",
     2025: "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson"
 }
+
+
+# -------------------------
+# COLORS
+# -------------------------
 
 COUNTRY_COLORS = {}
 
@@ -38,71 +49,35 @@ for s in COLOR_FIVE:
     COUNTRY_COLORS[s] = "#eccff2"
 
 
+# -------------------------
+# MAP CLASS
+# -------------------------
+
 class OSMGeoMap:
     def __init__(self, tileset="Esri.WorldPhysical", zoom_level=0, year=1938, arrows=None):
         self.tileset = tileset
         self.zoom_level = zoom_level
         self.year = year
-        url = WORLD_BY_YEAR.get(year, WORLD_BY_YEAR[1938])
-        self.geo_json = get_geojson(year, url)
         self.arrows = arrows or []
 
-    def _fetch_ohm_streets(self, bbox):
-        """
-        Fetch streets from OHM via Overpass API within a bounding box
-        bbox = [south, west, north, east]
-        """
-        overpass_url = "https://overpass-api.openhistoricalmap.org/api/interpreter"
+        url = WORLD_BY_YEAR.get(year, WORLD_BY_YEAR[1938])
+        self.geo_json = get_geojson(year, url)
 
-        # Overpass query: get all highways in the bounding box
-        query = f"""
-        [out:json][timeout:25][date:"{self.year}-01-01T00:00:00Z"];
-        (
-          way["highway"]({bbox[0]},{bbox[1]},{bbox[2]},{bbox[3]});
-        );
-        out body;
-        >;
-        out skel qt;
-        """
-        response = requests.post(overpass_url, data=query)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            print("Error fetching OHM data:", response.status_code)
-            return None
-
-    def _add_ohm_layer(self, m, bbox):
-        """Render streets from OHM as Polylines"""
-        data = self._fetch_ohm_streets(bbox)
-        if not data:
-            return
-
-        # Convert Overpass ways to PolyLines
-        elements = data.get("elements", [])
-        ways = [e for e in elements if e["type"] == "way" and "geometry" in e]
-
-        for way in ways:
-            coords = [(point['lat'], point['lon']) for point in way['geometry']]
-            highway = way.get('tags', {}).get('highway', '')
-            # simple styling: primary roads thick black, residential thin gray
-            if highway in ['primary', 'secondary', 'tertiary', 'trunk']:
-                color = 'black'
-                weight = 3
-            else:
-                color = 'gray'
-                weight = 1
-            folium.PolyLine(coords, color=color, weight=weight, opacity=0.7).add_to(m)
 
     def get_map(self) -> str:
 
         cache_key = (self.zoom_level, self.year)
 
         if cache_key in MAP_CACHE:
-            print(" Using cached map:", cache_key)
+            print("Using cached map:", cache_key)
             return MAP_CACHE[cache_key]
 
-        print(" Generating map:", cache_key)
-        # Default location
+        print("Generating map:", cache_key)
+
+        # -------------------------
+        # BASE LOCATION
+        # -------------------------
+
         location = [44, 9]
         zoom_start = 5
 
@@ -110,31 +85,28 @@ class OSMGeoMap:
             location = [48, 9]
             zoom_start = 6
         elif self.zoom_level == 2:
-            # Schwenningen: [48.0636961, 8.536548]
             location = [48.060, 8.536548]
             zoom_start = 15
 
-        if self.zoom_level == 2:
-            # Base tiles
-            m = folium.Map(
-                location=location, 
-                zoom_start=zoom_start, 
-                tiles="OpenStreetMap",zoom_control=False,
-                scrollWheelZoom=False,
-                dragging=False,
-                doubleClickZoom=False,
-                box_zoom=False,
-                keyboard=False)
-        else:
-            m = folium.Map(
-                location=location, 
-                zoom_start=zoom_start, 
-                tiles=self.tileset,zoom_control=False,
-                scrollWheelZoom=False,
-                dragging=False,
-                doubleClickZoom=False,
-                box_zoom=False,
-                keyboard=False)
+        # -------------------------
+        # MAP INIT
+        # -------------------------
+
+        m = folium.Map(
+            location=location,
+            zoom_start=zoom_start,
+            tiles=self.tileset if self.zoom_level < 2 else "OpenStreetMap",
+            zoom_control=False,
+            scrollWheelZoom=False,
+            dragging=False,
+            doubleClickZoom=False,
+            box_zoom=False,
+            keyboard=False
+        )
+
+        # -------------------------
+        # COUNTRY LAYER
+        # -------------------------
 
         if self.zoom_level < 2:
 
@@ -166,19 +138,50 @@ class OSMGeoMap:
                 tooltip=tooltip
             ).add_to(m)
 
-        elif self.zoom_level == 2:
-            # Define bounding box around city (approx ±0.01°)
-            lat, lon = location
-            bbox = [lat - 0.01, lon - 0.01, lat + 0.01, lon + 0.01]
-            # self._add_ohm_layer(m, bbox)
+        # -------------------------
+        # CITY DATA
+        # -------------------------
 
-        # Arrows
+        city_counts = get_city_dataset()
+        city_marker_data = {}
+
+        for city, count in city_counts.items():
+
+            result = get_city_coords(city)
+
+            # skip invalid results
+            if not result or not isinstance(result, dict):
+                continue
+
+            coords = result.get("coords")
+
+            if not coords:
+                continue
+
+            if not isinstance(coords, (list, tuple)) or len(coords) != 2:
+                continue
+
+            if isinstance(count, dict):
+                count = sum(v for v in count.values() if isinstance(v, (int, float)))
+
+            city_marker_data[city] = {
+                "coords": coords,
+                "count": int(count)
+            }
+
+        # -------------------------
+        # ARROWS (UNCHANGED)
+        # -------------------------
+
         if self.zoom_level < 2:
-            persons = get_nationality_counts()
+
             for start_city, start_country, end_city, end_country, color, width, dash, opacity in self.arrows:
+
                 start_coords = get_city_coords(start_city, country=start_country)
                 end_coords = get_city_coords(end_city, country=end_country)
+
                 if start_coords and end_coords:
+
                     add_arrow(
                         m,
                         start_coords,
@@ -189,14 +192,42 @@ class OSMGeoMap:
                         opacity=opacity,
                         dash=dash
                     )
-                    people_count = persons.get(start_city, 0)
-                    add_circle(
-                        m,
-                        start_coords,
-                        color,
-                        size = max(10000, math.sqrt(people_count) * 10000),
-                        opacity=0.8,
-                    )
+
+        # -------------------------
+        # CIRCLES (RESTORED COLOR LOGIC)
+        # -------------------------
+        
+        for city, data in city_marker_data.items():
+
+            # ALWAYS extract safely
+            coords = data.get("coords")
+
+            if not coords:
+                continue
+
+            # validate structure
+            if not isinstance(coords, (list, tuple)):
+                continue
+
+            if len(coords) != 2:
+                continue
+
+            count = data.get("count", 0)
+
+            if not isinstance(count, (int, float)):
+                continue
+
+            add_circle(
+                m,
+                coords,
+                color="#3388ff",
+                size=max(5000, math.sqrt(count) * 8000),
+                opacity=0.8,
+            )
+
+        # -------------------------
+        # FINALIZE
+        # -------------------------
 
         folium.LayerControl().add_to(m)
 

@@ -2,14 +2,25 @@ import requests
 import json
 import os
 
+# -------------------------
+# CONFIG
+# -------------------------
+
 OHM_URL = "http://localhost:5000/ohm"
+
+GEONAMES_URL = "http://api.geonames.org/searchJSON"
+GEONAMES_USERNAME = "PatrickProjekt"
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CACHE_DIR = os.path.join(BASE_DIR, "cache")
 CACHE_FILE = os.path.join(CACHE_DIR, "city_cache.json")
 
 os.makedirs(CACHE_DIR, exist_ok=True)
 
-# Load cache from file if it exists
+# -------------------------
+# LOAD CACHE
+# -------------------------
+
 if os.path.exists(CACHE_FILE):
     try:
         with open(CACHE_FILE, "r") as f:
@@ -19,61 +30,112 @@ if os.path.exists(CACHE_FILE):
 else:
     _CACHE = {}
 
+# -------------------------
+# HELPERS
+# -------------------------
 
 def _make_key(city_name: str, country: str, year: int) -> str:
-    """Create a JSON-safe cache key."""
     return f"{city_name.lower()}|{country.lower() if country else ''}|{year}"
 
 
 def _save_cache():
-    """Persist cache to disk."""
     with open(CACHE_FILE, "w") as f:
         json.dump(_CACHE, f)
 
 
-def get_city_coords(city_name: str, country: str = None, year: int = 1938):
-    """Cached access to OHM API with persistent storage."""
+def _call_geonames(city_name: str, country: str = None):
+    """GeoNames API call"""
+    params = {
+        "q": city_name,
+        "maxRows": 1,
+        "username": GEONAMES_USERNAME
+    }
 
-    key = _make_key(city_name, country, year)
-
-    # Return from cache if available
-    if key in _CACHE:
-        return _CACHE[key]
-
-    # Call API only if not cached
-    params = {"name": city_name, "year": year}
     if country:
         params["country"] = country
 
-    response = requests.get(OHM_URL, params=params)
-    data = response.json()
+    r = requests.get(GEONAMES_URL, params=params, timeout=20)
+    r.raise_for_status()
+    return r.json()
+
+
+def _call_ohm(city_name: str, country: str = None, year: int = 1938):
+    """OHM fallback API call"""
+    params = {"name": city_name, "year": year}
+
+    if country:
+        params["country"] = country
+
+    response = requests.get(OHM_URL, params=params, timeout=20)
+    response.raise_for_status()
+    return response.json()
+
+# -------------------------
+# MAIN FUNCTION
+# -------------------------
+
+def get_city_coords(city_name: str, country: str = None, year: int = 1938):
+    """
+    Unified geocoder:
+    Cache → GeoNames → OHM → store result
+    """
+
+    key = _make_key(city_name, country, year)
+
+    # 1. CACHE HIT
+    if key in _CACHE:
+        return _CACHE[key]
 
     coords = None
+    source = None
 
-    if isinstance(data, list) and len(data) > 0:
-        for item in data:
-            c = item.get("coordinates")
-            if not c:
-                continue
+    # 2. GEO NAMES FIRST (fast + modern)
+    try:
+        geo = _call_geonames(city_name, country)
+        results = geo.get("geonames", [])
 
-            if country:
-                country_str = str(item.get("country", "")).lower()
-                if country.lower() not in country_str and country_str not in country.lower():
-                    continue
+        if results:
+            coords = [
+                float(results[0]["lat"]),
+                float(results[0]["lng"])
+            ]
+            source = "geonames"
+    except Exception:
+        coords = None
 
-            coords = [c["lat"], c["lon"]]
-            break
+    # 3. OHM FALLBACK (historical / fallback)
+    if coords is None:
+        try:
+            data = _call_ohm(city_name, country, year)
 
-    # Store result (even None to avoid repeated failed calls)
-    _CACHE[key] = coords
+            if isinstance(data, list) and len(data) > 0:
+                for item in data:
+                    c = item.get("coordinates")
+                    if not c:
+                        continue
+
+                    coords = [c["lat"], c["lon"]]
+                    source = "ohm"
+                    break
+        except Exception:
+            coords = None
+
+    # 4. STORE RESULT (even if None)
+    _CACHE[key] = {
+        "coords": coords,
+        "source": source
+    }
+
     _save_cache()
 
-    return coords
+    return _CACHE[key]
 
+# -------------------------
+# PRELOADING (optional)
+# -------------------------
 
 def preload_cities(cities: list[tuple]):
     """
-    Preload coordinates at app startup.
     cities = [(city, country), ...]
     """
     for city, country in cities:
