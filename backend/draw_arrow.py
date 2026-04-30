@@ -26,18 +26,19 @@ def add_arrow(
             opacity=opacity,
             dash_array=dash
         ).add_to(m)
-    except ValueError:
+
+            # Arrowhead
+        lat1, lon1 = start
+        lat2, lon2 = end
+        angle = math.atan2(lat2 - lat1, lon2 - lon1)
+        angle1 = angle + math.pi / 8
+        angle2 = angle - math.pi / 8
+
+        arrow1 = [lat2 - size * math.sin(angle1), lon2 - size * math.cos(angle1)]
+        arrow2 = [lat2 - size * math.sin(angle2), lon2 - size * math.cos(angle2)]
+
+        folium.PolyLine(locations=[arrow1, [lat2, lon2]], color=color, weight=weight, opacity=opacity).add_to(m)
+        folium.PolyLine(locations=[arrow2, [lat2, lon2]], color=color, weight=weight, opacity=opacity).add_to(m)
+    except ValueError, TypeError:
         pass
 
-    # Arrowhead
-    lat1, lon1 = start
-    lat2, lon2 = end
-    angle = math.atan2(lat2 - lat1, lon2 - lon1)
-    angle1 = angle + math.pi / 8
-    angle2 = angle - math.pi / 8
-
-    arrow1 = [lat2 - size * math.sin(angle1), lon2 - size * math.cos(angle1)]
-    arrow2 = [lat2 - size * math.sin(angle2), lon2 - size * math.cos(angle2)]
-
-    folium.PolyLine(locations=[arrow1, [lat2, lon2]], color=color, weight=weight, opacity=opacity).add_to(m)
-    folium.PolyLine(locations=[arrow2, [lat2, lon2]], color=color, weight=weight, opacity=opacity).add_to(m)
