@@ -17,13 +17,17 @@ def add_arrow(
     start and end are [lat, lon] lists.
     """
     # Main line
-    folium.PolyLine(
-        locations=[start, end],
-        color=color,
-        weight=weight,
-        opacity=opacity,
-        dash_array=dash
-    ).add_to(m)
+    # TODO: Add type safety. Crashes backend.
+    try:
+        folium.PolyLine(
+            locations=[start, end],
+            color=color,
+            weight=weight,
+            opacity=opacity,
+            dash_array=dash
+        ).add_to(m)
+    except ValueError:
+        pass
 
     # Arrowhead
     lat1, lon1 = start
