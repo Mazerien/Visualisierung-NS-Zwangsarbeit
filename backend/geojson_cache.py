@@ -11,7 +11,6 @@ os.makedirs(CACHE_DIR, exist_ok=True)
 # Load cache
 if os.path.exists(CACHE_FILE):
     try:
-        print("Used Cache!!!!!!!!!")
         with open(CACHE_FILE, "r") as f:
             _CACHE = json.load(f)
     except json.JSONDecodeError:
