@@ -1,11 +1,20 @@
 from flask import Blueprint, request, jsonify
 from ohm import get_ohm_city_data
+<<<<<<< dev
 from . import END_POINT, OHM
 
 
 @OHM.route(f"{END_POINT}/ohm", methods=["GET"])
 def api_ohm_city():
     """TODO: Docstring"""
+=======
+
+OHM = Blueprint("OHM", __name__)
+
+
+@OHM.route("/ohm", methods=["GET"])
+def api_ohm_city():
+>>>>>>> main
     city_name = request.args.get("name")
     country = request.args.get("country")
     year = request.args.get("year", type=int)
