@@ -4,6 +4,20 @@ OVERPASS_URL = "https://overpass-api.openhistoricalmap.org/api/interpreter"
 
 
 def build_query(city_name, country=None, year=None):
+    """TODO: Docstring"""
+    # Both country and year
+    if country and year:
+        return f"""
+        [out:json][timeout:25];
+        area["name"="{country}"]["admin_level"="2"]->.searchArea;
+        nwr["place"]["name"~"^{city_name}$", i](area.searchArea)(if:
+            t["start_date"] < "{year + 1}" &&
+            (!is_tag("end_date") || t["end_date"] >= "{year}")
+        );
+        out geom;
+        """
+
+    # Only year
     if year:
         return f"""
         [out:json][timeout:25];
@@ -14,6 +28,7 @@ def build_query(city_name, country=None, year=None):
         out geom;
         """
 
+    # Only country
     if country:
         return f"""
         [out:json][timeout:25];
@@ -22,6 +37,7 @@ def build_query(city_name, country=None, year=None):
         out geom;
         """
 
+    # Default: no filters
     return f"""
     [out:json][timeout:25];
     nwr["place"]["name"~"^{city_name}$", i];
@@ -30,6 +46,7 @@ def build_query(city_name, country=None, year=None):
 
 
 def fetch_data(query):
+    """TODO: Docstring"""
     headers = {
         "User-Agent": "OHM-Python-Flask/1.0"
     }
@@ -45,6 +62,7 @@ def fetch_data(query):
 
 
 def process_results(data):
+    """TODO: Docstring"""
     results = []
 
     for el in data.get("elements", []):

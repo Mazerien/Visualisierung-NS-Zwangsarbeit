@@ -1,0 +1,59 @@
+{
+    "collection": "Housing",
+    "schema": {
+        "name": "Housing"
+    },
+    "fields": [
+        {
+            "field": "ID",
+            "type": "integer",
+            "schema": {
+                "is_primary_key": true,
+                "has_auto_increment": true
+            },
+            "meta": {
+                "interface": "numeric",
+                "readonly": true
+            },
+            "required": true
+        },
+        {
+            "field": "Adress",
+            "type": "string",
+            "schema": {
+                "is_nullable": false
+            },
+            "meta": {
+                "interface": "input"
+            },
+            "required": true
+        },
+        {
+            "field": "Type",
+            "type": "string",
+            "schema": {
+                "is_nullable": false
+            },
+            "meta": {
+                "interface": "select-dropdown",
+                "options": {
+                    "choices": [
+                        {
+                            "text": "Schwenningen",
+                            "value": "Schwenningen"
+                        },
+                        {
+                            "text": "Imprisonment",
+                            "value": "Imprisonment"
+                        },
+                        {
+                            "text": "Living",
+                            "value": "Living"
+                        }
+                    ]
+                }
+            },
+            "required": true
+        }
+    ]
+}

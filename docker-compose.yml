@@ -1,65 +1,75 @@
 #######################################################################
 ### This file creates Docker containers for a MySQL database,       ###
 ### the Directus headless CMS, and the Python backend with Flask.   ###
+### Local tech stack for testing purposes only.                     ###
 #######################################################################
 services:
-  # MySQL
+  flask:
+    image: python:latest
+    volumes:
+      - nszw:/var/lib/flask
+    build:
+      context: backend/
+    restart: always
+    ports:
+      - "5000:5000"
+    networks:
+      - app
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:5000/api/hello"]
+      interval: 1m30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+  
+  react:
+    image: node:latest
+    volumes:
+      - nszw:/var/lib/react
+    build:
+      context: frontend/
+    restart: always
+    ports:
+      - "3000:3000"
+    networks:
+      - app
+    depends_on:
+      flask:
+        condition: service_healthy
+  
   db:
-    image: mysql
-    container_name: db
+    image: mysql:latest
     restart: always
     volumes:
-      - ./data:/var/lib/mysql/
-    env_file:
-      - .env
-    environment:
-      MYSQL_ROOT_PASSWORD: ${SQL_PASSWORD}
-      MYSQL_DATABASE: ${SQL_DB}
-      MYSQL_USER: ${SQL_USER}
-      MYSQL_PASSWORD: ${SQL_PASSWORD}
+      - db:/var/lib/mysql
     networks:
       - app
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      timeout: 20s
+      timeout: 30s
       retries: 5
-  
-  # Python backend
-  flask:
-    container_name: backend
-    build:
-      context: .
-      dockerfile: dockerfile 
-    ports:
-      - "5000:5000"
-    depends_on:
-      db:
-        condition:
-          service_healthy
-    networks:
-      - app
-    #command: python excel_migration.py
 
-# Directus
   directus:
     image: directus/directus:latest
-    container_name: directus
     ports:
       - "8055:8055"
     depends_on:
       db:
-        condition: 
+        condition:
           service_healthy
     environment:
       DB_CLIENT: "mysql"
       DB_HOST: "db"
       DB_PORT: "3306"
-      DB_DATABASE: "${SQL_DB}"
-      DB_USER: "${SQL_USER}"
-      DB_PASSWORD: "${SQL_PASSWORD}"
     networks:
       - app
 
 networks:
   app:
-    driver:  bridge
+    driver: bridge
+
+
+volumes:
+  nszw:
+  db:
+    

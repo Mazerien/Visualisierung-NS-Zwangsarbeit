@@ -1,0 +1,68 @@
+{
+    "collection": "Employment",
+    "schema": {
+        "name": "Employment"
+    },
+    "fields": [
+        {
+            "field": "ID",
+            "type": "integer",
+            "schema": {
+                "is_primary_key": true,
+                "has_auto_increment": true
+            },
+            "meta": {
+                "interface": "numeric",
+                "readonly": true
+            },
+            "required": true
+        },
+        {
+            "field": "Name",
+            "type": "string",
+            "meta": {
+                "interface": "input"
+            }
+        },
+        {
+            "field": "Company",
+            "type": "integer",
+            "schema": {
+                "foreign_key_table": "Company",
+                "foreign_key_column": "ID",
+                "is_nullable": false
+            },
+            "meta": {
+                "interface": "collection-item-dropdown",
+                "options": {
+                    "template": "{{Name}}"
+                },
+                "display": "related-values",
+                "display_options": {
+                    "template": "{{Name}}"
+                }
+            },
+            "required": true
+        },
+        {
+            "field": "Person",
+            "type": "integer",
+            "schema": {
+                "foreign_key_table": "Person",
+                "foreign_key_column": "id",
+                "is_nullable": false
+            },
+            "meta": {
+                "interface": "collection-item-dropdown",
+                "options": {
+                    "template": "{{FirstName}} {{LastName}}"
+                },
+                "display": "related-values",
+                "display_options": {
+                    "template": "{{FirstName}} {{LastName}}"
+                }
+            },
+            "required": true
+        }
+    ]
+}

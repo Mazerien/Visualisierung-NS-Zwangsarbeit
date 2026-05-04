@@ -1,0 +1,13 @@
+FROM node:lts
+
+RUN useradd -m frontend
+WORKDIR /home/frontend
+
+COPY package*.json .
+RUN npm install
+
+COPY --chown=frontend:frontend . .
+USER frontend
+
+EXPOSE 3000
+CMD ["npm", "start"]

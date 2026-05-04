@@ -1,23 +1,21 @@
-# API for interaction with the backend
+# API for interaction between back- and frontend
 The API is called through either POST, or GET requests.  
 Below is a documentation of the possible interactions with the frontend.
 
 ## Debug / Testing
-`/api/hello` **/GET** returns `Hello, World`; ensures connection with backend is possible.  
+### GET /api/hello
+Returns Hello, World; ensures connection with backend is possible.
 
-## Map
-### OSM
-`/api/osm` **/GET** returns an HTML string (iframe) of an OSM map.  
-Comes with three (0, 1, 2) zoom levels specified by `zoom_level.` Defaults to minimum zoom if no or wrong parameter given.  
-Parameter:  
-```
-zoom_level: int
-```
+## OpenStreetMap
+### GET /api/osm
+Returns HTML string (iframe) of an OSM map.  
+**Parameters:**  
+- `zoom_level: int`: 0, 1, or 2. Defaults to minimum if no or wrong parameter given.
 
-TODO: Add current-day borders of Europe
-
-### OHM
-TODO
-
-## Database
-TODO
+## OpenHistoryMap
+### GET /api/ohm
+TODO: Docstring.  
+**Parameters:**
+- `name: String`: Name of the city. Required field.
+- `country: String`: Name of the country in English.
+- `year: int`: The year in AD.

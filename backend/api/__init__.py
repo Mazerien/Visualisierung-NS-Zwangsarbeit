@@ -1,7 +1,8 @@
-"""
-Flask blueprints for API.
-"""
+"""Flask blueprints."""
 from flask import Blueprint
 
-DEBUG_API = Blueprint("debug", __name__)
-OSM_API = Blueprint("osm", __name__)
+END_POINT = "/api"
+
+DEBUG = Blueprint("debug", __name__)
+OSM = Blueprint("osm", __name__)
+OHM = Blueprint("ohm", __name__)

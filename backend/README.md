@@ -1,26 +1,16 @@
-# Flask app
-## Directory Structure
-```
-app/
-├── database.py
-├── main.py
-├── geography.py
-├── data  
-    ├── *.json
-    └── *.xlsx
-├── static  
-│   ├── *.css
-│   ├── *.ico
-│   └── images
-│       └── *.png
-└── templates
-    └── *.html
-```
-database.py defines the connection with MySQL.  
-main.py is the Flask app.  
-geography.py concerns Open Street Map API calls.  
+# Backend
+## Setup
+Create virtual environment, install requirements with `pip install -r requirements.txt`  
+Start with `python app.py`.  
+Check if it works by going to: `localhost:5000/api/hello`  
 
-data/ is for data to be digitalized, for example Excel spreadsheets.  
-static/ serves CSS files.  
-static/images/ serves image files. Currently, map generation data gets stored here.  
-templates/ serves HTML templates. All templates must inherit from `templates/base.html`.
+## Directory structure
+```
+backend/
+├── app.py
+├── osm.py
+└── api/
+    ├── debug.py
+    ├── osm.py
+    └── README.md
+```

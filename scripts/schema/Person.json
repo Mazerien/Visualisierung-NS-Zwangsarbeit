@@ -1,0 +1,172 @@
+{
+    "collection": "Person",
+    "schema": {"name": "Person"},
+    "fields": [
+        {
+            "field": "ID", "type": "integer",
+            "schema": {
+                "is_primary_key": true,
+                "has_auto_increment": true
+            },
+            "meta": {
+                "interface": "numeric",
+                "readonly": true
+            },
+            "required": true
+        },
+        {
+            "field": "LastName", "type": "string",
+            "schema": {
+                "is_nullable": false
+            },
+            "meta": {
+                "interface": "input"
+            },
+            "required": true
+        },
+        {
+            "field": "FirstName", "type": "string",
+            "schema": {
+                "is_nullable": false
+            },
+            "meta": {
+                "interface": "input"
+            }
+        },
+        {
+            "field": "MaidenName", "type": "string",
+            "meta": {
+                "interface": "input"
+            }
+        },
+        {
+            "field": "Gender", "type": "string",
+            "schema": {
+                "is_nullable": false
+            },
+            "meta": {
+                "interface": "select-dropdown",
+                "options": {
+                    "choices": [
+                        {
+                            "text": "Male",
+                            "value": "M"
+                        },
+                        {
+                            "text": "Female",
+                            "value": "F"
+                        },
+                        {
+                            "text": "Other",
+                            "value": "X"
+                        }
+                    ]
+                },
+            "required": true
+            }
+        },
+        {
+            "field": "PlaceOfBirth", "type": "string",
+            "meta": {
+                "interface": "input"
+            }
+        },
+        {
+            "field": "DateOfBirth", "type": "date",
+            "meta": {
+                "interface": "datetime"
+            }
+        },
+        {
+            "field": "PlaceOfDeath", "type": "string",
+            "meta": {
+                "interface": "input"
+            }
+        },
+        {
+            "field": "DateOfDeath", "type": "date",
+            "meta": {
+                "interface": "datetime"
+            }
+        },
+        {
+            "field": "Nationality", "type": "string",
+            "meta": {
+                "interface": "input"
+            }
+        },
+        {
+            "field": "LastPlaceOfResidence", "type": "string",
+            "meta": {
+                "interface": "input"
+            }
+        },
+        {
+            "field": "Marriage", "type": "json",
+            "schema": {
+                "foreign_key_table": "Person",
+                "foreign_key_column": "id",
+                "is_nullable": true
+            },
+            "meta": {
+                "interface": "collection-item-dropdown",
+                "display": "labels"
+            },
+            "options": {
+                "selectedCollection": "Person",
+                "template": "{{FirstName}} {{LastName}}"
+            }
+        },
+        {
+            "field": "Father", "type": "json",
+            "schema": {
+                "foreign_key_table": "Person",
+                "foreign_key_column": "id",
+                "is_nullable": true
+            },
+            "meta": {
+                "interface": "collection-item-dropdown",
+                "display": "labels"
+            },
+            "options": {
+                "selectedCollection": "Person",
+                "template": "{{FirstName}} {{LastName}}"
+            }
+        },
+        {
+            "field": "Mother", "type": "json",
+            "schema": {
+                "foreign_key_table": "Person",
+                "foreign_key_column": "id",
+                "is_nullable": true
+            },
+            "meta": {
+                "interface": "collection-item-dropdown",
+                "display": "labels"
+            },
+            "options": {
+                "selectedCollection": "Person",
+                "template": "{{FirstName}} {{LastName}}"
+            }
+        },
+        {
+            "field": "Religion", "type": "string",
+            "meta": {
+                "interface": "input"
+            }
+        },
+        {
+            "field": "Profession", "type": "string",
+            "meta": {
+                "interface": "input"
+            }
+        },
+        {
+            "field": "Source", "type": "string",
+            "meta": {
+                "interface": "input"
+            }
+        }
+    ]
+}
+

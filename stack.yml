@@ -1,0 +1,46 @@
+#######################################################################
+### This file creates Docker containers for the backend with Flask  ###
+### and the frontend with React.                                    ###
+#######################################################################
+services:
+  backend:
+    image: dgeorghfu/nszw-backend:latest
+    description: "Flask backend"
+    volumes:
+      - nszw:/var/lib/backend
+    restart: always
+    ports:
+      - "5000:5000"
+    networks:
+      - app
+    healthcheck:
+      test: ["CMD", "curl", "http://localhost:5000/api/hello"]
+      interval: 1m30s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  frontend:
+    image: dgeorghfu/nszw-frontend:latest
+    description: "React frontend"
+    volumes:
+      - nszw:/var/lib/frontend
+    restart: always
+    ports:
+      - "3000:3000"
+    networks:
+      - app
+    depends_on:
+      backend:
+        condition: service_healthy
+
+
+networks:
+  app:
+    driver: bridge
+  
+
+volumes:
+  nszw:
+  db:
+    
