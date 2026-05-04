@@ -1,4 +1,6 @@
-"""Flask backend with middleware from api/."""
+"""
+Flask backend with middleware from api/.
+"""
 import logging
 from flask import Flask, Blueprint
 from flask_cors import CORS

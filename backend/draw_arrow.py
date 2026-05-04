@@ -1,8 +1,8 @@
 """
 TODO: Docstring
 """
-import folium
 import math
+import folium
 
 def add_arrow(
     m,

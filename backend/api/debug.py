@@ -1,4 +1,6 @@
-"""Endpoints for basic debugging purposes.."""
+"""
+Endpoints for basic debugging purposes.
+"""
 from json import dumps
 from . import END_POINT, DEBUG
 
@@ -7,5 +9,4 @@ from . import END_POINT, DEBUG
 def hello():
     """Checks if connectivity exists."""
     return dumps({"message": "Hello, World!"})
-
 

@@ -1,4 +1,6 @@
-"""Flask blueprints."""
+"""
+Flask blueprints.
+"""
 from flask import Blueprint
 
 END_POINT = "/api"

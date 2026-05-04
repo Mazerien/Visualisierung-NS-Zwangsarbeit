@@ -21,3 +21,4 @@ def api_ohm_city():
         return jsonify(results)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+

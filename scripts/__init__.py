@@ -1,5 +1,5 @@
-from dotenv import load_dotenv
 from os import getenv
+from dotenv import load_dotenv
 
 URL = "http://localhost:8055"
 load_dotenv("../.env")

@@ -34,12 +34,16 @@ COUNTRY_COLORS = {}
 
 COLOR_ONE = ["Germany", "USSR", "Spain", "United Kingdom", "Turkey", "Hungary"]
 COLOR_TWO = ["Italy", "Finland", "Yugoslavia", "Netherlands", "Czechoslovakia", 
-             "Portugal", "Bulgaria", "Libya"]
+             "Portugal", "Bulgaria", "Libya"
+             ]
 COLOR_THREE = ["Poland", "Romania", "Greece", "France", "Norway", "Estonia", 
-               "Iran", "Syria", "Tunisia"]
-COLOR_FOUR = ["Sweden", "Switzerland", "Belgium", "Ireland", "Lithuania", "Algeria"]
+               "Iran", "Syria", "Tunisia"
+               ]
+COLOR_FOUR = ["Sweden", "Switzerland", "Belgium", "Ireland", "Lithuania", "Algeria"
+              ]
 COLOR_FIVE = ["Denmark", "Latvia", "Iraq", "Luxembourg", "Armenia", "Albania", 
-              "Morocco", "Mesopotamia"]
+              "Morocco", "Mesopotamia"
+              ]
 
 for s in COLOR_ONE:
     COUNTRY_COLORS[s] = "#fffdc1"

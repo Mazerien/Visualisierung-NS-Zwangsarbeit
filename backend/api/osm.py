@@ -1,4 +1,6 @@
-"""Get the map from the backend."""
+"""
+Get the map from the backend.
+"""
 from flask import Blueprint, request, Response
 
 from geo_map import OSMGeoMap

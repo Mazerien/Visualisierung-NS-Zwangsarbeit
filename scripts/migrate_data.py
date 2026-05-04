@@ -79,8 +79,9 @@ class MigrateData:
         "Ostarbeitendenliste.xlsx", usecols="B:V"
     ), pd.read_excel(
         "Gefangenenbuch.xlsx", skiprows=4, usecols="D,F:N,P:T,X:AD,AF,AB:AN,AT"),
-        pd.read_excel("IMIs.xlsx", usecols="B:V")
-    
+        pd.read_excel("IMIs.xlsx", usecols="B:V"
+                      )
+
     ]
     # TODO: Refactor this class. This is hell, but it *does* work.
 
@@ -92,7 +93,8 @@ class MigrateData:
             file = MigrateData.files[i].replace({np.nan: None})
 
             for _, row in file.iterrows():
-                person = MigrateData.person(row, is_gefangenenbuch, is_imi_liste)
+                person = MigrateData.person(
+                    row, is_gefangenenbuch, is_imi_liste)
                 if is_gefangenenbuch:
                     # TODO
                     company = MigrateData.company(row)
@@ -157,7 +159,7 @@ class MigrateData:
                 }
                 req = requests.post(
                     f"{URL}/items/Housing", json=payload, headers=AUTH_HEADER)
-    
+
     def imprisonment(row: pd.Series):
         # TODO
         pass
@@ -173,12 +175,12 @@ class MigrateData:
             })
         except AttributeError:
             maiden_name = None
-        
+
         try:
             gender = NormalizeData.gender(row["Geschlecht"])
         except:
             gender = "X"
-        
+
         if is_gefangenenbuch:
             last_name = row["Nachname (korrigiert)"].title()
             first_name = row["Vorname (korrigiert)"].title()
@@ -234,11 +236,10 @@ class MigrateData:
         for k, v in payload.items():
             if v is not None and v != "None":
                 finalpayload[k] = v
-        
+
         req = requests.post(f"{URL}/items/Person",
-                             json=finalpayload, headers=AUTH_HEADER)
-    
+                            json=finalpayload, headers=AUTH_HEADER)
+
     def tenancy(row: pd.Series):
         # TODO
         pass
-

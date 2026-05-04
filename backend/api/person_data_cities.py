@@ -1,9 +1,8 @@
 """
 TODO: Docstring
 """
-import requests
 import os
-import re
+import requests
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -27,9 +26,9 @@ def normalize_city(city: str):
     city = city.strip()
 
     # fix known country abbreviations / separators
-    #city = city.replace("Frankr.", "France")
-    #city = city.replace("Polen", "Poland")
-    #city = city.replace("Hell.", "Netherlands")
+    # city = city.replace("Frankr.", "France")
+    # city = city.replace("Polen", "Poland")
+    # city = city.replace("Hell.", "Netherlands")
 
     # remove suffixes like "/ Polen"
     city = city.split("/")[0]
