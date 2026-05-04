@@ -12,7 +12,7 @@ def warm_cache(arrows):
     """
     Preload OHM coordinates into cache.
     """
-    for start_city, start_country, end_city, end_country, color, width, dash, opacity in arrows:
+    for start_city, start_country, end_city, end_country, _, _, _, _ in arrows:
         # Only preload start city
         _ = get_city_coords(start_city, country=start_country)
         # Optionally preload Schwenningen once

@@ -1,3 +1,6 @@
+"""
+TODO: Docstring
+"""
 import folium
 import requests
 import random

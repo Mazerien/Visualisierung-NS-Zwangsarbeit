@@ -238,3 +238,4 @@ class MigrateData:
     def tenancy(row: pd.Series):
         # TODO
         pass
+
