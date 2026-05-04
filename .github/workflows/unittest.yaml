@@ -12,6 +12,6 @@ jobs:
               uses: actions/setup-python@v3
               with:
                     python-version: ${{ matrix.python-version }}
-            
-            - run: pip install -r backend/requirements.txt
-            - run: pytest scripts/testing.py
+            - run: cd backend/
+            - run: pip install -r requirements.txt
+            - run: pytest ../scripts/testing.py
