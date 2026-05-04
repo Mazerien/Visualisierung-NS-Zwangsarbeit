@@ -2,7 +2,7 @@ name: mittwald mStudio container deployment
 
 on:
   push:
-    #branches: [main]
+    branches: [main]
   workflow_dispatch:
 
 jobs:

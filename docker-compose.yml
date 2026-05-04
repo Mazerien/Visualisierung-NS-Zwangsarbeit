@@ -1,13 +1,15 @@
 #######################################################################
-### This file creates Docker containers for the backend with Flask  ###
-### and the frontend with React.                                    ###
+### This file creates Docker containers for a MySQL database,       ###
+### the Directus headless CMS, and the Python backend with Flask.   ###
+### Local tech stack for testing purposes only.                     ###
 #######################################################################
 services:
   flask:
-    image: dgeorghfu/nszw-backend:latest
-    description: "Flask backend"
+    image: python:latest
     volumes:
       - nszw:/var/lib/flask
+    build:
+      context: backend/
     restart: always
     ports:
       - "5000:5000"
@@ -22,9 +24,10 @@ services:
   
   react:
     image: node:latest
-    description: "React frontend"
     volumes:
       - nszw:/var/lib/react
+    build:
+      context: frontend/
     restart: always
     ports:
       - "3000:3000"
@@ -33,12 +36,38 @@ services:
     depends_on:
       flask:
         condition: service_healthy
+  
+  db:
+    image: mysql:latest
+    restart: always
+    volumes:
+      - db:/var/lib/mysql
+    networks:
+      - app
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 30s
+      retries: 5
 
+  directus:
+    image: directus/directus:latest
+    ports:
+      - "8055:8055"
+    depends_on:
+      db:
+        condition:
+          service_healthy
+    environment:
+      DB_CLIENT: "mysql"
+      DB_HOST: "db"
+      DB_PORT: "3306"
+    networks:
+      - app
 
 networks:
   app:
     driver: bridge
-  
+
 
 volumes:
   nszw:
