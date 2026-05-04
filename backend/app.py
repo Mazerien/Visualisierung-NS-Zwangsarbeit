@@ -1,4 +1,6 @@
-"""Flask backend with middleware from api/."""
+"""
+Flask backend with middleware from api/.
+"""
 import logging
 from flask import Flask, Blueprint
 from flask_cors import CORS
@@ -20,3 +22,4 @@ with app.app_context():
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
+

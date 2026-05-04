@@ -1,3 +1,6 @@
+"""
+TODO: Docstring
+"""
 from enum import Enum
 import folium
 
@@ -7,6 +10,9 @@ SCHWENNINGEN = [48.1, 9.0]
 
 
 class ZoomLevel(Enum):
+    """
+    TODO: Docstring
+    """
     MINIMUM = 0
     MEDIUM = 1
     MAXIMUM = 2
@@ -58,3 +64,4 @@ class OpenStreetMap:
             case ZoomLevel.MAXIMUM:
                 self._zoom_start = 20
         self._location = SCHWENNINGEN if self.zoom_level == ZoomLevel.MAXIMUM else CENTRAL_EUROPE
+

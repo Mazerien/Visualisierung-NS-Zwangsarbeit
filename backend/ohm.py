@@ -1,3 +1,6 @@
+"""
+TODO: Docstring
+"""
 import requests
 
 OVERPASS_URL = "https://overpass-api.openhistoricalmap.org/api/interpreter"
@@ -93,3 +96,4 @@ def get_ohm_city_data(city_name, country=None, year=None):
     query = build_query(city_name, country, year)
     data = fetch_data(query)
     return process_results(data)
+

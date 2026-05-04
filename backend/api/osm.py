@@ -1,4 +1,6 @@
-"""Get the map from the backend."""
+"""
+Get the map from the backend.
+"""
 from flask import Blueprint, request, Response
 
 from geo_map import OSMGeoMap
@@ -12,7 +14,7 @@ def warm_cache(arrows):
     """
     Preload OHM coordinates into cache.
     """
-    for start_city, start_country, end_city, end_country, color, width, dash, opacity in arrows:
+    for start_city, start_country, end_city, end_country, _, _, _, _ in arrows:
         # Only preload start city
         _ = get_city_coords(start_city, country=start_country)
         # Optionally preload Schwenningen once
@@ -39,3 +41,4 @@ def get_map():
     ).get_map()
 
     return Response(html_map, mimetype="text/html")
+

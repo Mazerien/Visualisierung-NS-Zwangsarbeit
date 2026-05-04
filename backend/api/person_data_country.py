@@ -1,3 +1,6 @@
+"""
+TODO: Docstring
+"""
 import requests
 import os
 from dotenv import load_dotenv
@@ -65,3 +68,4 @@ def get_nationality_counts():
         normalized[mapped] = normalized.get(mapped, 0) + count
 
     return normalized
+
