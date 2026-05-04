@@ -1,10 +1,9 @@
 """
 TODO: Docstring
 """
-import folium
-import requests
-import random
 import math
+import random
+import folium
 
 from geo_cache import get_city_coords
 from geojson_cache import get_geojson
@@ -12,7 +11,6 @@ from draw_arrow import add_arrow
 from draw_circle import add_circle
 
 from api.person_data_cities import get_city_dataset
-from api.person_data_country import get_nationality_counts
 
 
 # -------------------------
@@ -35,10 +33,13 @@ WORLD_BY_YEAR = {
 COUNTRY_COLORS = {}
 
 COLOR_ONE = ["Germany", "USSR", "Spain", "United Kingdom", "Turkey", "Hungary"]
-COLOR_TWO = ["Italy", "Finland", "Yugoslavia", "Netherlands", "Czechoslovakia", "Portugal", "Bulgaria", "Libya"]
-COLOR_THREE = ["Poland", "Romania", "Greece", "France", "Norway", "Estonia", "Iran", "Syria", "Tunisia"]
+COLOR_TWO = ["Italy", "Finland", "Yugoslavia", "Netherlands", "Czechoslovakia", 
+             "Portugal", "Bulgaria", "Libya"]
+COLOR_THREE = ["Poland", "Romania", "Greece", "France", "Norway", "Estonia", 
+               "Iran", "Syria", "Tunisia"]
 COLOR_FOUR = ["Sweden", "Switzerland", "Belgium", "Ireland", "Lithuania", "Algeria"]
-COLOR_FIVE = ["Denmark", "Latvia", "Iraq", "Luxembourg", "Armenia", "Albania", "Morocco", "Mesopotamia"]
+COLOR_FIVE = ["Denmark", "Latvia", "Iraq", "Luxembourg", "Armenia", "Albania", 
+              "Morocco", "Mesopotamia"]
 
 for s in COLOR_ONE:
     COUNTRY_COLORS[s] = "#fffdc1"
@@ -68,7 +69,9 @@ class OSMGeoMap:
 
 
     def get_map(self) -> str:
-
+        """
+        TODO: Docstring
+        """
         cache_key = (self.zoom_level, self.year)
 
         if cache_key in MAP_CACHE:

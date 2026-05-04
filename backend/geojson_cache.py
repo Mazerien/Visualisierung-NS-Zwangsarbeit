@@ -1,9 +1,9 @@
 """
 TODO: Docstring
 """
-import requests
 import json
 import os
+import requests
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CACHE_DIR = os.path.join(BASE_DIR, "cache")
@@ -14,7 +14,7 @@ os.makedirs(CACHE_DIR, exist_ok=True)
 # Load cache
 if os.path.exists(CACHE_FILE):
     try:
-        with open(CACHE_FILE, "r") as f:
+        with open(CACHE_FILE, "r", encoding="UTF-8") as f:
             _CACHE = json.load(f)
     except json.JSONDecodeError:
         _CACHE = {}

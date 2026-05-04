@@ -40,7 +40,7 @@ def drop_tables():
 def main():
     if test_connection() != 200:
         raise "No connection possible. Is Directus running?"
-    elif test_authentication() != 200:
+    if test_authentication() != 200:
         raise "Directus cannot authenticate with the given admin token. Is the .env set correctly?"
     
     # while True:

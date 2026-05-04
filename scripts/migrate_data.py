@@ -17,7 +17,10 @@ class NormalizeData:
         return s
 
     def date(d: str) -> dt.date:
-        """Checks if given date is in DD.MM.JJJJ, MM/DD/YYYY, or YYYY-MM-DD format. Returns date object."""
+        """
+        Checks if given date is in DD.MM.JJJJ, MM/DD/YYYY, or YYYY-MM-DD format. 
+        Returns date object.
+        """
         d = str(d).split()[0]
         for format in ("%d.%m.%Y", "%m/%d/%Y", "%Y-%m-%d"):
             try:

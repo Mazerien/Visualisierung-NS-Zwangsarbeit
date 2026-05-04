@@ -2,7 +2,6 @@
 TODO: Docstring
 """
 import folium
-import math
 
 def add_circle(
     m,

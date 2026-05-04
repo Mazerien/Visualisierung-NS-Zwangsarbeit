@@ -39,8 +39,10 @@ def add_arrow(
         arrow1 = [lat2 - size * math.sin(angle1), lon2 - size * math.cos(angle1)]
         arrow2 = [lat2 - size * math.sin(angle2), lon2 - size * math.cos(angle2)]
 
-        folium.PolyLine(locations=[arrow1, [lat2, lon2]], color=color, weight=weight, opacity=opacity).add_to(m)
-        folium.PolyLine(locations=[arrow2, [lat2, lon2]], color=color, weight=weight, opacity=opacity).add_to(m)
+        folium.PolyLine(locations=[arrow1, [lat2, lon2]], color=color, 
+                        weight=weight, opacity=opacity).add_to(m)
+        folium.PolyLine(locations=[arrow2, [lat2, lon2]], color=color, 
+                        weight=weight, opacity=opacity).add_to(m)
     except ValueError, TypeError:
         pass
 
