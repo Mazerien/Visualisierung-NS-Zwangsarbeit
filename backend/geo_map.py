@@ -242,3 +242,4 @@ class OSMGeoMap:
         MAP_CACHE[cache_key] = html
 
         return html
+

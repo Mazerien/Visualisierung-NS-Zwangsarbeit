@@ -65,4 +65,3 @@ class OpenStreetMap:
                 self._zoom_start = 20
         self._location = SCHWENNINGEN if self.zoom_level == ZoomLevel.MAXIMUM else CENTRAL_EUROPE
 
-

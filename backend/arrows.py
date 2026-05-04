@@ -68,3 +68,4 @@ def get_arrows(set_name: str = "default"):
             arrows = DEFAULT_ARROWS
 
     return expand_arrows(arrows)
+
