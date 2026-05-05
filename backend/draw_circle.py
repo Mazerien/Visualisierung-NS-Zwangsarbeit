@@ -22,4 +22,3 @@ def add_circle(
         fill= True,
         fill_opacity= opacity
     ).add_to(m)
-

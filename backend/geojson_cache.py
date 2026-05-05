@@ -62,4 +62,3 @@ def preload_years(years: list[int], world_by_year: dict):
             get_geojson(year, url)
 
     _save_cache()
-

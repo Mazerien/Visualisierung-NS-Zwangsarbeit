@@ -23,6 +23,9 @@ def warm_cache(arrows):
 
 @OSM.route(END_POINT, methods=["GET"])
 def get_map():
+    """
+    TODO: Docstring
+    """
     # Get params
     zoom_level = int(request.args.get("zoom_level", 0))
     year = int(request.args.get("year", 1938))
@@ -41,4 +44,3 @@ def get_map():
     ).get_map()
 
     return Response(html_map, mimetype="text/html")
-

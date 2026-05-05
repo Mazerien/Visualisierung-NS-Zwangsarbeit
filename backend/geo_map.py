@@ -33,15 +33,15 @@ WORLD_BY_YEAR = {
 COUNTRY_COLORS = {}
 
 COLOR_ONE = ["Germany", "USSR", "Spain", "United Kingdom", "Turkey", "Hungary"]
-COLOR_TWO = ["Italy", "Finland", "Yugoslavia", "Netherlands", "Czechoslovakia", 
+COLOR_TWO = ["Italy", "Finland", "Yugoslavia", "Netherlands", "Czechoslovakia",
              "Portugal", "Bulgaria", "Libya"
              ]
-COLOR_THREE = ["Poland", "Romania", "Greece", "France", "Norway", "Estonia", 
+COLOR_THREE = ["Poland", "Romania", "Greece", "France", "Norway", "Estonia",
                "Iran", "Syria", "Tunisia"
                ]
 COLOR_FOUR = ["Sweden", "Switzerland", "Belgium", "Ireland", "Lithuania", "Algeria"
               ]
-COLOR_FIVE = ["Denmark", "Latvia", "Iraq", "Luxembourg", "Armenia", "Albania", 
+COLOR_FIVE = ["Denmark", "Latvia", "Iraq", "Luxembourg", "Armenia", "Albania",
               "Morocco", "Mesopotamia"
               ]
 
@@ -62,6 +62,9 @@ for s in COLOR_FIVE:
 # -------------------------
 
 class OSMGeoMap:
+    """
+    TODO: Docstring
+    """
     def __init__(self, tileset="Esri.WorldPhysical", zoom_level=0, year=1938, arrows=None):
         self.tileset = tileset
         self.zoom_level = zoom_level
@@ -206,7 +209,7 @@ class OSMGeoMap:
         # -------------------------
         # CIRCLES (RESTORED COLOR LOGIC)
         # -------------------------
-        
+
         for city, data in city_marker_data.items():
 
             # ALWAYS extract safely
@@ -246,4 +249,3 @@ class OSMGeoMap:
         MAP_CACHE[cache_key] = html
 
         return html
-

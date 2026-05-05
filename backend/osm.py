@@ -43,6 +43,9 @@ class OpenStreetMap:
 
     @property
     def zoom_level(self) -> ZoomLevel:
+        """
+        TODO: Docstring
+        """
         return self._zoom_level
 
     @zoom_level.setter
@@ -64,4 +67,3 @@ class OpenStreetMap:
             case ZoomLevel.MAXIMUM:
                 self._zoom_start = 20
         self._location = SCHWENNINGEN if self.zoom_level == ZoomLevel.MAXIMUM else CENTRAL_EUROPE
-

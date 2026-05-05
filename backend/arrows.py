@@ -9,6 +9,9 @@ TARGET_COUNTRY = "Deutschland"
 
 @dataclass
 class Arrow:
+    """
+    TODO: Docstring
+    """
     start_city: str
     start_country: str
     color: str
@@ -68,4 +71,3 @@ def get_arrows(set_name: str = "default"):
             arrows = DEFAULT_ARROWS
 
     return expand_arrows(arrows)
-
