@@ -1,4 +1,4 @@
-name: Linter
+name: Linter (Backend)
 
 on: 
   push:
@@ -25,4 +25,5 @@ jobs:
         pip install -r backend/requirements.txt
     - name: Analysing the code with pylint
       run: |
-        cd backend && pylint $(git ls-files '*.py')
+        cd backend
+        python -m pylint --init-hook="import sys; sys.path.append('.');" $(git ls-files '*.py')

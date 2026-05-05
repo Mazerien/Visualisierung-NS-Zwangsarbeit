@@ -189,7 +189,6 @@ class OSMGeoMap:
         if self.zoom_level < 2:
 
             for start_city, start_country, end_city, end_country, color, width, dash, opacity in self.arrows:
-
                 start_coords = get_city_coords(start_city, country=start_country)
                 end_coords = get_city_coords(end_city, country=end_country)
 
