@@ -229,12 +229,23 @@ class OSMGeoMap:
             if not isinstance(count, (int, float)):
                 continue
 
+            popup_html = f"""
+            <div style="font-family: Arial; width: 220px;">
+                <h4 style="margin-bottom: 5px;">{city}</h4>
+                <hr>
+                <b>Count:</b> {count}<br>
+                <b>Radius:</b> {int(max(5000, math.sqrt(count) * 8000))} m
+            </div>
+            """
+
             add_circle(
                 m,
                 coords,
                 color="#3388ff",
                 size=max(5000, math.sqrt(count) * 8000),
                 opacity=0.8,
+                popup_html=popup_html,
+                tooltip_text=f"{city} ({count})"
             )
 
         # -------------------------

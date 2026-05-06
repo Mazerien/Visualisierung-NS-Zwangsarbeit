@@ -9,16 +9,22 @@ def add_circle(
     color,
     size=0.5,
     opacity=0.8,
+    popup_html=None,
+    tooltip_text=None,
 ):
     """
-    Draw a line with an arrow from start to end on a folium map.
-    start and end are [lat, lon] lists.
+    Interactive circle with optional popup + tooltip.
     """
-    # Main line
+
+    popup = folium.Popup(popup_html, max_width=300) if popup_html else None
+
     folium.Circle(
-        location= start,
-        radius= size,  # meters
-        color= color,
-        fill= True,
-        fill_opacity= opacity
+        location=start,
+        radius=size,
+        color=color,
+        fill=True,
+        fill_color=color,
+        fill_opacity=opacity,
+        popup=popup,
+        tooltip=tooltip_text
     ).add_to(m)
