@@ -14,4 +14,4 @@ jobs:
               with:
                     python-version: ${{ matrix.python-version }}
             - run: pip install -r backend/requirements.txt
-            - run: cd backend && pytest scripts/testing.py
+            - run: pytest scripts/testing.py
