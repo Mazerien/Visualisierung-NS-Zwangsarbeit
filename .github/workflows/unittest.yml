@@ -1,5 +1,5 @@
 # Does a headless localhost unit testing of the backend.
-# Checks that the backend works if not connected to the internet.
+# Checks that the backend works if pointing to localhost.
 name: Unit Testing
 
 on: 
@@ -15,6 +15,12 @@ jobs:
               uses: actions/setup-python@v3
               with:
                     python-version: ${{ matrix.python-version }}
-            - run: cd backend
-            - run: pip install requirements.txt
-            - run: pytest scripts/testing.py
+            
+            - name: Install dependencies
+              run: pip install -r backend/requirements.txt
+            
+            - name: Run Unit Tests
+              run: cd scripts && pytest testing.py
+              env:
+                DIRECTUS_URL: ${{ vars.DIRECTUS_URL }}
+                DIRECTUS_TOKEN: ${{ vars.DIRECTUS_TOKEN }}

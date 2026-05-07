@@ -43,5 +43,5 @@ def add_arrow(
                         weight=weight, opacity=opacity).add_to(m)
         folium.PolyLine(locations=[arrow2, [lat2, lon2]], color=color,
                         weight=weight, opacity=opacity).add_to(m)
-    except ValueError, TypeError:
+    except (ValueError, TypeError):
         pass
