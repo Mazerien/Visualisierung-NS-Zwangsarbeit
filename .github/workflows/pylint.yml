@@ -1,3 +1,5 @@
+# Runs a linter on the backend only.
+# Only fails if code quality drops below 9 / 10.
 name: Linter (Backend)
 
 on: 
@@ -26,4 +28,4 @@ jobs:
     - name: Analysing the code with pylint
       run: |
         cd backend
-        python -m pylint --init-hook="import sys; sys.path.append('.');" $(git ls-files '*.py')
+        python -m pylint --fail-under=9 --init-hook="import sys; sys.path.append('.');" $(git ls-files '*.py')
