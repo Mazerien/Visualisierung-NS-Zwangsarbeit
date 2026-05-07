@@ -10,7 +10,7 @@ from backend.app import create_app
 
 URL = "http://localhost:5000"
 
-
+### Set up Flask
 @pytest.fixture()
 def app():
     app = create_app()
@@ -27,9 +27,11 @@ def runner(app: Flask):
     return app.test_cli_runner()
 
 
+### Unit Tests
 def test_connection(client):
     res = client.get(f"{URL}/api/hello")
     assert res.status_code == 200
+    assert b"Hello, World!" in res.data
 
 
 def test_osm_no_params(client):
@@ -41,3 +43,17 @@ def test_osm_params(client):
     res = client.get(f"{URL}/api/osm?zoom_level=2")
     assert res.status_code == 200
 
+
+def test_osm_no_params(client):
+    res = client.get(f"{URL}/api/osm")
+    assert res.status_code == 200
+
+
+def test_ohm_city_no_params(client):
+    res = client.get(f"{URL}/api/ohm")
+    assert res.status_code == 400
+
+
+def test_ohm_city_city(client):
+    res = client.get(f"{URL}/api/ohm?name=Berlin")
+    assert res.status_code == 200

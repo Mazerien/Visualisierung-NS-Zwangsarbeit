@@ -1,9 +1,9 @@
 """
 TODO: Docstring
 """
-import requests
 import json
 import os
+import requests
 
 # -------------------------
 # CONFIG
@@ -25,7 +25,7 @@ os.makedirs(CACHE_DIR, exist_ok=True)
 
 if os.path.exists(CACHE_FILE):
     try:
-        with open(CACHE_FILE, "r") as f:
+        with open(CACHE_FILE, "r", encoding="UTF-8") as f:
             _CACHE = json.load(f)
     except json.JSONDecodeError:
         _CACHE = {}
@@ -41,7 +41,7 @@ def _make_key(city_name: str, country: str, year: int) -> str:
 
 
 def _save_cache():
-    with open(CACHE_FILE, "w") as f:
+    with open(CACHE_FILE, "w", encoding="UTF-8") as f:
         json.dump(_CACHE, f)
 
 
@@ -102,7 +102,7 @@ def get_city_coords(city_name: str, country: str = None, year: int = 1938):
                 float(results[0]["lng"])
             ]
             source = "geonames"
-    except Exception:
+    except TypeError:
         coords = None
 
     # 3. OHM FALLBACK (historical / fallback)
@@ -119,7 +119,7 @@ def get_city_coords(city_name: str, country: str = None, year: int = 1938):
                     coords = [c["lat"], c["lon"]]
                     source = "ohm"
                     break
-        except Exception:
+        except KeyError:
             coords = None
 
     # 4. STORE RESULT (even if None)

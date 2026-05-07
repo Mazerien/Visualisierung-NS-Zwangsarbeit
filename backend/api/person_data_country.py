@@ -1,14 +1,15 @@
 """
 TODO: Docstring
 """
-import requests
 import os
+import requests
 from dotenv import load_dotenv
 
 load_dotenv()
 
 DIRECTUS_URL = os.getenv("DIRECTUS_URL")
 DIRECTUS_TOKEN = os.getenv("DIRECTUS_TOKEN")
+TIMEOUT = 10
 
 
 COUNTRY_MAP = {
@@ -47,7 +48,7 @@ def get_nationality_counts():
         "Authorization": f"Bearer {DIRECTUS_TOKEN}"
     }
 
-    response = requests.get(url, params=params, headers=headers)
+    response = requests.get(url, params=params, headers=headers, timeout=TIMEOUT)
 
     if response.status_code != 200:
         print("Error:", response.text)

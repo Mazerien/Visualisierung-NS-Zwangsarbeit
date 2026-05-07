@@ -8,6 +8,7 @@ import requests
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CACHE_DIR = os.path.join(BASE_DIR, "cache")
 CACHE_FILE = os.path.join(CACHE_DIR, "geojson_cache.json")
+TIMEOUT = 10
 
 os.makedirs(CACHE_DIR, exist_ok=True)
 
@@ -24,7 +25,7 @@ else:
 
 def _save_cache():
     """Persist cache to disk."""
-    with open(CACHE_FILE, "w") as f:
+    with open(CACHE_FILE, "w", encoding="UTF-8") as f:
         json.dump(_CACHE, f)
 
 
@@ -39,10 +40,10 @@ def get_geojson(year: int, url: str):
         return _CACHE[key]
 
     print(f" Downloading GeoJSON for {year}")
-    response = requests.get(url)
+    response = requests.get(url, timeout=TIMEOUT)
 
     if response.status_code != 200:
-        raise Exception(f"Failed to fetch GeoJSON: {response.status_code}")
+        raise requests.HTTPError(f"Failed to fetch GeoJSON: {response.status_code}")
 
     data = response.json()
 

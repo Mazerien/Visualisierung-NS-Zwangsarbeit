@@ -55,7 +55,7 @@ class OpenStreetMap:
         """
         try:
             z = ZoomLevel(int(i))
-        except:
+        except TypeError:
             z = 0
         self._zoom_level = z
 

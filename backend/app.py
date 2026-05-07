@@ -10,17 +10,21 @@ from api.ohm import OHM
 
 
 def create_app() -> Flask:
-    app = Flask(__name__)
+    """
+    Creates a Flask app and sets the logging.
+    Also sets up API end points.
+    """
+    a = Flask(__name__)
     # Only log errors.
     log = logging.getLogger("werkzeug")
     log.setLevel(logging.ERROR)
-    CORS(app=app)
+    CORS(app=a)
 
     middleware: list[Blueprint] = [DEBUG, OSM, OHM]
-    with app.app_context():
+    with a.app_context():
         for api in middleware:
-            app.register_blueprint(api)
-    return app
+            a.register_blueprint(api)
+    return a
 
 
 if __name__ == "__main__":
