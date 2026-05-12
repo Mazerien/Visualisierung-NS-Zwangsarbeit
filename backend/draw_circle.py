@@ -17,14 +17,12 @@ def add_circle(
     """
 
     popup = folium.Popup(popup_html, max_width=300) if popup_html else None
-
-    folium.Circle(
+    
+    folium.CircleMarker(
         location=start,
-        radius=size,
+        radius=max(3, min(size / 20000, 15)),  # scale down
         color=color,
         fill=True,
-        fill_color=color,
         fill_opacity=opacity,
         popup=popup,
-        tooltip=tooltip_text
     ).add_to(m)

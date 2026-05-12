@@ -11,6 +11,7 @@ from draw_arrow import add_arrow
 from draw_circle import add_circle
 
 from api.person_data_cities import get_city_dataset
+from folium import Element
 
 
 # -------------------------
@@ -108,6 +109,7 @@ class OSMGeoMap:
         m = folium.Map(
             location=location,
             zoom_start=zoom_start,
+            prefer_canvas=True,
             tiles=self.tileset if self.zoom_level < 2 else "OpenStreetMap",
             zoom_control=False,
             scrollWheelZoom=False,
@@ -116,6 +118,34 @@ class OSMGeoMap:
             box_zoom=False,
             keyboard=False
         )
+
+       
+
+        style = """
+        <style>
+        .popup-card {
+            font-family: Arial, sans-serif;
+            width: 200px;
+        }
+
+        .popup-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .popup-divider {
+            border-top: 1px solid #ccc;
+            margin: 5px 0;
+        }
+
+        .popup-row {
+            font-size: 13px;
+        }
+        </style>
+        """
+
+        m.get_root().html.add_child(Element(style))
 
         # -------------------------
         # COUNTRY LAYER
@@ -217,6 +247,9 @@ class OSMGeoMap:
             if not coords:
                 continue
 
+            if city == "Unknown":
+                continue
+
             # validate structure
             if not isinstance(coords, (list, tuple)):
                 continue
@@ -230,11 +263,10 @@ class OSMGeoMap:
                 continue
 
             popup_html = f"""
-            <div style="font-family: Arial; width: 220px;">
-                <h4 style="margin-bottom: 5px;">{city}</h4>
-                <hr>
-                <b>Count:</b> {count}<br>
-                <b>Radius:</b> {int(max(5000, math.sqrt(count) * 8000))} m
+            <div class="popup-card">
+                <div class="popup-title">{city}</div>
+                <div class="popup-divider"></div>
+                <div class="popup-row">Count: {count}</div>
             </div>
             """
 
