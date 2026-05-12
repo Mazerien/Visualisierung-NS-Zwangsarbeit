@@ -20,9 +20,10 @@ from folium import Element
 
 MAP_CACHE = {}
 
+#2020: "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson",
 WORLD_BY_YEAR = {
     1938: "https://raw.githubusercontent.com/aourednik/historical-basemaps/refs/heads/master/geojson/world_1938.geojson",
-    2020: "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson",
+    1945: "https://raw.githubusercontent.com/aourednik/historical-basemaps/master/geojson/world_1945.geojson",
     2025: "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson"
 }
 
