@@ -1,10 +1,11 @@
 import { useState } from "react";
 import ZoomControls from "./Components/ZoomButtons/ZoomControls";
-import MapIframe from "./Components/MapIFrame";
 import Interactable from "./Components/Interactables/Interactable";
 import InfoPanel from "./Components/InfoPanels/InfoPanelFrame/InfoPanel";
 import { interactablesData } from "./Components/Interactables/InteractablesData";
 import TimelineSlider from "./Components/TimeLineSlider/TimelineSlider";
+import MapView from "./Components/MapView";
+import "leaflet/dist/leaflet.css";
 
 function App() {
   const [zoom, setZoom] = useState(0);
@@ -24,7 +25,7 @@ function App() {
   return (
     <div>
       <ZoomControls zoom={zoom} setZoom={setZoom} zoomLevels={zoomLevels} />
-      <MapIframe zoom={zoom} year={year} />
+      <MapView zoom={zoom} year={year} setSelected={setSelected} />
 
       {/* Timeout for the Animation */}
       {setTimeout(() => {

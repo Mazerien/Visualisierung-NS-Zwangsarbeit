@@ -76,20 +76,17 @@ class OSMGeoMap:
         self.geo_json = get_geojson(year, url)
 
 
-    def get_map(self) -> str:
+    def get_map(self):
         """
         TODO: Docstring
         """
         cache_key = (self.zoom_level, self.year)
 
         if cache_key in MAP_CACHE:
-            print("Using cached map:", cache_key)
             return MAP_CACHE[cache_key]
 
-        print("Generating map:", cache_key)
-
         # -------------------------
-        # BASE LOCATION
+        # LOCATION LOGIC (KEEP)
         # -------------------------
 
         location = [44, 9]
@@ -103,105 +100,21 @@ class OSMGeoMap:
             zoom_start = 15
 
         # -------------------------
-        # MAP INIT
-        # -------------------------
-
-        m = folium.Map(
-            location=location,
-            zoom_start=zoom_start,
-            prefer_canvas=True,
-            tiles=self.tileset if self.zoom_level < 2 else "OpenStreetMap",
-            zoom_control=False,
-            scrollWheelZoom=False,
-            dragging=False,
-            doubleClickZoom=False,
-            box_zoom=False,
-            keyboard=False
-        )
-
-       
-
-        style = """
-        <style>
-        .popup-card {
-            font-family: Arial, sans-serif;
-            width: 200px;
-        }
-
-        .popup-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .popup-divider {
-            border-top: 1px solid #ccc;
-            margin: 5px 0;
-        }
-
-        .popup-row {
-            font-size: 13px;
-        }
-        </style>
-        """
-
-        m.get_root().html.add_child(Element(style))
-
-        # -------------------------
-        # COUNTRY LAYER
-        # -------------------------
-
-        if self.zoom_level < 2:
-
-            def style_function(feature):
-                country_name = feature["properties"].get("NAME")
-                fill_color = COUNTRY_COLORS.get(
-                    country_name,
-                    f'#{random.randint(0, 0xFFFFFF):06x}'
-                )
-                return {
-                    "fillColor": fill_color,
-                    "color": "black",
-                    "weight": 1,
-                    "fillOpacity": 0.7,
-                }
-
-            tooltip = folium.GeoJsonTooltip(
-                fields=["NAME"],
-                aliases=["Country:"],
-                localize=True,
-                sticky=True,
-                labels=True
-            )
-
-            folium.GeoJson(
-                self.geo_json,
-                name=f"Countries {self.year}",
-                style_function=style_function,
-                tooltip=tooltip
-            ).add_to(m)
-
-        # -------------------------
-        # CITY DATA
+        # CITY DATA (KEEP)
         # -------------------------
 
         city_counts = get_city_dataset()
         city_marker_data = {}
 
         for city, count in city_counts.items():
-
             result = get_city_coords(city)
 
-            # skip invalid results
             if not result or not isinstance(result, dict):
                 continue
 
             coords = result.get("coords")
 
-            if not coords:
-                continue
-
-            if not isinstance(coords, (list, tuple)) or len(coords) != 2:
+            if not coords or len(coords) != 2:
                 continue
 
             if isinstance(count, dict):
@@ -213,81 +126,34 @@ class OSMGeoMap:
             }
 
         # -------------------------
-        # ARROWS (UNCHANGED)
+        # ARROWS → RETURN DATA
         # -------------------------
 
-        if self.zoom_level < 2:
+        arrows_data = []
 
-            for start_city, start_country, end_city, end_country, color, width, dash, opacity in self.arrows:
-                start_coords = get_city_coords(start_city, country=start_country)
-                end_coords = get_city_coords(end_city, country=end_country)
+        for start_city, start_country, end_city, end_country, color, width, dash, opacity in self.arrows:
+            start_coords = get_city_coords(start_city, country=start_country)
+            end_coords = get_city_coords(end_city, country=end_country)
 
-                if start_coords and end_coords:
+            if start_coords and end_coords:
+                arrows_data.append({
+                    "start": start_coords,
+                    "end": end_coords,
+                    "color": color,
+                    "width": width,
+                    "dash": dash,
+                    "opacity": opacity
+                })
 
-                    add_arrow(
-                        m,
-                        start_coords,
-                        end_coords,
-                        color=color,
-                        weight=width,
-                        size=0.5,
-                        opacity=opacity,
-                        dash=dash
-                    )
+        result = {
+            "countries": self.geo_json,
+            "cities": city_marker_data,
+            "arrows": arrows_data,
+            "view": {
+                "center": location,
+                "zoom": zoom_start
+            }
+        }
 
-        # -------------------------
-        # CIRCLES (RESTORED COLOR LOGIC)
-        # -------------------------
-
-        for city, data in city_marker_data.items():
-
-            # ALWAYS extract safely
-            coords = data.get("coords")
-
-            if not coords:
-                continue
-
-            if city == "Unknown":
-                continue
-
-            # validate structure
-            if not isinstance(coords, (list, tuple)):
-                continue
-
-            if len(coords) != 2:
-                continue
-
-            count = data.get("count", 0)
-
-            if not isinstance(count, (int, float)):
-                continue
-
-            popup_html = f"""
-            <div class="popup-card">
-                <div class="popup-title">{city}</div>
-                <div class="popup-divider"></div>
-                <div class="popup-row">Count: {count}</div>
-            </div>
-            """
-
-            add_circle(
-                m,
-                coords,
-                color="#3388ff",
-                size=max(5000, math.sqrt(count) * 8000),
-                opacity=0.8,
-                popup_html=popup_html,
-                tooltip_text=f"{city} ({count})"
-            )
-
-        # -------------------------
-        # FINALIZE
-        # -------------------------
-
-        folium.LayerControl().add_to(m)
-
-        html = m.get_root()._repr_html_()
-
-        MAP_CACHE[cache_key] = html
-
-        return html
+        MAP_CACHE[cache_key] = result
+        return result
