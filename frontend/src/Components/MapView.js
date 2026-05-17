@@ -2,9 +2,37 @@ import { MapContainer, TileLayer, GeoJSON, Polyline } from "react-leaflet";
 import { useEffect, useState } from "react";
 import CityCircle from "./CityCircles/CityCircle";
 
-export default function MapView({ zoom, year, setSelected }) {
+export default function MapView({ zoom, year, setSelected}) {
   const [data, setData] = useState(null);
+  const [nationalityCounts, setNationalityCounts] = useState({});
+  
+  const counts = Object.values(nationalityCounts);
+  const min = counts.length ? Math.min(...counts) : 0;
+  const max = counts.length ? Math.max(...counts) : 1;
 
+  function scaleWidth(value) {
+    const minWidth = 2;
+    const maxWidth = 20;
+    if (max === min) return (minWidth + maxWidth) / 2;
+
+    const normalized = (value - min) / (max - min);
+    return minWidth + normalized * (maxWidth - minWidth);
+  }
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const res = await fetch("http://localhost:5000/api/nationality");
+        const data = await res.json();
+        setNationalityCounts(data);
+        console.log("Data:", data);
+      } catch (err) {
+        console.error("Failed to load nationality data:", err);
+      }
+    }
+
+    fetchData();
+  }, []);
   // -----------------------------
   // FETCH DATA
   // -----------------------------
@@ -24,10 +52,26 @@ export default function MapView({ zoom, year, setSelected }) {
   const cities = data.cities || {};
   const arrows = data.arrows || [];
   const countries = data.countries || null;
+  //console.log("Data: " + data.arrows)
+
+  
+
+
+  const arrowsWithWidth = arrows.map((a) => {
+    const value = nationalityCounts[a.start_city];
+
+    //console.log("arrow country:", a.start_city, "value:", value);
+
+    return {
+      ...a,
+      width: scaleWidth(value ?? 1)
+    };
+  });
+
 
   return (
     <MapContainer
-      key={`${zoom}-${year}`} 
+      key={`${zoom}-${year}`}
       center={data.view.center}
       zoom={data.view.zoom}
       style={{ height: "100vh", width: "100%" }}
@@ -48,7 +92,7 @@ export default function MapView({ zoom, year, setSelected }) {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
       )}
-
+ 
       {/* -----------------------------
           COUNTRIES (WORLD MODE ONLY)
       ----------------------------- */}
@@ -63,7 +107,36 @@ export default function MapView({ zoom, year, setSelected }) {
             fillOpacity: 0.7
           })}
           onEachFeature={(feature, layer) => {
+            const name = feature.properties.NAME;
             layer.bindTooltip(feature.properties.NAME);
+            const allowedCountries = new Set([
+              "Germany", "France", "Italy", "Spain", "United Kingdom",
+              "Poland", "Austria", "Switzerland", "Netherlands",
+              "Belgium", "Czechia", "Slovakia", "Hungary",
+              "Romania", "Bulgaria", "Greece", "Norway", "Sweden",
+              "Finland", "Denmark", "Portugal", "Ireland",
+              "Ukraine", "Belarus", "Russia"
+            ]);
+
+            const isClickable = allowedCountries.has(name);
+
+            layer.on({
+              click: (e) => {
+                if (!isClickable) return;
+
+                const map = e.target._map;
+                const bounds = e.target.getBounds();
+
+                map.fitBounds(bounds, {
+                  padding: [40, 40]
+                });
+
+                const zoom = map.getZoom();
+                if (zoom > 6) {
+                  map.setZoom(6);
+                }
+              }
+            });
           }}
         />
       )}
@@ -73,7 +146,6 @@ export default function MapView({ zoom, year, setSelected }) {
       ----------------------------- */}
       {zoom < 2 && Object.entries(cities).map(([city, d]) => {
         if (!d?.coords || city === "Unknown") return null;
-        
 
         return (
           <CityCircle
@@ -88,7 +160,7 @@ export default function MapView({ zoom, year, setSelected }) {
       {/* -----------------------------
           ARROWS (WORLD MODE ONLY)
       ----------------------------- */}
-      {zoom < 2 && arrows.map((a, i) => (
+      {zoom < 2 && arrowsWithWidth.map((a, i) => (
         <Polyline
           key={i}
           positions={[a.start, a.end]}

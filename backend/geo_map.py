@@ -138,8 +138,14 @@ class OSMGeoMap:
 
             if start_coords and end_coords:
                 arrows_data.append({
+                    "start_city": start_city,
+                    "start_country": start_country,
+                    "end_city": end_city,
+                    "end_country": end_country,
+
                     "start": start_coords,
                     "end": end_coords,
+
                     "color": color,
                     "width": width,
                     "dash": dash,

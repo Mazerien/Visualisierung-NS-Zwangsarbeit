@@ -1,6 +1,6 @@
 import "./TimelineSlider.css";
 
-const years = [1938, 2000, 2025];
+const years = [1938, 1945, 2025];
 
 export default function TimelineSlider({ year, setYear }) {
   const index = years.indexOf(year);

@@ -19,10 +19,10 @@ export default function RightPanel({ selected, onClose }) {
               alt=""
               className="panel-image large"
             />
-
-            <div className="side-text">
+            {/*<div className="side-text">
               <p>This is a Man that stands</p>
-            </div>
+            </div>*/}
+            
           </div>
 
 

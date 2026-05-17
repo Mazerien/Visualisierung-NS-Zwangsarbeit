@@ -7,6 +7,7 @@ from flask_cors import CORS
 from api.debug import DEBUG
 from api.osm import OSM
 from api.ohm import OHM
+from api.person_data_country_api import NATIONALITY
 
 
 def create_app() -> Flask:
@@ -20,7 +21,7 @@ def create_app() -> Flask:
     log.setLevel(logging.ERROR)
     CORS(app=a)
 
-    middleware: list[Blueprint] = [DEBUG, OSM, OHM]
+    middleware: list[Blueprint] = [DEBUG, OSM, OHM, NATIONALITY]
     with a.app_context():
         for api in middleware:
             a.register_blueprint(api)
