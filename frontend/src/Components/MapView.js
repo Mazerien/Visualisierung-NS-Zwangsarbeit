@@ -1,10 +1,11 @@
 import { MapContainer, TileLayer, GeoJSON, Polyline } from "react-leaflet";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import CityCircle from "./CityCircles/CityCircle";
 
 export default function MapView({ zoom, year, setSelected}) {
   const [data, setData] = useState(null);
   const [nationalityCounts, setNationalityCounts] = useState({});
+  const selectedCountryRef = useRef(null);
   
   const counts = Object.values(nationalityCounts);
   const min = counts.length ? Math.min(...counts) : 0;
@@ -120,23 +121,27 @@ export default function MapView({ zoom, year, setSelected}) {
 
             const isClickable = allowedCountries.has(name);
 
-            layer.on({
-              click: (e) => {
-                if (!isClickable) return;
+             layer.on({
+                click: (e) => {
+                  if (!isClickable) return;
 
-                const map = e.target._map;
-                const bounds = e.target.getBounds();
+                  const map = e.target._map;
+                  const bounds = e.target.getBounds();
 
-                map.fitBounds(bounds, {
-                  padding: [40, 40]
-                });
+                  if (selectedCountryRef.current === name) {
+                    map.setView(data.view.center, data.view.zoom);
+                    selectedCountryRef.current = null;
+                    return;
+                  }
 
-                const zoom = map.getZoom();
-                if (zoom > 6) {
-                  map.setZoom(6);
+                  map.fitBounds(bounds, {
+                    padding: [20, 20],
+                    maxZoom: 7
+                  });
+
+                  selectedCountryRef.current = name;
                 }
-              }
-            });
+              });
           }}
         />
       )}
