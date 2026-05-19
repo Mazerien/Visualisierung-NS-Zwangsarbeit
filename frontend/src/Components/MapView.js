@@ -1,8 +1,8 @@
-import { MapContainer, TileLayer, GeoJSON, Polyline } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, Polyline, Popup } from "react-leaflet";
 import { useEffect, useState, useRef } from "react";
 import CityCircle from "./CityCircles/CityCircle";
 
-export default function MapView({ zoom, year, setSelected}) {
+export default function MapView({ zoom, year,selected, setSelected}) {
   const [data, setData] = useState(null);
   const [nationalityCounts, setNationalityCounts] = useState({});
   const selectedCountryRef = useRef(null);
@@ -177,6 +177,41 @@ export default function MapView({ zoom, year, setSelected}) {
         />
       ))}
 
+      {/* -----------------------------
+          POPUPS (For the Circles)
+      ----------------------------- */}
+      {selected && selected.coords && (
+        <Popup
+          position={selected.coords}
+          className="custom-popup"
+          maxWidth={400}
+          offset={[0, -20]}
+          eventHandlers={{
+            remove: () => setSelected(null),
+          }}
+        >
+          <div className="popup-content">
+           
+            <h2>{selected.title}</h2>
+
+            {selected.content?.text && (
+              <p>{selected.content.text}</p>
+            )}
+
+            {selected.content?.images?.[0] && (
+              <img
+                src={selected.content.images[0]}
+                alt=""
+                className="popup-image"
+              />
+            )}
+
+            {selected.content?.videos?.map((src, i) => (
+              <video key={i} src={src} controls className="popup-video" />
+            ))}
+          </div>
+        </Popup>
+      )}
     </MapContainer>
   );
 }

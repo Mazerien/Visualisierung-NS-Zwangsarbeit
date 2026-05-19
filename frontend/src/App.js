@@ -1,7 +1,6 @@
 import { useState } from "react";
 import ZoomControls from "./Components/ZoomButtons/ZoomControls";
 import Interactable from "./Components/Interactables/Interactable";
-import InfoPanel from "./Components/InfoPanels/InfoPanelFrame/InfoPanel";
 import { interactablesData } from "./Components/Interactables/InteractablesData";
 import TimelineSlider from "./Components/TimeLineSlider/TimelineSlider";
 import MapView from "./Components/MapView";
@@ -25,7 +24,7 @@ function App() {
   return (
     <div>
       <ZoomControls zoom={zoom} setZoom={setZoom} zoomLevels={zoomLevels} />
-      <MapView zoom={zoom} year={year} setSelected={setSelected} />
+      <MapView zoom={zoom} year={year} selected={selected} setSelected={setSelected} />
 
       {/* Timeout for the Animation */}
       {setTimeout(() => {
@@ -43,7 +42,6 @@ function App() {
         <TimelineSlider year={year} setYear={setYear} />
       </div>
 
-      <InfoPanel selected={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }

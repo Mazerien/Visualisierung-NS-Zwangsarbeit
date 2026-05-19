@@ -6,7 +6,7 @@ export default function CityCircle({ city, data, setSelected }) {
   return (
     <Circle
       center={data.coords}
-      radius={Math.max(5000, Math.sqrt(data.count) * 8000)}
+      radius={Math.max(5000, Math.sqrt(data.count || 0) * 8000)}
       pathOptions={{
         color: "#3388ff",
         fillOpacity: 0.6
