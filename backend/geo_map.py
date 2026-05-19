@@ -1,17 +1,10 @@
 """
 TODO: Docstring
 """
-import math
-import random
-import folium
-
 from geo_cache import get_city_coords
 from geojson_cache import get_geojson
-from draw_arrow import add_arrow
-from draw_circle import add_circle
 
 from api.person_data_cities import get_city_dataset, get_city_counts
-from folium import Element
 
 
 # -------------------------

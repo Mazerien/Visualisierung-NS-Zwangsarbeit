@@ -6,7 +6,7 @@ export default function RightPanel({ selected, onClose }) {
       {selected && (
         <>
           <button className="close-button" onClick={onClose}>
-            ✕
+            ➜
           </button>
 
           <h2>{selected.title}</h2>

@@ -33,7 +33,7 @@ export default function CityPopup({ selected, setSelected }) {
         ))}
 
         {selected.content?.people?.length > 0 && (
-          <div style={{ marginTop: "10px" }}>
+          <div style={{ marginTop: "5px" }}>
             <h4>Zwangsarbeiter: {selected.count}</h4>
 
             <ul style={{ paddingLeft: "15px", maxHeight: "150px", overflowY: "auto" }}>

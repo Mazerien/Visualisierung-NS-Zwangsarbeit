@@ -3,7 +3,7 @@ import ZoomControls from "./Components/ZoomButtons/ZoomControls";
 import Interactable from "./Components/Interactables/Interactable";
 import { interactablesData } from "./Components/Interactables/InteractablesData";
 import TimelineSlider from "./Components/TimeLineSlider/TimelineSlider";
-import MapView from "./Components/MapView";
+import MapView from "./MapView/MapView";
 import "leaflet/dist/leaflet.css";
 
 function App() {
