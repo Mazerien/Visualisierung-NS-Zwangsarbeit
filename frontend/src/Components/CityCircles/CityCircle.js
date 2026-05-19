@@ -15,14 +15,15 @@ export default function CityCircle({ city, data, setSelected }) {
       eventHandlers={{
         click: () => {
           setSelected({
-            title: city,
+            title: `Stadt: ${city}`,
             content: {
-              text: `Zwangsarbeiter Herkunft: ${data.count}`,
+              count: data.count,
               images: [],
-              videos: []
+              videos: [],
+              people: data.people || []
             },
             coords: data.coords,
-            count: data.count
+            count: data.count,
           });
         },
 

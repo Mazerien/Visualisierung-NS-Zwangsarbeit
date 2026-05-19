@@ -10,7 +10,7 @@ from geojson_cache import get_geojson
 from draw_arrow import add_arrow
 from draw_circle import add_circle
 
-from api.person_data_cities import get_city_dataset
+from api.person_data_cities import get_city_dataset, get_city_counts
 from folium import Element
 
 
@@ -104,7 +104,9 @@ class OSMGeoMap:
         # CITY DATA (KEEP)
         # -------------------------
 
-        city_counts = get_city_dataset()
+        city_dataset = get_city_dataset()
+        city_counts = get_city_counts(city_dataset)
+
         city_marker_data = {}
 
         for city, count in city_counts.items():
@@ -122,8 +124,10 @@ class OSMGeoMap:
                 count = sum(v for v in count.values() if isinstance(v, (int, float)))
 
             city_marker_data[city] = {
+                
                 "coords": coords,
-                "count": int(count)
+                "count": int(count),
+                "people": city_dataset.get(city, {}).get("people", [])
             }
 
         # -------------------------
