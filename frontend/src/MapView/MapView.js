@@ -37,7 +37,7 @@ export default function MapView({ zoom, year, selected, setSelected }) {
       ...d
     }));
 
-  const threshold = zoom === 0 ? 2 : zoom === 1 ? 0.5 : 0;
+  const threshold = zoom === 0 ? 1 : zoom === 1 ? 0.5 : 0;
   const clusteredCities = clusterCities(cityArray, threshold);
 
   return (

@@ -9,7 +9,7 @@ export default function CityCircle({ city, data, setSelected }) {
       radius={Math.max(5000, Math.sqrt(data.count || 0) * 8000)}
       pathOptions={{
         color: "#3388ff",
-        fillOpacity: 0.6
+        fillOpacity: 1
       }}
 
       eventHandlers={{
@@ -31,13 +31,13 @@ export default function CityCircle({ city, data, setSelected }) {
         mouseover: (e) => {
           e.target.setStyle({
             fillOpacity: 0.9,
-            weight: 3
+            weight: 6
           });
         },
 
         mouseout: (e) => {
           e.target.setStyle({
-            fillOpacity: 0.6,
+            fillOpacity: 1,
             weight: 1
           });
         }
