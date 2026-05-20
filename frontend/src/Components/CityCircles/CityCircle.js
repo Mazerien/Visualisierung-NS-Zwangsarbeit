@@ -15,12 +15,13 @@ export default function CityCircle({ city, data, setSelected }) {
       eventHandlers={{
         click: () => {
           setSelected({
-            title: `Stadt: ${city}`,
+            title: `${data.cities?.length || 1} Städte`,
             content: {
               count: data.count,
               images: [],
               videos: [],
-              people: data.people || []
+              people: data.people || [],
+              cities: data.cities || []
             },
             coords: data.coords,
             count: data.count,

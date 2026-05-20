@@ -8,6 +8,7 @@ import CountriesLayer from "./Layers/CountriesLayer";
 import { useMapData } from "./Hooks/useMapData";
 import { useNationalityCounts } from "./Hooks/useNationalityCounts";
 import { scaleWidth } from "./Utils/scaleWidth";
+import { clusterCities } from "./Utils/clusterCities";
 
 export default function MapView({ zoom, year, selected, setSelected }) {
   const data = useMapData(zoom, year);
@@ -28,6 +29,16 @@ export default function MapView({ zoom, year, selected, setSelected }) {
 
   const cities = data.cities || {};
   const countries = data.countries;
+
+  const cityArray = Object.entries(cities)
+    .filter(([name, d]) => d?.coords && name !== "Unknown")
+    .map(([name, d]) => ({
+      name,
+      ...d
+    }));
+
+  const threshold = zoom === 0 ? 2 : zoom === 1 ? 0.5 : 0;
+  const clusteredCities = clusterCities(cityArray, threshold);
 
   return (
     <MapContainer
@@ -60,14 +71,17 @@ export default function MapView({ zoom, year, selected, setSelected }) {
       )}
 
       {zoom < 2 &&
-        Object.entries(cities).map(([city, d]) => {
-          if (!d?.coords || city === "Unknown") return null;
-
+        clusteredCities.map((cluster, i) => {
+          if (!cluster?.coords) return null;
           return (
             <CityCircle
-              key={city}
-              city={city}
-              data={d}
+              key={i}
+              city={cluster.cities[0].name}
+              data={{
+                coords: cluster.coords,
+                count: cluster.count,
+                cities: cluster.cities
+              }}
               setSelected={setSelected}
             />
           );
