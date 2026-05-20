@@ -1,5 +1,3 @@
-// Components/RightPanel.jsx
-
 import "./InfoPanel.css";
 
 export default function InfoPanel({ selected, onClose }) {
@@ -9,13 +7,14 @@ export default function InfoPanel({ selected, onClose }) {
     <div className={`info-panel ${selected ? "open" : ""}`}>
       {selected && (
         <>
-          <button className="close-button" onClick={onClose}>
+          <button className="edge-close" onClick={onClose}>
             ➜
           </button>
 
-          <h2>{selected.title}</h2>
-
-          {PanelComponent && <PanelComponent />}
+          <div className="panel-content">
+            <h2>{selected.title}</h2>
+            {PanelComponent && <PanelComponent />}
+          </div>
         </>
       )}
     </div>
