@@ -1,5 +1,5 @@
 import { MapContainer, TileLayer, Polyline } from "react-leaflet";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 
 import CityCircle from "../Components/Marker/CityCircle";
 import CityPopup from "../Components/Popups/CityPopup";
@@ -15,6 +15,27 @@ import { schwenningenPoints } from "./Hooks/useStubSchwenningenPoints";
 export default function MapView({ zoom, year, selected, setSelected, panelUI, setPanelUI }) {
   const data = useMapData(zoom, year);
   const nationalityCounts = useNationalityCounts();
+  useEffect(() => {
+    if (!setPanelUI) return;
+
+    setPanelUI((prev) => {
+      if (!prev || prev.status === "closed") return prev;
+
+      return {
+        ...prev,
+        status: "closing"
+      };
+    });
+
+    const t = setTimeout(() => {
+      setPanelUI({
+        status: "closed",
+        data: null
+      });
+    }, 180);
+
+    return () => clearTimeout(t);
+  }, [zoom, setPanelUI]);
 
   const selectedCountryRef = useRef(null);
 
