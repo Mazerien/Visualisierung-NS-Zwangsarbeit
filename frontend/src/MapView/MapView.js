@@ -12,7 +12,7 @@ import { clusterCities } from "./Utils/clusterCities";
 import SchwenningenMarker from "../Components/Marker/SchwenningenMarker";
 import { schwenningenPoints } from "./Hooks/useStubSchwenningenPoints";
 
-export default function MapView({ zoom, year, selected, setSelected }) {
+export default function MapView({ zoom, year, selected, setSelected, panelUI, setPanelUI }) {
   const data = useMapData(zoom, year);
   const nationalityCounts = useNationalityCounts();
 
@@ -111,7 +111,7 @@ export default function MapView({ zoom, year, selected, setSelected }) {
           <SchwenningenMarker
             key={point.id}
             point={point}
-            setSelected={setSelected}
+            setPanelUI={setPanelUI}
           />
         ))}
     </MapContainer>
