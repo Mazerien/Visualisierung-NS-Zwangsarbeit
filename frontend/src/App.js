@@ -1,9 +1,8 @@
 import { useState } from "react";
 import ZoomControls from "./Components/ZoomButtons/ZoomControls";
-import Interactable from "./Components/Interactables/Interactable";
-import { interactablesData } from "./Components/Interactables/InteractablesData";
 import TimelineSlider from "./Components/TimeLineSlider/TimelineSlider";
 import MapView from "./MapView/MapView";
+import InfoPanel from "./Components/InfoPanels/InfoPanel";
 import "leaflet/dist/leaflet.css";
 
 function App() {
@@ -25,19 +24,13 @@ function App() {
     <div>
       <ZoomControls zoom={zoom} setZoom={setZoom} zoomLevels={zoomLevels} />
       <MapView zoom={zoom} year={year} selected={selected} setSelected={setSelected} />
-
+      <InfoPanel
+        selected={selected}
+        onClose={() => setSelected(null)}
+      />
       {/* Timeout for the Animation */}
       {setTimeout(() => {
       }, 150)}
-      {/*{interactables.map((item) => (  // use this when using Backend data */}
-      {interactablesData[zoom].map((item) => (
-        <Interactable
-          key={item.id}
-          x={item.x}
-          y={item.y}
-          onClick={() => setSelected(item)}
-        />
-      ))}
       <div style={{ opacity: zoom === 2 ? 0 : 1, pointerEvents: zoom === 2 ? "none" : "auto" }}>
         <TimelineSlider year={year} setYear={setYear} />
       </div>

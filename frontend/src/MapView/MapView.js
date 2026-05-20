@@ -1,7 +1,7 @@
 import { MapContainer, TileLayer, Polyline } from "react-leaflet";
 import { useRef } from "react";
 
-import CityCircle from "../Components/CityCircles/CityCircle";
+import CityCircle from "../Components/Marker/CityCircle";
 import CityPopup from "../Components/Popups/CityPopup";
 
 import CountriesLayer from "./Layers/CountriesLayer";
@@ -9,6 +9,8 @@ import { useMapData } from "./Hooks/useMapData";
 import { useNationalityCounts } from "./Hooks/useNationalityCounts";
 import { scaleWidth } from "./Utils/scaleWidth";
 import { clusterCities } from "./Utils/clusterCities";
+import SchwenningenMarker from "../Components/Marker/SchwenningenMarker";
+import { schwenningenPoints } from "./Hooks/useStubSchwenningenPoints";
 
 export default function MapView({ zoom, year, selected, setSelected }) {
   const data = useMapData(zoom, year);
@@ -103,6 +105,15 @@ export default function MapView({ zoom, year, selected, setSelected }) {
       {selected?.coords && (
         <CityPopup selected={selected} setSelected={setSelected} />
       )}
+
+      {zoom === 2 &&
+        schwenningenPoints.map((point) => (
+          <SchwenningenMarker
+            key={point.id}
+            point={point}
+            setSelected={setSelected}
+          />
+        ))}
     </MapContainer>
   );
 }
