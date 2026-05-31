@@ -6,7 +6,7 @@ export function useNationalityCounts() {
   useEffect(() => {
     async function fetchData() {
       try {
-        const res = await fetch("http://localhost:5000/api/nationality");
+        const res = await fetch("https://flask.p-qsvcne.project.space/api/nationality");
         const data = await res.json();
         setCounts(data);
       } catch (err) {
