@@ -32,10 +32,27 @@ def get_map():
     arrows = get_arrows(arrow_set)
     warm_cache(arrows)
 
-    geo = OSMGeoMap(
-        zoom_level=zoom_level,
-        arrows=arrows,
-        year=year
-    )
+    try:
+        geo = OSMGeoMap(
+            zoom_level=zoom_level,
+            arrows=arrows,
+            year=year
+        )
 
-    return jsonify(geo.get_map())
+        return jsonify(geo.get_map())
+    except Exception as e:
+        print("MAP ERROR:", e)
+
+        # fallback map
+        return jsonify({
+            "countries": {
+                "type": "FeatureCollection",
+                "features": []
+            },
+            "cities": {},
+            "arrows": [],
+            "view": {
+                "center": [44, 9],
+                "zoom": 5
+            }
+        }), 200

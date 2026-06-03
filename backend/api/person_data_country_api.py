@@ -6,5 +6,10 @@ END_POINT = "/api/nationality"
 
 @NATIONALITY.route(END_POINT, methods=["GET"])
 def nationality_counts():
-    data = get_nationality_counts()
-    return jsonify(data)
+    try:
+        data = get_nationality_counts()
+        return jsonify(data)
+
+    except Exception as e:
+        print("NATIONALITY ERROR:", e)
+        return jsonify({}), 200

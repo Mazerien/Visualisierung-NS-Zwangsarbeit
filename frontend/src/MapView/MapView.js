@@ -53,6 +53,11 @@ export default function MapView({ zoom, year, selected, setSelected, panelUI, se
   const cities = data.cities || {};
   const countries = data.countries;
 
+  const isValidGeoJSON =
+      countries &&
+      countries.type === "FeatureCollection" &&
+      Array.isArray(countries.features);
+      
   const cityArray = Object.entries(cities)
     .filter(([name, d]) => d?.coords && name !== "Unknown")
     .map(([name, d]) => ({
@@ -84,7 +89,7 @@ export default function MapView({ zoom, year, selected, setSelected, panelUI, se
         }
       />
 
-      {zoom < 2 && (
+      {zoom < 2 && isValidGeoJSON && (
         <CountriesLayer
           countries={countries}
           year={year}

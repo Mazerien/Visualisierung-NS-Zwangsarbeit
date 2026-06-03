@@ -8,7 +8,7 @@ from api.debug import DEBUG
 from api.osm import OSM
 from api.ohm import OHM
 from api.person_data_country_api import NATIONALITY
-
+from flask import jsonify
 
 def create_app() -> Flask:
     """
@@ -20,6 +20,20 @@ def create_app() -> Flask:
     log = logging.getLogger("werkzeug")
     log.setLevel(logging.ERROR)
     CORS(app=a)
+
+    @a.errorhandler(404)
+    def handle_404(e):
+        return jsonify({
+            "error": "Not Found",
+            "message": str(e)
+        }), 404
+
+    @a.errorhandler(500)
+    def handle_500(e):
+        return jsonify({
+            "error": "Internal Server Error",
+            "message": str(e)
+        }), 500
 
     middleware: list[Blueprint] = [DEBUG, OSM, OHM, NATIONALITY]
     with a.app_context():
