@@ -57,12 +57,18 @@ export default function MapView({ zoom, year, selected, setSelected, panelUI, se
       countries &&
       countries.type === "FeatureCollection" &&
       Array.isArray(countries.features);
-      
+
+
   const cityArray = Object.entries(cities)
-    .filter(([name, d]) => d?.coords && name !== "Unknown")
-    .map(([name, d]) => ({
-      name,
-      ...d
+    .filter(([key, d]) => Array.isArray(d?.coords))
+    .map(([key, d]) => ({
+      id: key,                 // IMPORTANT: keep full key as ID
+      name: key.split("|")[0], // display name only
+      country: key.split("|")[1],
+      year: key.split("|")[2],
+      coords: d.coords,
+       count: Number(d.count) || 0,
+      source: d.source
     }));
 
   const threshold = zoom === 0 ? 1 : zoom === 1 ? 0.5 : 0;
@@ -115,18 +121,26 @@ export default function MapView({ zoom, year, selected, setSelected, panelUI, se
           );
         })}
 
-      {zoom < 2 &&
-        arrowsWithWidth.map((a, i) => (
+      {zoom < 2 && arrowsWithWidth
+        .filter(a =>
+          Array.isArray(a.start?.coords) &&
+          Array.isArray(a.end?.coords)
+        )
+        .map((a, i) => (
           <Polyline
             key={i}
-            positions={[a.start, a.end]}
+            positions={[
+              a.start.coords,
+              a.end.coords
+            ]}
             pathOptions={{
               color: a.color,
               weight: a.width,
               opacity: a.opacity
             }}
           />
-        ))}
+        ))
+      }
 
       {selected?.coords && (
         <CityPopup selected={selected} setSelected={setSelected} />

@@ -98,29 +98,48 @@ class OSMGeoMap:
         # -------------------------
 
         city_dataset = get_city_dataset()
-        city_counts = get_city_counts(city_dataset)
 
         city_marker_data = {}
 
-        for city, count in city_counts.items():
-            result = get_city_coords(city)
+        for city, data in city_dataset.items():
 
-            if not result or not isinstance(result, dict):
+            countries = data.get("countries", {})
+
+            # -------------------------
+            # 1. TOTAL COUNT (like old system)
+            # -------------------------
+            total_count = 0
+            for c, count in countries.items():
+                if isinstance(count, (int, float)):
+                    total_count += count
+                elif isinstance(count, dict):
+                    total_count += sum(
+                        v for v in count.values()
+                        if isinstance(v, (int, float))
+                    )
+
+            # -------------------------
+            # 2. GET COORDS (use BEST country, but only ONCE)
+            # -------------------------
+            coords = None
+
+            for country in countries.keys():
+                result = get_city_coords(city, country=country, year=self.year)
+
+                if result and result.get("coords"):
+                    coords = result["coords"]
+                    break 
+
+            if not coords:
                 continue
 
-            coords = result.get("coords")
-
-            if not coords or len(coords) != 2:
-                continue
-
-            if isinstance(count, dict):
-                count = sum(v for v in count.values() if isinstance(v, (int, float)))
-
+            # -------------------------
+            # 3. FINAL STRUCTURE 
+            # -------------------------
             city_marker_data[city] = {
-                
                 "coords": coords,
-                "count": int(count),
-                "people": city_dataset.get(city, {}).get("people", [])
+                "count": int(total_count), 
+                "people": data.get("people", [])
             }
 
         # -------------------------
