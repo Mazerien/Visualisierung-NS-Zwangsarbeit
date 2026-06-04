@@ -1,16 +1,10 @@
 """
 TODO: Docstring
 """
-import math
-import random
-import folium
-
 from geo_cache import get_city_coords
 from geojson_cache import get_geojson
-from draw_arrow import add_arrow
-from draw_circle import add_circle
 
-from api.person_data_cities import get_city_dataset
+from api.person_data_cities import get_city_dataset, get_city_counts
 
 
 # -------------------------
@@ -19,9 +13,10 @@ from api.person_data_cities import get_city_dataset
 
 MAP_CACHE = {}
 
+#2020: "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson",
 WORLD_BY_YEAR = {
     1938: "https://raw.githubusercontent.com/aourednik/historical-basemaps/refs/heads/master/geojson/world_1938.geojson",
-    2020: "https://raw.githubusercontent.com/datasets/geo-countries/master/data/countries.geojson",
+    1945: "https://raw.githubusercontent.com/aourednik/historical-basemaps/master/geojson/world_1945.geojson",
     2025: "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson"
 }
 
@@ -33,15 +28,15 @@ WORLD_BY_YEAR = {
 COUNTRY_COLORS = {}
 
 COLOR_ONE = ["Germany", "USSR", "Spain", "United Kingdom", "Turkey", "Hungary"]
-COLOR_TWO = ["Italy", "Finland", "Yugoslavia", "Netherlands", "Czechoslovakia", 
+COLOR_TWO = ["Italy", "Finland", "Yugoslavia", "Netherlands", "Czechoslovakia",
              "Portugal", "Bulgaria", "Libya"
              ]
-COLOR_THREE = ["Poland", "Romania", "Greece", "France", "Norway", "Estonia", 
+COLOR_THREE = ["Poland", "Romania", "Greece", "France", "Norway", "Estonia",
                "Iran", "Syria", "Tunisia"
                ]
 COLOR_FOUR = ["Sweden", "Switzerland", "Belgium", "Ireland", "Lithuania", "Algeria"
               ]
-COLOR_FIVE = ["Denmark", "Latvia", "Iraq", "Luxembourg", "Armenia", "Albania", 
+COLOR_FIVE = ["Denmark", "Latvia", "Iraq", "Luxembourg", "Armenia", "Albania",
               "Morocco", "Mesopotamia"
               ]
 
@@ -62,6 +57,9 @@ for s in COLOR_FIVE:
 # -------------------------
 
 class OSMGeoMap:
+    """
+    TODO: Docstring
+    """
     def __init__(self, tileset="Esri.WorldPhysical", zoom_level=0, year=1938, arrows=None):
         self.tileset = tileset
         self.zoom_level = zoom_level
@@ -72,20 +70,17 @@ class OSMGeoMap:
         self.geo_json = get_geojson(year, url)
 
 
-    def get_map(self) -> str:
+    def get_map(self):
         """
         TODO: Docstring
         """
         cache_key = (self.zoom_level, self.year)
 
         if cache_key in MAP_CACHE:
-            print("Using cached map:", cache_key)
             return MAP_CACHE[cache_key]
 
-        print("Generating map:", cache_key)
-
         # -------------------------
-        # BASE LOCATION
+        # LOCATION LOGIC (KEEP)
         # -------------------------
 
         location = [44, 9]
@@ -99,151 +94,89 @@ class OSMGeoMap:
             zoom_start = 15
 
         # -------------------------
-        # MAP INIT
+        # CITY DATA (KEEP)
         # -------------------------
 
-        m = folium.Map(
-            location=location,
-            zoom_start=zoom_start,
-            tiles=self.tileset if self.zoom_level < 2 else "OpenStreetMap",
-            zoom_control=False,
-            scrollWheelZoom=False,
-            dragging=False,
-            doubleClickZoom=False,
-            box_zoom=False,
-            keyboard=False
-        )
+        city_dataset = get_city_dataset()
 
-        # -------------------------
-        # COUNTRY LAYER
-        # -------------------------
-
-        if self.zoom_level < 2:
-
-            def style_function(feature):
-                country_name = feature["properties"].get("NAME")
-                fill_color = COUNTRY_COLORS.get(
-                    country_name,
-                    f'#{random.randint(0, 0xFFFFFF):06x}'
-                )
-                return {
-                    "fillColor": fill_color,
-                    "color": "black",
-                    "weight": 1,
-                    "fillOpacity": 0.7,
-                }
-
-            tooltip = folium.GeoJsonTooltip(
-                fields=["NAME"],
-                aliases=["Country:"],
-                localize=True,
-                sticky=True,
-                labels=True
-            )
-
-            folium.GeoJson(
-                self.geo_json,
-                name=f"Countries {self.year}",
-                style_function=style_function,
-                tooltip=tooltip
-            ).add_to(m)
-
-        # -------------------------
-        # CITY DATA
-        # -------------------------
-
-        city_counts = get_city_dataset()
         city_marker_data = {}
 
-        for city, count in city_counts.items():
+        for city, data in city_dataset.items():
 
-            result = get_city_coords(city)
+            countries = data.get("countries", {})
 
-            # skip invalid results
-            if not result or not isinstance(result, dict):
-                continue
+            # -------------------------
+            # 1. TOTAL COUNT (like old system)
+            # -------------------------
+            total_count = 0
+            for c, count in countries.items():
+                if isinstance(count, (int, float)):
+                    total_count += count
+                elif isinstance(count, dict):
+                    total_count += sum(
+                        v for v in count.values()
+                        if isinstance(v, (int, float))
+                    )
 
-            coords = result.get("coords")
+            # -------------------------
+            # 2. GET COORDS (use BEST country, but only ONCE)
+            # -------------------------
+            coords = None
+
+            for country in countries.keys():
+                result = get_city_coords(city, country=country, year=self.year)
+
+                if result and result.get("coords"):
+                    coords = result["coords"]
+                    break 
 
             if not coords:
                 continue
 
-            if not isinstance(coords, (list, tuple)) or len(coords) != 2:
-                continue
-
-            if isinstance(count, dict):
-                count = sum(v for v in count.values() if isinstance(v, (int, float)))
-
+            # -------------------------
+            # 3. FINAL STRUCTURE 
+            # -------------------------
             city_marker_data[city] = {
                 "coords": coords,
-                "count": int(count)
+                "count": int(total_count), 
+                "people": data.get("people", [])
             }
 
         # -------------------------
-        # ARROWS (UNCHANGED)
+        # ARROWS → RETURN DATA
         # -------------------------
 
-        if self.zoom_level < 2:
+        arrows_data = []
 
-            for start_city, start_country, end_city, end_country, color, width, dash, opacity in self.arrows:
+        for start_city, start_country, end_city, end_country, color, width, dash, opacity in self.arrows:
+            start_coords = get_city_coords(start_city, country=start_country)
+            end_coords = get_city_coords(end_city, country=end_country)
 
-                start_coords = get_city_coords(start_city, country=start_country)
-                end_coords = get_city_coords(end_city, country=end_country)
+            if start_coords and end_coords:
+                arrows_data.append({
+                    "start_city": start_city,
+                    "start_country": start_country,
+                    "end_city": end_city,
+                    "end_country": end_country,
 
-                if start_coords and end_coords:
+                    "start": start_coords,
+                    "end": end_coords,
 
-                    add_arrow(
-                        m,
-                        start_coords,
-                        end_coords,
-                        color=color,
-                        weight=width,
-                        size=0.5,
-                        opacity=opacity,
-                        dash=dash
-                    )
+                    "color": color,
+                    "width": width,
+                    "dash": dash,
+                    "opacity": opacity
+                })
 
-        # -------------------------
-        # CIRCLES (RESTORED COLOR LOGIC)
-        # -------------------------
-        
-        for city, data in city_marker_data.items():
+        result = {
+            "countries": self.geo_json,
+            "cities": city_marker_data,
+            "arrows": arrows_data,
+            "view": {
+                "center": location,
+                "zoom": zoom_start
+            }
+        }
 
-            # ALWAYS extract safely
-            coords = data.get("coords")
-
-            if not coords:
-                continue
-
-            # validate structure
-            if not isinstance(coords, (list, tuple)):
-                continue
-
-            if len(coords) != 2:
-                continue
-
-            count = data.get("count", 0)
-
-            if not isinstance(count, (int, float)):
-                continue
-
-            add_circle(
-                m,
-                coords,
-                color="#3388ff",
-                size=max(5000, math.sqrt(count) * 8000),
-                opacity=0.8,
-            )
-
-        # -------------------------
-        # FINALIZE
-        # -------------------------
-
-        folium.LayerControl().add_to(m)
-
-        html = m.get_root()._repr_html_()
-
-        MAP_CACHE[cache_key] = html
-
-        return html
-
+        MAP_CACHE[cache_key] = result
+        return result

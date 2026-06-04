@@ -7,10 +7,16 @@
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.1",
     "@testing-library/user-event": "^13.5.0",
+    "eslint": "^8.57.1",
+    "leaflet": "^1.9.4",
+    "prettier": "^3.8.3",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
+    "react-leaflet": "^5.0.0",
     "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "stylelint": "^17.11.1",
+    "web-vitals": "^2.1.4",
+    "yaml": "^2.9.0"
   },
   "scripts": {
     "start": "react-scripts start",

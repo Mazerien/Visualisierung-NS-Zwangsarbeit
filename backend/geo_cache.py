@@ -1,9 +1,10 @@
 """
 TODO: Docstring
 """
-import requests
 import json
 import os
+import requests
+from directusHelper import directus_get, directus_upsert
 
 # -------------------------
 # CONFIG
@@ -12,7 +13,7 @@ import os
 GEONAMES_URL = "http://api.geonames.org/searchJSON"
 GEONAMES_USERNAME = "PatrickProjekt"
 
-OHM_URL = "http://localhost:5000/api/ohm"
+OHM_URL = "https://flask.p-qsvcne.project.space/api/ohm"
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 CACHE_DIR = os.path.join(BASE_DIR, "cache")
 CACHE_FILE = os.path.join(CACHE_DIR, "city_cache.json")
@@ -25,7 +26,7 @@ os.makedirs(CACHE_DIR, exist_ok=True)
 
 if os.path.exists(CACHE_FILE):
     try:
-        with open(CACHE_FILE, "r") as f:
+        with open(CACHE_FILE, "r", encoding="UTF-8") as f:
             _CACHE = json.load(f)
     except json.JSONDecodeError:
         _CACHE = {}
@@ -36,12 +37,12 @@ else:
 # HELPERS
 # -------------------------
 
-def _make_key(city_name: str, country: str, year: int) -> str:
-    return f"{city_name.lower()}|{country.lower() if country else ''}|{year}"
+def _make_key(city_name: str, country: str = None) -> str:
+    return f"{city_name.lower()}|{country.lower() if country else ''}"
 
 
 def _save_cache():
-    with open(CACHE_FILE, "w") as f:
+    with open(CACHE_FILE, "w", encoding="UTF-8") as f:
         json.dump(_CACHE, f)
 
 
@@ -77,21 +78,30 @@ def _call_ohm(city_name: str, country: str = None, year: int = 1938):
 # -------------------------
 
 def get_city_coords(city_name: str, country: str = None, year: int = 1938):
-    """
-    Unified geocoder:
-    Cache → GeoNames → OHM → store result
-    """
 
-    key = _make_key(city_name, country, year)
+    if not city_name:
+        return {"coords": None, "source": "missing_city"}
 
-    # 1. CACHE HIT
-    if key in _CACHE:
-        return _CACHE[key]
+    cleaned = city_name.strip().lower()
+    if cleaned in ["unknown", "n/a", "null", "none", ""]:
+        return {"coords": None, "source": "invalid_city"}
+
+    key = _make_key(city_name, country)
+
+    # 1. DIRECTUS CACHE
+    cached = directus_get("CityGeoData", key)
+    if cached:
+        return {
+            "coords": cached["coords"],
+            "source": cached["source"]
+        }
 
     coords = None
     source = None
 
-    # 2. GEO NAMES FIRST (fast + modern)
+    # -------------------------
+    # 2. GEONAMES (try precise)
+    # -------------------------
     try:
         geo = _call_geonames(city_name, country)
         results = geo.get("geonames", [])
@@ -103,34 +113,80 @@ def get_city_coords(city_name: str, country: str = None, year: int = 1938):
             ]
             source = "geonames"
     except Exception:
-        coords = None
+        pass
 
-    # 3. OHM FALLBACK (historical / fallback)
+    # -------------------------
+    # 3. GEONAMES fallback (NO country)
+    # -------------------------
+    if coords is None:
+        try:
+            geo = _call_geonames(city_name, None) 
+            results = geo.get("geonames", [])
+
+            if results:
+                coords = [
+                    float(results[0]["lat"]),
+                    float(results[0]["lng"])
+                ]
+                source = "geonames_no_country"
+        except Exception:
+            pass
+
+    # -------------------------
+    # 4. OHM fallback
+    # -------------------------
     if coords is None:
         try:
             data = _call_ohm(city_name, country, year)
 
-            if isinstance(data, list) and len(data) > 0:
-                for item in data:
-                    c = item.get("coordinates")
-                    if not c:
-                        continue
+            for item in data:
+                c = item.get("coordinates")
+                if not c:
+                    continue
 
-                    coords = [c["lat"], c["lon"]]
-                    source = "ohm"
-                    break
+                coords = [c["lat"], c["lon"]]
+                source = "ohm"
+                break
         except Exception:
-            coords = None
+            pass
 
-    # 4. STORE RESULT (even if None)
-    _CACHE[key] = {
+    # -------------------------
+    # 4. OHM fallback (NO Country, Year)
+    # -------------------------
+
+    if coords is None:
+        try:
+            data = _call_ohm(city_name, None, None)
+
+            for item in data:
+                c = item.get("coordinates")
+                if not c:
+                    continue
+
+                coords = [c["lat"], c["lon"]]
+                source = "ohm"
+                break
+        except Exception:
+            pass
+
+    # -------------------------
+    # 5. STORE IN DIRECTUS
+    # -------------------------
+    payload = {
+        "city": city_name,
+        "country": country,   # keep original context
+        "year": year,
+        "coords": coords,
+        "source": source,
+        "cache_key": key
+    }
+
+    directus_upsert("CityGeoData", payload)
+
+    return {
         "coords": coords,
         "source": source
     }
-
-    _save_cache()
-
-    return _CACHE[key]
 
 # -------------------------
 # PRELOADING (optional)
@@ -144,4 +200,3 @@ def preload_cities(cities: list[tuple]):
         get_city_coords(city, country)
 
     _save_cache()
-

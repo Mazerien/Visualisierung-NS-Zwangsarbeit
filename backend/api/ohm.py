@@ -3,12 +3,15 @@ TODO: Docstring
 """
 from flask import Blueprint, request, jsonify
 from ohm import get_ohm_city_data
-
+from . import END_POINT
 OHM = Blueprint("OHM", __name__)
 
 
-@OHM.route("/ohm", methods=["GET"])
+@OHM.route(f"{END_POINT}/ohm", methods=["GET"])
 def api_ohm_city():
+    """
+    TODO: Docstring
+    """
     city_name = request.args.get("name")
     country = request.args.get("country")
     year = request.args.get("year", type=int)
@@ -21,4 +24,3 @@ def api_ohm_city():
         return jsonify(results)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-

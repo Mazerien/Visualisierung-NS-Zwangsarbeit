@@ -1,3 +1,6 @@
+# Builds and uploads all containers to Docker Hub,
+# then pushes and starts them to mittwald
+# with credentials in the GitHub variables.
 name: mittwald mStudio container deployment
 
 on:

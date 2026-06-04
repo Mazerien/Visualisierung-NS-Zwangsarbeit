@@ -1,14 +1,17 @@
 import { useState } from "react";
 import ZoomControls from "./Components/ZoomButtons/ZoomControls";
-import MapIframe from "./Components/MapIFrame";
-import Interactable from "./Components/Interactables/Interactable";
-import InfoPanel from "./Components/InfoPanels/InfoPanelFrame/InfoPanel";
-import { interactablesData } from "./Components/Interactables/InteractablesData";
 import TimelineSlider from "./Components/TimeLineSlider/TimelineSlider";
+import MapView from "./MapView/MapView";
+import InfoPanel from "./Components/InfoPanels/InfoPanel";
+import "leaflet/dist/leaflet.css";
 
 function App() {
   const [zoom, setZoom] = useState(0);
   const [selected, setSelected] = useState(null);
+  const [panelUI, setPanelUI] = useState({
+    status: "closed", // "open" | "closing" | "closed"
+    data: null
+  });
   const zoomLevels = [0, 1, 2];
   const [year, setYear] = useState(1938);
 
@@ -24,25 +27,18 @@ function App() {
   return (
     <div>
       <ZoomControls zoom={zoom} setZoom={setZoom} zoomLevels={zoomLevels} />
-      <MapIframe zoom={zoom} year={year} />
-
+      <MapView zoom={zoom} year={year} selected={selected} setSelected={setSelected} panelUI={panelUI} setPanelUI={setPanelUI} />
+      <InfoPanel
+        panelUI={panelUI}
+        setPanelUI={setPanelUI}
+      />
       {/* Timeout for the Animation */}
       {setTimeout(() => {
       }, 150)}
-      {/*{interactables.map((item) => (  // use this when using Backend data */}
-      {interactablesData[zoom].map((item) => (
-        <Interactable
-          key={item.id}
-          x={item.x}
-          y={item.y}
-          onClick={() => setSelected(item)}
-        />
-      ))}
       <div style={{ opacity: zoom === 2 ? 0 : 1, pointerEvents: zoom === 2 ? "none" : "auto" }}>
         <TimelineSlider year={year} setYear={setYear} />
       </div>
 
-      <InfoPanel selected={selected} onClose={() => setSelected(null)} />
     </div>
   );
 }

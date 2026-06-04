@@ -12,4 +12,5 @@ SELECT * FROM ${TABLE};
 ```
 
 ## Sources
-[How to filter the Directus API](https://learndirectus.com/how-to-filter-the-directus-api/)
+[How to filter the Directus API](https://learndirectus.com/how-to-filter-the-directus-api/)  
+[Application Factories](https://flask.palletsprojects.com/en/stable/patterns/appfactories/)

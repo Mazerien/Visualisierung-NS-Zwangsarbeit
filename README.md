@@ -20,4 +20,4 @@ On commit, it immediately gets deployed to the mittwald container through a GitH
 [Python docker-compose](https://tecadmin.net/how-to-create-and-run-a-flask-application-using-docker/)  
 [Control startup and shutdown order in Compose](https://docs.docker.com/compose/how-tos/startup-order/)  
 [Directus Admin user](https://directus.io/docs/configuration/general#first-admin-user)  
-[MySQL health check](https://stackoverflow.com/questions/42567475/docker-compose-check-if-mysql-connection-is-ready)
+[MySQL health check](https://stackoverflow.com/questions/42567475/docker-compose-check-if-mysql-connection-is-ready)  

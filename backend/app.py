@@ -7,19 +7,41 @@ from flask_cors import CORS
 from api.debug import DEBUG
 from api.osm import OSM
 from api.ohm import OHM
+from api.person_data_country_api import NATIONALITY
+from flask import jsonify
 
-app = Flask(__name__)
-# Only log errors.
-log = logging.getLogger("werkzeug")
-log.setLevel(logging.ERROR)
-CORS(app=app)
+def create_app() -> Flask:
+    """
+    Creates a Flask app and sets the logging.
+    Also sets up API end points.
+    """
+    a = Flask(__name__)
+    # Only log errors.
+    log = logging.getLogger("werkzeug")
+    log.setLevel(logging.ERROR)
+    CORS(app=a)
 
-middleware: list[Blueprint] = [DEBUG, OSM, OHM]
-with app.app_context():
-    for api in middleware:
-        app.register_blueprint(api)
+    @a.errorhandler(404)
+    def handle_404(e):
+        return jsonify({
+            "error": "Not Found",
+            "message": str(e)
+        }), 404
+
+    @a.errorhandler(500)
+    def handle_500(e):
+        return jsonify({
+            "error": "Internal Server Error",
+            "message": str(e)
+        }), 500
+
+    middleware: list[Blueprint] = [DEBUG, OSM, OHM, NATIONALITY]
+    with a.app_context():
+        for api in middleware:
+            a.register_blueprint(api)
+    return a
 
 
 if __name__ == "__main__":
+    app = create_app()
     app.run(host="0.0.0.0", port=5000)
-

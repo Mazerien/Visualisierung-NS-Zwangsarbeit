@@ -1,0 +1,26 @@
+# Does a headless localhost unit testing of the backend.
+# Checks that the backend works if pointing to localhost.
+name: Unit Testing
+
+on: 
+    push: 
+        branches: [dev]
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Set up Python ${{ matrix.python-version }}
+              uses: actions/setup-python@v3
+              with:
+                    python-version: ${{ matrix.python-version }}
+            
+            - name: Install dependencies
+              run: pip install -r backend/requirements.txt
+            
+            - name: Run Unit Tests
+              run: cd scripts && pytest testing.py
+              env:
+                DIRECTUS_URL: ${{ vars.DIRECTUS_URL }}
+                DIRECTUS_TOKEN: ${{ vars.DIRECTUS_TOKEN }}

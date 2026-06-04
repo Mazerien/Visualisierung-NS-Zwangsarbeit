@@ -53,7 +53,8 @@ def get_city_dataset():
     Returns:
     {
         city: {
-            country: count
+            countries: { country: count },
+            people: [{first_name, last_name}]
         }
     }
     """
@@ -64,7 +65,7 @@ def get_city_dataset():
     url = f"{DIRECTUS_URL}/items/Person"
 
     params = {
-        "fields": "PlaceOfBirth,Nationality",
+        "fields": "PlaceOfBirth,Nationality,FirstName,LastName",
         "limit": -1
     }
 
@@ -80,11 +81,14 @@ def get_city_dataset():
 
     data = response.json().get("data", [])
 
-    city_country_counts = {}
+    city_data = {}
 
     for item in data:
         city = normalize_city(item.get("PlaceOfBirth"))
         country = item.get("Nationality")
+
+        first = item.get("FirstName")
+        last = item.get("LastName")
 
         if not city or not country:
             continue
@@ -92,14 +96,23 @@ def get_city_dataset():
         city = city.strip()
         country = country.strip()
 
-        if city not in city_country_counts:
-            city_country_counts[city] = {}
+        if city not in city_data:
+            city_data[city] = {
+                "countries": {},
+                "people": []
+            }
 
-        city_country_counts[city][country] = (
-            city_country_counts[city].get(country, 0) + 1
+        city_data[city]["countries"][country] = (
+            city_data[city]["countries"].get(country, 0) + 1
         )
 
-    return city_country_counts
+        if first or last:
+            city_data[city]["people"].append({
+                "first_name": first,
+                "last_name": last
+            })
+
+    return city_data
 
 
 # -------------------------
@@ -127,13 +140,29 @@ def build_geocoding_tasks(city_country_counts):
 
 def get_city_counts(city_country_counts):
     """
-    Aggregates total counts per city
+    Safely aggregates counts per city even if structure contains nested dicts.
     """
 
-    return {
-        city: sum(countries.values())
-        for city, countries in city_country_counts.items()
-    }
+    result = {}
+
+    for city, countries in city_country_counts.items():
+
+        total = 0
+
+        for value in countries.values():
+
+            if isinstance(value, (int, float)):
+                total += value
+
+            elif isinstance(value, dict):
+                total += sum(
+                    v for v in value.values()
+                    if isinstance(v, (int, float))
+                )
+
+        result[city] = total
+
+    return result
 
 
 # -------------------------
@@ -155,4 +184,3 @@ if __name__ == "__main__":
 
     print("\nGEOCODING TASKS SAMPLE:")
     print(geocoding_tasks[:10])
-
