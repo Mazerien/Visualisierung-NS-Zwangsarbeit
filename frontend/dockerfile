@@ -1,6 +1,6 @@
 FROM node:lts
 
-RUN useradd -m frontend
+RUN useradd -m frontend || echo "User exists; skipping creation."
 WORKDIR /home/frontend
 
 COPY package*.json .

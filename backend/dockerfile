@@ -1,6 +1,6 @@
 FROM python
 
-RUN useradd backend
+RUN useradd backend || echo "User exists; skipping creation."
 USER backend
 WORKDIR /home/backend
 
