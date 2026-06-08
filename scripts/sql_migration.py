@@ -26,7 +26,7 @@ class MySQL:
             self.check_tables()
         except Exception as e:
             print(e)
-            print(f"Can't connect to MySQL. Continuing without database.")
+            print("Can't connect to MySQL. Continuing without database.")
 
     def query_exec(self, query: str, values=None, is_read_only: bool = False):
         """
@@ -73,19 +73,19 @@ class MySQL:
     def insert_person(self, last_name: str, first_name: str, maiden_name: str, gender: chr,
                       place_birth: str, date_birth: date, place_death: str,
                       nationality: str, last_place_residence: str, marriage: str, father: str,
-                      mother: str, religion: str,profession: str):
+                      mother: str, religion: str, profession: str):
         """
         Inserts a single Person with their respective data.
         Refer to the MySQL schema for more information.
         """
         query = """INSERT INTO person (
         last_name, first_name, maiden_name, gender, place_birth, date_birth, place_death,
-        nationality, last_place_residence, marriage, father, mother, religion, profession
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        nationality, last_place_residence, religion, profession
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         values = (
             last_name, first_name, maiden_name, gender, place_birth, date_birth,
             place_death, nationality, last_place_residence, marriage,
-            father, mother, religion, profession
+            profession
         )
         self.query_exec(query, values)

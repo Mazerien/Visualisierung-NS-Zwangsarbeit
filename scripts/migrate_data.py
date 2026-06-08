@@ -6,8 +6,11 @@ from sql_migration import MySQL
 
 class NormalizeData:
     """Helper class for migrating xlsx data by transforming and normalizing data."""
+
     def replace_string(self, s: str, replacement: dict[str]) -> str:
         """Replaces all given substrings with the given dict."""
+        if (not isinstance(s, str)):
+            return
         s = s.replace("(", "").replace(")", "")
         for old, new in replacement.items():
             s = s.replace(old, new)
@@ -69,58 +72,102 @@ class NormalizeData:
             age -= 1
         return age
 
+
 class InsertData:
     """
     Helper class for inserting data into the MySQL database.
     """
     normalize_data = NormalizeData()
 
-    def insert_person(self, row: pd.Series, database: MySQL, is_gefangenenbuch: bool, is_imi_liste: bool):
+    def insert_person(self, row: pd.Series, database: MySQL,
+                      is_gefangenenbuch: bool):
         """
         Inserts a person from a given DataFrame row into the database.
         Also returns the Person within the DB.
         """
-        last_name = row["Nachname (korrigiert)"].title()
-        first_name = row["Vorname (korrigiert)"]
-        maiden_name = maiden_name=row["Geburtsname"]
-        gender = self.normalize_data.gender(row["Geschlecht"])
-        birthday = self.normalize_data.date(row["Geburtsdatum"])
-        nationality = self.normalize_data.country(row["Nationalität"])
-        place_birth = self.normalize_data.place_birth(uncorrected=row["Geburtsort"],
-            corrected=row["Geburtsort (aktuell/korrigiert)"])
-        place_death = row["Sterbeort"]
-        last_place_residence = row["Letzter Wohnort (Land)"]
-        marriage = None #TODO
-        father = None
-        mother = None
-        religion = row["Religion"]
-        profession = row["Berufsangabe"]
+        try:
+            maiden_name = row["Geburtsname"].title()
+            maiden_name = "name"
+        except:
+            maiden_name = ""
+        try:
+            gender = self.normalize_data.gender(row["Geschlecht"])
+        except:
+            gender = "Other"
 
-        database.insert_person(last_name, first_name, maiden_name, gender, place_birth,
+        if is_gefangenenbuch == True:
+            # Is this horrible spaghetti code?
+            # Absolutely. But I was told to rewrite it so many times,
+            # that I simply lost track.
+            # Proceed with caution.
+            last_name = row["Nachname (korrigiert)"].title()
+            first_name = row["Vorname (korrigiert)"]
+            try:
+                geburtsort = row["Geburtsort"]
+            except:
+                try:
+                    geburtsort = row['Geburt']
+                except:
+                    geburtsort = ""
+            place_birth = geburtsort
+            try:
+                place_death = row["Sterbeort"].replace("nan", "")
+            except AttributeError:
+                place_death = None
+            nationality = self.normalize_data.country(row["Nationalität"])
+            father = None
+            mother = None
+            marriage = None
+            profession = row["Berufsangabe"]
+            last_place_residence = row["Letzter Wohnort (Land)"]
+        else:
+            last_name = row["Nachname"].title()
+            if last_name == "Nachname":
+                return
+            first_name = row["Vorname"].title()
+            place_birth = ""
+            place_death = ""
+            nationality = ""
+            father = ""
+            mother = ""
+            profession = None
+            last_place_residence = None
+            religion = None
+            marriage = None
+            # if is_imi_liste:
+            #     source = "IMIliste"
+            # else:
+            #     source = "Ostarbeiterliste"
+        birthday = self.normalize_data.date(row["Geburtsdatum"])
+        religion = row["Religion"]
+        try:
+            database.insert_person(last_name, first_name, maiden_name, gender, place_birth,
                                birthday, place_death, nationality, last_place_residence,
                                marriage, father, mother, religion, profession)
-
+        except Exception as e:
+            print(e)
 
 
 def main():
+    """Do the migration."""
     files = [pd.read_excel(
         "Ostarbeitendenliste.xlsx", usecols="B:V"
     ), pd.read_excel(
         "Gefangenenbuch.xlsx", skiprows=4, usecols="D,F:N,P:T,X:AD,AF,AB:AN,AT"),
-        pd.read_excel("IMIs.xlsx", usecols="B:V"
-                      )
+        pd.read_excel("IMIs.xlsx", usecols="B:V")
     ]
     database = MySQL("mysql", "mysql", "localhost", "mysql")
     insert_data = InsertData()
-
 
     i = 0
     for file in files:
         for _, row in file.iterrows():
             is_gefangenenbuch = i == 1
-            is_imi_liste = i == 1
-            insert_data.insert_person(row=row, database=database, is_gefangenenbuch, is_imi_liste)
+            # is_imi_liste = i == 1
+            insert_data.insert_person(row=row, database=database,
+                                      is_gefangenenbuch=is_gefangenenbuch)
         i += 1
+
 
 if __name__ == "__main__":
     main()
