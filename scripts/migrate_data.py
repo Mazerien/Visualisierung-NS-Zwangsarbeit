@@ -87,7 +87,6 @@ class InsertData:
         """
         try:
             maiden_name = row["Geburtsname"].title()
-            maiden_name = "name"
         except:
             maiden_name = ""
         try:
@@ -144,8 +143,35 @@ class InsertData:
             database.insert_person(last_name, first_name, maiden_name, gender, place_birth,
                                birthday, place_death, nationality, last_place_residence,
                                marriage, father, mother, religion, profession)
-        except Exception as e:
-            print(e)
+        except Exception:
+            pass
+
+    def insert_company(self, row: pd.Series, database: MySQL):
+        """Inserts into the Company table."""
+        companies: list[str] = [row["Unternehmen"], row["Unternehmen2"]]
+        companies_corrected: list[str] = []
+
+        # Checks if either Company have a string in the Excel; discards if it is empty or erroneous.
+        for c in companies:
+            if c is not None and isinstance(c, str) and len(c) > 0 and c != "?":
+                # TODO: Think of a unified algorithm for correcting these human data insertion errors?
+                replacement = {
+                    "... Ziegelwerk Mühlacker u.a.": "Ziegelwerk Mühlacker"
+                }
+                c = self.normalize_data.replace_string(c, replacement)
+                companies_corrected.append(c)
+        if len(companies_corrected) == 0:
+            return
+
+        # Checks if either Company is already in the DB. Creates an entry if not.
+        companies = []
+        for c in companies_corrected:
+            company = database.get_company_by_name(c)
+            if company is not None and len(company) == 0:
+                print(f"New Company {c} added to DB.")
+                database.insert_company(c)
+                companies.append(database.get_company_by_name(c)[0])
+        return companies
 
 
 def main():
@@ -157,6 +183,7 @@ def main():
         pd.read_excel("IMIs.xlsx", usecols="B:V")
     ]
     database = MySQL("mysql", "mysql", "localhost", "mysql")
+    database.drop_tables(reset_db=True)
     insert_data = InsertData()
 
     i = 0
@@ -166,6 +193,8 @@ def main():
             # is_imi_liste = i == 1
             insert_data.insert_person(row=row, database=database,
                                       is_gefangenenbuch=is_gefangenenbuch)
+            if is_gefangenenbuch:
+                insert_data.insert_company(row=row, database=database)
         i += 1
 
 

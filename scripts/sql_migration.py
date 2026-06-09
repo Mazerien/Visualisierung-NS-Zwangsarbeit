@@ -60,6 +60,17 @@ class MySQL:
         except mysql.connector.errors.ProgrammingError:
             print("No tables exist in this DB. Creating them now.")
             self.create_tables()
+    
+    def drop_tables(self, reset_db: bool = True):
+        """
+        Deletes all tables and associated data.
+        Also re-creates tables if reset_db.
+        """
+        # List reversed because later tables are dependent on former ones
+        for table in reversed(self.tables):
+            self.query_exec(f"DROP TABLE IF EXISTS {table}")
+        if reset_db:
+            self.create_tables()
 
     def create_tables(self):
         """Goes through every schema and creates a SQL table for them."""
@@ -89,3 +100,14 @@ class MySQL:
             profession
         )
         self.query_exec(query, values)
+    
+    def insert_company(self, name: str):
+        query = "INSERT INTO company (name_comp_hist) VALUES (%s)"
+        values = (name,)
+        self.query_exec(query, values)
+    
+    def get_company_by_name(self, name: str):
+        """Checks if a company by that exact name exists in the DB."""
+        query: str = "SELECT * FROM company WHERE name_comp_hist = %s"
+        values: tuple[str] = (name,)
+        return self.query_exec(query, values, is_read_only=True)
