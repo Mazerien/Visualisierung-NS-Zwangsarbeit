@@ -100,14 +100,28 @@ class MySQL:
             profession
         )
         self.query_exec(query, values)
-    
+
     def insert_company(self, name: str):
         query = "INSERT INTO company (name_comp_hist) VALUES (%s)"
         values = (name,)
         self.query_exec(query, values)
-    
+
     def get_company_by_name(self, name: str):
         """Checks if a company by that exact name exists in the DB."""
         query: str = "SELECT * FROM company WHERE name_comp_hist = %s"
         values: tuple[str] = (name,)
+        return self.query_exec(query, values, is_read_only=True)
+
+    def insert_housing(self, name_place: str, location: str):
+        """Checks if a housing by that exact name exists in the DB."""
+        query = "INSERT INTO housing (name_place, location) VALUES (%s, %s)"
+        values = (name_place, location)
+        self.query_exec(query, values)
+
+    def get_housing_by_adress(self, adress: str):
+        """
+        Retrieve a housing record by its address.
+        """
+        query: str = "SELECT * FROM housing WHERE name_place = %s"
+        values = (adress,)
         return self.query_exec(query, values, is_read_only=True)

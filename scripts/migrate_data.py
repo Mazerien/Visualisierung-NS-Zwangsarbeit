@@ -172,6 +172,28 @@ class InsertData:
                 database.insert_company(c)
                 companies.append(database.get_company_by_name(c)[0])
         return companies
+    
+    def insert_housing(self, row: pd.Series, database: MySQL):
+        """Inserts a house with its respective housing type."""
+        housing: list[str] = [
+            row["Unterkunft (Adresse Kriegszeit)"], row["Unterkunft2"]]
+        housing_corrected: list[str] = []
+        for h in housing:
+            if h is not None and isinstance(h, str) and len(h) > 0 and h != "?":
+                h = h.replace("Wohnsitz unbek.", "")
+                housing_corrected.append(h)
+        if len(housing_corrected) == 0:
+            return
+        
+        housing = []
+        for h in housing_corrected:
+            house = database.get_housing_by_adress(h)
+            if isinstance(h, str) and len(house) == 0:
+                database.insert_housing(name_place=h, location="Schwenningen")
+                house = database.get_housing_by_adress(h)
+                print(f"Housing {h} added to DB.")
+                housing.append(house)
+        return housing
 
 
 def main():
@@ -195,6 +217,7 @@ def main():
                                       is_gefangenenbuch=is_gefangenenbuch)
             if is_gefangenenbuch:
                 insert_data.insert_company(row=row, database=database)
+                insert_data.insert_housing(row=row, database=database)
         i += 1
 
 
