@@ -3,12 +3,7 @@ TODO: Docstring
 """
 import os
 import requests
-from dotenv import load_dotenv
 
-load_dotenv()
-
-DIRECTUS_URL = os.getenv("DIRECTUS_URL")
-DIRECTUS_TOKEN = os.getenv("DIRECTUS_TOKEN")
 TIMEOUT = 10
 
 
@@ -27,17 +22,24 @@ COUNTRY_MAP = {
         "Unknown": "Unknown"
     }
 
+def get_directus_config():
+    url = os.getenv("DIRECTUS_URL")
+    token = os.getenv("DIRECTUS_TOKEN")
+
+    if not url or not token:
+        raise RuntimeError("Missing Directus env vars")
+
+    return url, token
+
 
 def get_nationality_counts():
     """TODO: Docstring"""
-    load_dotenv("../.env")
-    directus_url = os.getenv("DIRECTUS_URL")
-    directus_token = os.getenv("DIRECTUS_TOKEN")
+    directus_url, directus_token = get_directus_config()
 
     if not directus_url or not directus_token:
-        raise RuntimeError("Missing DIRECTUS_URL or DIRECTUS_TOKEN")
+        raise RuntimeError("Missing directus_url or directus_token")
 
-    url = f"{DIRECTUS_URL}/items/Person"
+    url = f"{directus_url}/items/Person"
 
     params = {
         "aggregate[count]": "*",
@@ -45,7 +47,7 @@ def get_nationality_counts():
     }
 
     headers = {
-        "Authorization": f"Bearer {DIRECTUS_TOKEN}"
+        "Authorization": f"Bearer {directus_token}"
     }
 
     response = requests.get(url, params=params, headers=headers, timeout=TIMEOUT)

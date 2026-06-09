@@ -1,13 +1,15 @@
 from flask import Blueprint, jsonify
+import os
 from person_data_country import get_nationality_counts
+
 
 NATIONALITY = Blueprint("nationality", __name__)
 END_POINT = "/api/nationality"
 print("NATIONALITY MODULE LOADED")
-
+print("ENV CHECK:", os.getenv("DIRECTUS_URL"), os.getenv("DIRECTUS_TOKEN"))
 @NATIONALITY.route(END_POINT, methods=["GET"])
 def nationality_counts():
-    print("NATIONALITY ROUTE CALLED")
+    print(" HIT ON INSTANCE:", id(NATIONALITY))
     try:
         data = get_nationality_counts()
         return jsonify(data)

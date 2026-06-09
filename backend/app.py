@@ -35,16 +35,19 @@ def create_app() -> Flask:
             "message": str(e)
         }), 500
     
-    @a.route("/routes")
-    def routes():
-        return str(a.url_map)
+    @a.route("/debug")
+    def debug():
+        return {
+            "loaded": True
+        }
 
     middleware: list[Blueprint] = [DEBUG, OSM, OHM, NATIONALITY]
     with a.app_context():
         for api in middleware:
-            a.register_blueprint(api)
             print(a.url_map)
             print("REGISTERING:", api)
+            a.register_blueprint(api)
+            print("After registry ",a.url_map)
     return a
 
 
