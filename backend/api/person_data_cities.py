@@ -3,14 +3,15 @@ TODO: Docstring
 """
 import os
 import requests
-from dotenv import load_dotenv
 
-load_dotenv()
+def get_directus_config():
+    url = os.getenv("DIRECTUS_URL")
+    token = os.getenv("DIRECTUS_TOKEN")
 
-DIRECTUS_URL = os.getenv("DIRECTUS_URL")
-DIRECTUS_TOKEN = os.getenv("DIRECTUS_TOKEN")
+    if not url or not token:
+        raise RuntimeError("Missing Directus env vars")
 
-
+    return url, token
 # -------------------------
 # NORMALIZATION
 # -------------------------
@@ -58,11 +59,11 @@ def get_city_dataset():
         }
     }
     """
-
-    if not DIRECTUS_URL or not DIRECTUS_TOKEN:
+    directus_url, directus_token = get_directus_config()
+    if not directus_url or not directus_token:
         raise RuntimeError("Missing DIRECTUS_URL or DIRECTUS_TOKEN")
 
-    url = f"{DIRECTUS_URL}/items/Person"
+    url = f"{directus_url}/items/Person"
 
     params = {
         "fields": "PlaceOfBirth,Nationality,FirstName,LastName",
@@ -70,7 +71,7 @@ def get_city_dataset():
     }
 
     headers = {
-        "Authorization": f"Bearer {DIRECTUS_TOKEN}"
+        "Authorization": f"Bearer {directus_token}"
     }
 
     response = requests.get(url, params=params, headers=headers)
