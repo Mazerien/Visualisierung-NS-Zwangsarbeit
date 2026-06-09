@@ -34,11 +34,17 @@ def create_app() -> Flask:
             "error": "Internal Server Error",
             "message": str(e)
         }), 500
+    
+    @a.route("/routes")
+    def routes():
+        return str(a.url_map)
 
     middleware: list[Blueprint] = [DEBUG, OSM, OHM, NATIONALITY]
     with a.app_context():
         for api in middleware:
             a.register_blueprint(api)
+            print(a.url_map)
+            print("REGISTERING:", api)
     return a
 
 
