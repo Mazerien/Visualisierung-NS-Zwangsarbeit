@@ -15,7 +15,11 @@ export default function CountriesLayer({
     "Belgium", "Czechia", "Slovakia", "Hungary",
     "Romania", "Bulgaria", "Greece", "Norway", "Sweden",
     "Finland", "Denmark", "Portugal", "Ireland",
-    "Ukraine", "Belarus", "Russia"
+    "Ukraine", "Belarus", "Czechoslovakia", "Yugoslavia",
+    "Albania", "Turkey", "Germany (France)", "Germany (UK)",
+    "Germany (USA)", "Germany (Soviet)", "Luxembourg",
+    "Slovenia", "Croatia", "Serbia", "Kosovo", "Montenegro",
+    "North Macedonia", "Moldova"
   ]);
 
   return (
