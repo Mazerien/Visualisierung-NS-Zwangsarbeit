@@ -1,5 +1,5 @@
 import { Circle } from "react-leaflet";
-import HousingPanel from "./InfoPanels/HousingPanel";
+import HousingPanel from "../InfoPanels/HousingPanel";
 
 export default function SchwenningenMarker({ housing, setPanelUI }) {
   console.log(housing.coords);
