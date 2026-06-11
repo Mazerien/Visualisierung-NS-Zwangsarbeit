@@ -1,11 +1,13 @@
 import { Circle } from "react-leaflet";
+import HousingPanel from "./InfoPanels/HousingPanel";
 
-export default function SchwenningenMarker({ point, setPanelUI }) {
-  if (!point?.coords) return null;
+export default function SchwenningenMarker({ housing, setPanelUI }) {
+  console.log(housing.coords);
+  if (!housing?.coords) return null;
 
   return (
     <Circle
-      center={point.coords}
+      center={housing.coords}
       radius={50}
       pathOptions={{
         color: "#ff5500",
@@ -22,12 +24,16 @@ export default function SchwenningenMarker({ point, setPanelUI }) {
             setPanelUI({
               status: "open",
               data: {
-                title: point.name,
-                Panel: point.Panel
+                title: housing.name_place,
+                Panel: HousingPanel,
+                props: {
+                  data: housing
+                }
               }
             });
           }, 180);
         },
+
         mouseover: (e) => {
           e.target.setStyle({
             fillOpacity: 1,

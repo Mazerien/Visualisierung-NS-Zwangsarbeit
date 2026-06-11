@@ -11,10 +11,12 @@ import { scaleWidth } from "./Utils/scaleWidth";
 import { clusterCities } from "./Utils/clusterCities";
 import SchwenningenMarker from "../Components/Marker/SchwenningenMarker";
 import { schwenningenPoints } from "./Hooks/useStubSchwenningenPoints";
+import { useHousingPersons } from "./Hooks/useHousingPersons";
 
 export default function MapView({ zoom, year, selected, setSelected, panelUI, setPanelUI }) {
   const data = useMapData(zoom, year);
   const nationalityCounts = useNationalityCounts();
+  const housingData = useHousingPersons(zoom);
   useEffect(() => {
     if (!setPanelUI) return;
 
@@ -147,13 +149,13 @@ export default function MapView({ zoom, year, selected, setSelected, panelUI, se
       )}
 
       {zoom === 2 &&
-        schwenningenPoints.map((point) => (
-          <SchwenningenMarker
-            key={point.id}
-            point={point}
-            setPanelUI={setPanelUI}
-          />
-        ))}
+      housingData.map((housing) => (
+        <SchwenningenMarker
+          key={housing.housing_id}
+          housing={housing}
+          setPanelUI={setPanelUI}
+        />
+      ))}
     </MapContainer>
   );
 }

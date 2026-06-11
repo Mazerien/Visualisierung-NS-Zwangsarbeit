@@ -22,7 +22,7 @@ export default function InfoPanel({ panelUI, setPanelUI }) {
           <div className="panel-content">
             <h2>{panelUI.data.title}</h2>
 
-            {PanelComponent && <PanelComponent />}
+            {PanelComponent && <PanelComponent {...panelUI.data.props} />}
           </div>
         </>
       )}

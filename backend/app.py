@@ -8,6 +8,7 @@ from api.debug import DEBUG
 from api.osm import OSM
 from api.ohm import OHM
 from api.person_data_country_api import NATIONALITY
+from api.housing_data_api import HOUSING
 from flask import jsonify
 
 def create_app() -> Flask:
@@ -41,7 +42,7 @@ def create_app() -> Flask:
             "loaded": True
         }
 
-    middleware: list[Blueprint] = [DEBUG, OSM, OHM, NATIONALITY]
+    middleware: list[Blueprint] = [DEBUG, OSM, OHM, NATIONALITY, HOUSING]
     with a.app_context():
         for api in middleware:
             print(a.url_map)
