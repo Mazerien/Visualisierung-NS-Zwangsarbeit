@@ -5,8 +5,10 @@ import "./InfoPanel.css";
 export default function HousingPanel({ data }) {
   if (!data) return null;
 
+  const persons = Array.isArray(data.persons) ? data.persons : [];
+
   return (
-    <div className="info-panel">
+    <div>
       <h3>{data.name_place || "Unknown place"}</h3>
       <p><strong>Type:</strong> {data.type || "Unknown"}</p>
 
@@ -15,9 +17,13 @@ export default function HousingPanel({ data }) {
       </p>
 
       <ul>
-        {data.persons.map((p, i) => (
-          <li key={i}>{p || "Unknown person"}</li>
-        ))}
+        {persons.length > 0 ? (
+          persons.map((p, i) => (
+            <li key={i}>{p}</li>
+          ))
+        ) : (
+          <li>No persons found</li>
+        )}
       </ul>
       
       {data.foto && (
