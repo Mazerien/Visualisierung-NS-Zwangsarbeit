@@ -142,7 +142,7 @@ class InsertData:
             # else:
             #     source = "Ostarbeiterliste"
         birthday = self.normalize_data.date(row["Geburtsdatum"])
-        
+
         try:
             database.insert_person(last_name, first_name, maiden_name, gender, place_birth,
                                    birthday, place_death, nationality, last_place_residence,
@@ -178,6 +178,8 @@ class InsertData:
                 companies.append(database.get_company_by_name(c)[0])
         if len(companies) > 0:
             return companies[0]
+        if company:
+            return company[0]
         return None
 
     def insert_housing(self, row: pd.Series, database: MySQL):
@@ -202,14 +204,16 @@ class InsertData:
                 housing.append(house)
         return housing
 
-    def insert_employment(self, occupation: str, company_id: tuple, person_id: tuple, database: MySQL):
+    def insert_employment(self, occupation: str, company_id: tuple,
+                          person_id: tuple, database: MySQL):
         """Inserts employment"""
         if company_id is None or person_id is None:
             return
-        employment = database.get_employment_by_id(company_id=company_id, person_id=person_id)
+        employment = database.get_employment_by_id(
+            company_id=company_id, person_id=person_id)
         if len(employment) == 0:
             database.insert_employment(occupation=occupation,
-                                           company_id=company_id, person_id=person_id)
+                                       company_id=company_id, person_id=person_id)
 
 
 def main():
@@ -230,14 +234,16 @@ def main():
             row = row.where(pd.notna(row), other=None)
             is_gefangenenbuch = i == 1
             person = insert_data.insert_person(row=row, database=database,
-                                      is_gefangenenbuch=is_gefangenenbuch)
+                                               is_gefangenenbuch=is_gefangenenbuch)
             if person and is_gefangenenbuch:
                 person_id = person[0]
-                company = insert_data.insert_company(row=row, database=database)
+                company = insert_data.insert_company(
+                    row=row, database=database)
                 if company:
                     company_id = company[0]
-                    insert_data.insert_employment(occupation=row["Berufsangabe"], company_id=company_id, person_id=person_id, database=database)
-                insert_data.insert_housing(row=row, database=database)    
+                    insert_data.insert_employment(
+                        occupation=row["Berufsangabe"], company_id=company_id, person_id=person_id, database=database)
+                insert_data.insert_housing(row=row, database=database)
         i += 1
 
 

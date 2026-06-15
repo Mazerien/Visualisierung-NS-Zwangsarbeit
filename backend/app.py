@@ -35,7 +35,7 @@ def create_app() -> Flask:
             "error": "Internal Server Error",
             "message": str(e)
         }), 500
-    
+
     @a.route("/debug")
     def debug():
         return {
@@ -55,3 +55,4 @@ def create_app() -> Flask:
 if __name__ == "__main__":
     app = create_app()
     app.run(host="0.0.0.0", port=5000)
+

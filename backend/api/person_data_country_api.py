@@ -1,5 +1,6 @@
-from flask import Blueprint, jsonify
+"""TODO: Docstring"""
 import os
+from flask import Blueprint, jsonify
 from person_data_country import get_nationality_counts
 
 

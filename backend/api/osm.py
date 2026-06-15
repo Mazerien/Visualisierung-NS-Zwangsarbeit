@@ -1,7 +1,7 @@
 """
 Get the map from the backend.
 """
-from flask import Blueprint, request, Response, jsonify
+from flask import Blueprint, request, jsonify
 
 from geo_map import OSMGeoMap
 from arrows import get_arrows
@@ -25,6 +25,7 @@ def warm_cache(arrows):
 
 @OSM.route(END_POINT, methods=["GET"])
 def get_map():
+    """TODO: Docstring"""
     zoom_level = int(request.args.get("zoom_level", 0))
     year = int(request.args.get("year", 1938))
     arrow_set = request.args.get("arrows", "default")
