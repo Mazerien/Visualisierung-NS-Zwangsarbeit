@@ -9,7 +9,7 @@ class NormalizeData:
 
     def replace_string(self, s: str, replacement: dict[str]) -> str:
         """Replaces all given substrings with the given dict."""
-        if (not isinstance(s, str)):
+        if not isinstance(s, str):
             return
         s = s.replace("(", "").replace(")", "")
         for old, new in replacement.items():
@@ -31,9 +31,12 @@ class NormalizeData:
     def gender(self, g: str) -> chr:
         """Converts gender markers to an international standard."""
         codes = {
-            "m/w": "x",
-            "m/f": "x",
-            "w": "f"
+            "m/w": "Other",
+            "m/f": "Other",
+            "w": "Female",
+            "m": "Male",
+            None: "Other",
+            "": "Other"
         }
         return self.replace_string(g, codes)
 
@@ -85,16 +88,16 @@ class InsertData:
         Inserts a person from a given DataFrame row into the database.
         Also returns the Person within the DB.
         """
+        row = row.where(pd.notna(row), other=None)
         try:
             maiden_name = row["Geburtsname"].title()
-        except:
+        except (KeyError, AttributeError, TypeError):
             maiden_name = ""
         try:
             gender = self.normalize_data.gender(row["Geschlecht"])
-        except:
+        except (KeyError, AttributeError, TypeError):
             gender = "Other"
-
-        if is_gefangenenbuch == True:
+        if is_gefangenenbuch:
             # Is this horrible spaghetti code?
             # Absolutely. But I was told to rewrite it so many times,
             # that I simply lost track.
@@ -103,10 +106,10 @@ class InsertData:
             first_name = row["Vorname (korrigiert)"]
             try:
                 geburtsort = row["Geburtsort"]
-            except:
+            except KeyError:
                 try:
                     geburtsort = row['Geburt']
-                except:
+                except KeyError:
                     geburtsort = ""
             place_birth = geburtsort
             try:
@@ -119,6 +122,7 @@ class InsertData:
             marriage = None
             profession = row["Berufsangabe"]
             last_place_residence = row["Letzter Wohnort (Land)"]
+            religion = row["Religion"]
         else:
             last_name = row["Nachname"].title()
             if last_name == "Nachname":
@@ -138,12 +142,14 @@ class InsertData:
             # else:
             #     source = "Ostarbeiterliste"
         birthday = self.normalize_data.date(row["Geburtsdatum"])
-        religion = row["Religion"]
+        
         try:
             database.insert_person(last_name, first_name, maiden_name, gender, place_birth,
-                               birthday, place_death, nationality, last_place_residence,
-                               marriage, father, mother, religion, profession)
-        except Exception:
+                                   birthday, place_death, nationality, last_place_residence,
+                                   marriage, father, mother, religion, profession)
+            return database.get_person_by_name(first_name, maiden_name, last_name)[0]
+        except Exception as e:
+            print(e)
             pass
 
     def insert_company(self, row: pd.Series, database: MySQL):
@@ -154,7 +160,6 @@ class InsertData:
         # Checks if either Company have a string in the Excel; discards if it is empty or erroneous.
         for c in companies:
             if c is not None and isinstance(c, str) and len(c) > 0 and c != "?":
-                # TODO: Think of a unified algorithm for correcting these human data insertion errors?
                 replacement = {
                     "... Ziegelwerk Mühlacker u.a.": "Ziegelwerk Mühlacker"
                 }
@@ -171,8 +176,10 @@ class InsertData:
                 print(f"New Company {c} added to DB.")
                 database.insert_company(c)
                 companies.append(database.get_company_by_name(c)[0])
-        return companies
-    
+        if len(companies) > 0:
+            return companies[0]
+        return None
+
     def insert_housing(self, row: pd.Series, database: MySQL):
         """Inserts a house with its respective housing type."""
         housing: list[str] = [
@@ -184,7 +191,7 @@ class InsertData:
                 housing_corrected.append(h)
         if len(housing_corrected) == 0:
             return
-        
+
         housing = []
         for h in housing_corrected:
             house = database.get_housing_by_adress(h)
@@ -195,14 +202,23 @@ class InsertData:
                 housing.append(house)
         return housing
 
+    def insert_employment(self, occupation: str, company_id: tuple, person_id: tuple, database: MySQL):
+        """Inserts employment"""
+        if company_id is None or person_id is None:
+            return
+        employment = database.get_employment_by_id(company_id=company_id, person_id=person_id)
+        if len(employment) == 0:
+            database.insert_employment(occupation=occupation,
+                                           company_id=company_id, person_id=person_id)
+
 
 def main():
     """Do the migration."""
-    files = [pd.read_excel(
-        "Ostarbeitendenliste.xlsx", usecols="B:V"
-    ), pd.read_excel(
+    files = [pd.read_excel("IMIs.xlsx", usecols="B:V"), pd.read_excel(
         "Gefangenenbuch.xlsx", skiprows=4, usecols="D,F:N,P:T,X:AD,AF,AB:AN,AT"),
-        pd.read_excel("IMIs.xlsx", usecols="B:V")
+        pd.read_excel(
+        "Ostarbeitendenliste.xlsx", usecols="B:V"
+    )
     ]
     database = MySQL("mysql", "mysql", "localhost", "mysql")
     database.drop_tables(reset_db=True)
@@ -211,13 +227,17 @@ def main():
     i = 0
     for file in files:
         for _, row in file.iterrows():
+            row = row.where(pd.notna(row), other=None)
             is_gefangenenbuch = i == 1
-            # is_imi_liste = i == 1
-            insert_data.insert_person(row=row, database=database,
+            person = insert_data.insert_person(row=row, database=database,
                                       is_gefangenenbuch=is_gefangenenbuch)
-            if is_gefangenenbuch:
-                insert_data.insert_company(row=row, database=database)
-                insert_data.insert_housing(row=row, database=database)
+            if person and is_gefangenenbuch:
+                person_id = person[0]
+                company = insert_data.insert_company(row=row, database=database)
+                if company:
+                    company_id = company[0]
+                    insert_data.insert_employment(occupation=row["Berufsangabe"], company_id=company_id, person_id=person_id, database=database)
+                insert_data.insert_housing(row=row, database=database)    
         i += 1
 
 

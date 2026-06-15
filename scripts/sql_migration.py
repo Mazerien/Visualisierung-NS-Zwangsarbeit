@@ -3,6 +3,7 @@ import mysql.connector
 import json
 from datetime import date
 
+
 class MySQL:
     """
     Handles all connections with the MySQL database.
@@ -60,7 +61,7 @@ class MySQL:
         except mysql.connector.errors.ProgrammingError:
             print("No tables exist in this DB. Creating them now.")
             self.create_tables()
-    
+
     def drop_tables(self, reset_db: bool = True):
         """
         Deletes all tables and associated data.
@@ -96,10 +97,24 @@ class MySQL:
         """
         values = (
             last_name, first_name, maiden_name, gender, place_birth, date_birth,
-            place_death, nationality, last_place_residence, marriage,
+            place_death, nationality, last_place_residence, religion,
             profession
         )
         self.query_exec(query, values)
+
+    def get_person_by_name(self, first_name: str, maiden_name: str, last_name: str):
+        if maiden_name:
+            query: str = "SELECT * FROM person WHERE first_name = %s AND maiden_name = %s AND last_name = %s"
+            values: tuple[str, str, str] = (first_name, maiden_name, last_name)
+        else:
+            query: str = "SELECT * FROM person WHERE first_name = %s AND last_name = %s"
+            values: tuple[str, str] = (first_name, last_name)
+        return self.query_exec(query, values, is_read_only=True)
+
+    def get_person_by_id(self, person_id: int):
+        query: str = "SELECT * FROM person WHERE id = %s"
+        values = (person_id,)
+        return self.query_exec(query, values, is_read_only=True)
 
     def insert_company(self, name: str):
         query = "INSERT INTO company (name_comp_hist) VALUES (%s)"
@@ -124,4 +139,22 @@ class MySQL:
         """
         query: str = "SELECT * FROM housing WHERE name_place = %s"
         values = (adress,)
+        return self.query_exec(query, values, is_read_only=True)
+
+    def insert_employment(self, occupation: str, company_id: int, person_id: int):
+        """
+        Inserts into the Employment table.
+        """
+        query: str = """INSERT INTO employment
+        (occupation, company_id, person_id) VALUES (%s, %s, %s)
+        """
+        values = (occupation, company_id, person_id)
+        self.query_exec(query, values)
+
+    def get_employment_by_id(self, company_id: int, person_id: int):
+        """
+        Gets an Employment with a given Company and Person key pair.
+        """
+        query: str = "SELECT * FROM employment WHERE company_id = %s AND person_id = %s"
+        values: tuple[int, int] = (company_id, person_id)
         return self.query_exec(query, values, is_read_only=True)
