@@ -202,7 +202,8 @@ class InsertData:
                 house = database.get_housing_by_adress(h)
                 print(f"Housing {h} added to DB.")
                 housing.append(house)
-        return housing
+        if len(housing) > 0:
+            return housing[0]
 
     def insert_employment(self, occupation: str, company_id: tuple,
                           person_id: tuple, database: MySQL):
@@ -214,6 +215,12 @@ class InsertData:
         if len(employment) == 0:
             database.insert_employment(occupation=occupation,
                                        company_id=company_id, person_id=person_id)
+    
+    def insert_tenancy(self, housing_id: int, person_id: int, start_date: dt.date, end_date: dt.date, database: MySQL):
+        if not housing_id:
+            return
+        database.insert_tenancy(housing_id=housing_id, person_id=person_id, start_date=start_date, end_date=end_date)
+        return database.get_tenancy_by_id(housing_id=housing_id, person_id=person_id)
 
 
 def main():
@@ -227,6 +234,7 @@ def main():
     database = MySQL("mysql", "mysql", "localhost", "mysql")
     database.drop_tables(reset_db=True)
     insert_data = InsertData()
+    normalize_data = NormalizeData()
 
     i = 0
     for file in files:
@@ -243,7 +251,12 @@ def main():
                     company_id = company[0]
                     insert_data.insert_employment(
                         occupation=row["Berufsangabe"], company_id=company_id, person_id=person_id, database=database)
-                insert_data.insert_housing(row=row, database=database)
+                housing = insert_data.insert_housing(row=row, database=database)
+                if housing:
+                    housing_id = housing[0][0]
+                    start_date = normalize_data.date(row["Aufenthalt ab"])
+                    end_date = normalize_data.date(row["Aufenthalt bis"])
+                    insert_data.insert_tenancy(housing_id=housing_id, person_id=person_id, start_date=start_date, end_date=end_date, database=database)
         i += 1
 
 

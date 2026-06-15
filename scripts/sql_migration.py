@@ -158,3 +158,13 @@ class MySQL:
         query: str = "SELECT * FROM employment WHERE company_id = %s AND person_id = %s"
         values: tuple[int, int] = (company_id, person_id)
         return self.query_exec(query, values, is_read_only=True)
+
+    def insert_tenancy(self, housing_id: int, person_id: int, start_date: date, end_date: date):
+        query: str = "INSERT INTO tenancy (housing_id, person_id, start_date, end_date) VALUES (%s, %s, %s, %s)"
+        values = (housing_id, person_id, start_date, end_date)
+        self.query_exec(query, values)
+    
+    def get_tenancy_by_id(self, housing_id: int, person_id: int):
+        query: str = "SELECT * FROM tenancy WHERE housing_id = %s AND person_id = %s"
+        values = (housing_id, person_id)
+        return self.query_exec(query, values, is_read_only=True)
