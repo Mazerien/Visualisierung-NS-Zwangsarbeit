@@ -3,6 +3,7 @@
   top: 2.5%;
   bottom: 2.5%;
   right: 0;
+  
 
   width: 90vw;
   max-width: 520px;
@@ -17,6 +18,10 @@
   transition: transform 0.35s ease;
 
   z-index: 3000;
+
+  display: flex;
+  justify-content: center;
+ 
 }
 
 .info-panel.open {

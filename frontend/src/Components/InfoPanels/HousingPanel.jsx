@@ -9,11 +9,10 @@ export default function HousingPanel({ data }) {
 
   return (
     <div>
-      <h3>{data.name_place || "Unknown place"}</h3>
-      <p><strong>Type:</strong> {data.type || "Unknown"}</p>
+      <p><strong>Art des Ortes:</strong> {data.type || "Unknown"}</p>
 
       <p>
-        <strong>Persons:</strong> {data.persons_count ?? 0}
+        <strong>Anzahl Personen:</strong> {data.persons_count ?? 0}
       </p>
 
       <ul>

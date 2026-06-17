@@ -1,6 +1,6 @@
 import "./InfoPanel.css";
 
-export default function InfoPanel({ panelUI, setPanelUI }) {
+export default function InfoPanel({ panelUI, setPanelUI, setSelectedHousing }) {
   const PanelComponent = panelUI?.data?.Panel;
 
   const closePanel = () => {
@@ -8,6 +8,7 @@ export default function InfoPanel({ panelUI, setPanelUI }) {
 
     setTimeout(() => {
       setPanelUI({ status: "closed", data: null });
+      setSelectedHousing(null);
     }, 180);
   };
 

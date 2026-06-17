@@ -8,6 +8,7 @@ import "leaflet/dist/leaflet.css";
 function App() {
   const [zoom, setZoom] = useState(0);
   const [selected, setSelected] = useState(null);
+  const [selectedHousing, setSelectedHousing] = useState(null);
   const [panelUI, setPanelUI] = useState({
     status: "closed", // "open" | "closing" | "closed"
     data: null
@@ -27,10 +28,11 @@ function App() {
   return (
     <div>
       <ZoomControls zoom={zoom} setZoom={setZoom} zoomLevels={zoomLevels} />
-      <MapView zoom={zoom} year={year} selected={selected} setSelected={setSelected} panelUI={panelUI} setPanelUI={setPanelUI} />
+      <MapView zoom={zoom} year={year} selected={selected} setSelected={setSelected} panelUI={panelUI} setPanelUI={setPanelUI} selectedHousing={selectedHousing} setSelectedHousing={setSelectedHousing}/>
       <InfoPanel
         panelUI={panelUI}
         setPanelUI={setPanelUI}
+        setSelectedHousing={setSelectedHousing}
       />
       {/* Timeout for the Animation */}
       {setTimeout(() => {

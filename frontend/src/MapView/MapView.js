@@ -10,13 +10,19 @@ import { useNationalityCounts } from "./Hooks/useNationalityCounts";
 import { scaleWidth } from "./Utils/scaleWidth";
 import { clusterCities } from "./Utils/clusterCities";
 import SchwenningenMarker from "../Components/Marker/SchwenningenMarker";
-import { schwenningenPoints } from "./Hooks/useStubSchwenningenPoints";
 import { useHousingPersons } from "./Hooks/useHousingPersons";
+import { housingGeo } from "./Hooks/staticGeo";
 
-export default function MapView({ zoom, year, selected, setSelected, panelUI, setPanelUI }) {
+export default function MapView({ zoom, year, selected, setSelected, panelUI, setPanelUI, selectedHousing, setSelectedHousing}) {
   const data = useMapData(zoom, year);
   const nationalityCounts = useNationalityCounts();
   const housingData = useHousingPersons(zoom);
+  const enrichedHousingData = (housingData || []).map((h) => ({
+    ...h,
+    coords: housingGeo[h.housing_id] || null
+  }));
+  console.log("housingData:", housingData);
+  console.log("enriched:", enrichedHousingData);
   useEffect(() => {
     if (!setPanelUI) return;
 
@@ -149,11 +155,13 @@ export default function MapView({ zoom, year, selected, setSelected, panelUI, se
       )}
 
       {zoom === 2 &&
-      housingData.map((housing) => (
+      enrichedHousingData.map((housing) => (
         <SchwenningenMarker
           key={housing.housing_id}
           housing={housing}
           setPanelUI={setPanelUI}
+          selectedHousing={selectedHousing}
+          setSelectedHousing={setSelectedHousing}
         />
       ))}
     </MapContainer>
