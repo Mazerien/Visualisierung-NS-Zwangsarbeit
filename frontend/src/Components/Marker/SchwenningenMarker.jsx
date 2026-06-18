@@ -13,7 +13,7 @@ export default function SchwenningenMarker({ housing, setPanelUI, selectedHousin
       center={housing.coords}
       radius={50}
       pathOptions={{
-        color: isSelected ? "#007bff" : "#ff5500",
+        color: isSelected ? "#EF6C02" : "#8A2D2D",
         fillOpacity: isSelected ? 1 : 0.8
       }}
       eventHandlers={{

@@ -8,8 +8,9 @@ export default function CityCircle({ city, data, setSelected }) {
       center={data.coords}
       radius={Math.max(5000, Math.sqrt(data.count || 0) * 8000)}
       pathOptions={{
-        color: "#3388ff",
-        fillOpacity: 1
+        color: "#8A2D2D",
+        fillColor: "#8A2D2D",
+        fillOpacity: 0.9
       }}
 
       eventHandlers={{
