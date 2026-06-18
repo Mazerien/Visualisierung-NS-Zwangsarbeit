@@ -67,7 +67,10 @@ services:
     environment:
       DB_CLIENT: "mysql"
       DB_HOST: "db"
+      DB_DATABASE: "mysql"
       DB_PORT: "3306"
+      DB_USER: "mysql"
+      DB_PASSWORD: "mysql"
     networks:
       - app
 

@@ -85,20 +85,20 @@ class MySQL:
     def insert_person(self, last_name: str, first_name: str, maiden_name: str, gender: chr,
                       place_birth: str, date_birth: date, place_death: str,
                       nationality: str, last_place_residence: str, marriage: str, father: str,
-                      mother: str, religion: str, profession: str):
+                      mother: str, religion: str, profession: str, source: str):
         """
         Inserts a single Person with their respective data.
         Refer to the MySQL schema for more information.
         """
         query = """INSERT INTO person (
         last_name, first_name, maiden_name, gender, place_birth, date_birth, place_death,
-        nationality, last_place_residence, religion, profession
-        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        nationality, last_place_residence, religion, profession, source
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
         values = (
             last_name, first_name, maiden_name, gender, place_birth, date_birth,
             place_death, nationality, last_place_residence, religion,
-            profession
+            profession, source
         )
         self.query_exec(query, values)
 
@@ -160,11 +160,22 @@ class MySQL:
         return self.query_exec(query, values, is_read_only=True)
 
     def insert_tenancy(self, housing_id: int, person_id: int, start_date: date, end_date: date):
-        query: str = "INSERT INTO tenancy (housing_id, person_id, start_date, end_date) VALUES (%s, %s, %s, %s)"
+        query: str = """INSERT INTO tenancy (housing_id, person_id, start_date, end_date)
+        VALUES (%s, %s, %s, %s)"""
         values = (housing_id, person_id, start_date, end_date)
         self.query_exec(query, values)
-    
+
     def get_tenancy_by_id(self, housing_id: int, person_id: int):
         query: str = "SELECT * FROM tenancy WHERE housing_id = %s AND person_id = %s"
         values = (housing_id, person_id)
         return self.query_exec(query, values, is_read_only=True)
+
+    def insert_imprisonment(self, person_id: int, alt_prisoner_id: str, start_date: date,
+                            end_date: date,
+                            court_of_law: str):
+        query: str = """
+        INSERT INTO imprisonment (person_id, imprisonment_id, start_date, end_date, court_of_law)
+        VALUES (%s, %s, %s, %s, %s)"""
+        values = (person_id, alt_prisoner_id,
+                  start_date, end_date, court_of_law)
+        self.query_exec(query, values)

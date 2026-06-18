@@ -35,10 +35,11 @@ class NormalizeData:
             "m/f": "Other",
             "w": "Female",
             "m": "Male",
-            None: "Other",
-            "": "Other"
         }
-        return self.replace_string(g, codes)
+        if not isinstance(g, str) or g.strip() == "":
+            return "Other"
+        return codes.get(g.strip().lower(), "Other")
+
 
     def country(self, c: str) -> str:
         """Standardizes and cleans country names or codes."""
@@ -83,7 +84,7 @@ class InsertData:
     normalize_data = NormalizeData()
 
     def insert_person(self, row: pd.Series, database: MySQL,
-                      is_gefangenenbuch: bool):
+                      is_gefangenenbuch: bool, is_imi_liste: bool):
         """
         Inserts a person from a given DataFrame row into the database.
         Also returns the Person within the DB.
@@ -123,6 +124,7 @@ class InsertData:
             profession = row["Berufsangabe"]
             last_place_residence = row["Letzter Wohnort (Land)"]
             religion = row["Religion"]
+            source = "Gefangenenbuch"
         else:
             last_name = row["Nachname"].title()
             if last_name == "Nachname":
@@ -137,16 +139,16 @@ class InsertData:
             last_place_residence = None
             religion = None
             marriage = None
-            # if is_imi_liste:
-            #     source = "IMIliste"
-            # else:
-            #     source = "Ostarbeiterliste"
+            if is_imi_liste:
+                source = "IMIliste"
+            else:
+                source = "Ostarbeiterliste"
         birthday = self.normalize_data.date(row["Geburtsdatum"])
 
         try:
             database.insert_person(last_name, first_name, maiden_name, gender, place_birth,
                                    birthday, place_death, nationality, last_place_residence,
-                                   marriage, father, mother, religion, profession)
+                                   marriage, father, mother, religion, profession, source)
             return database.get_person_by_name(first_name, maiden_name, last_name)[0]
         except Exception as e:
             print(e)
@@ -215,12 +217,58 @@ class InsertData:
         if len(employment) == 0:
             database.insert_employment(occupation=occupation,
                                        company_id=company_id, person_id=person_id)
-    
-    def insert_tenancy(self, housing_id: int, person_id: int, start_date: dt.date, end_date: dt.date, database: MySQL):
+
+    def insert_tenancy(self, housing_id: int, person_id: int, start_date: dt.date, end_date:
+                       dt.date, database: MySQL):
         if not housing_id:
             return
-        database.insert_tenancy(housing_id=housing_id, person_id=person_id, start_date=start_date, end_date=end_date)
+        database.insert_tenancy(housing_id=housing_id, person_id=person_id, start_date=start_date,
+                                end_date=end_date)
         return database.get_tenancy_by_id(housing_id=housing_id, person_id=person_id)
+
+    def insert_imprisonment(self, person_id: int, alt_prisoner_id: str, start_date: dt.date,
+                            end_date: dt.date,
+                            court_of_law: str, database: MySQL):
+        alt_prisoner_id = alt_prisoner_id.replace("?", "")
+        database.insert_imprisonment(person_id=person_id, alt_prisoner_id=alt_prisoner_id,
+            start_date=start_date,
+            end_date=end_date, court_of_law=court_of_law)
+
+
+def handle_gefangenenbuch(insert_data: InsertData, normalize_data: NormalizeData, database, row: pd.Series, person: tuple):
+    """
+    Only the Gefangenenbuch has this data. For every other list,
+    it simply skips this.
+    """
+    # Person
+    person_id = person[0]
+    company = insert_data.insert_company(
+        row=row, database=database)
+    
+    # Company
+    if company:
+        company_id = company[0]
+        insert_data.insert_employment(
+            occupation=row["Berufsangabe"], company_id=company_id, person_id=person_id,
+            database=database)
+        
+    # Housing and Tenancy
+    housing = insert_data.insert_housing(row=row, database=database)
+    if housing:
+        housing_id = housing[0][0]
+        start_date = normalize_data.date(row["Aufenthalt ab"])
+        end_date = normalize_data.date(row["Aufenthalt bis"])
+        insert_data.insert_tenancy(housing_id=housing_id, person_id=person_id,
+                                   start_date=start_date, end_date=end_date, database=database)
+    
+    # Imprisonment
+    alt_prisoner_id = row["lfd.Nr."]
+    imprisonment_start_date = normalize_data.date(row["Aufenthalt (von)"])
+    imprisonment_end_date = normalize_data.date(row["Aufenthalt (bis)"])
+    court_of_law = row["Gericht"]
+    insert_data.insert_imprisonment(person_id=person_id, alt_prisoner_id=alt_prisoner_id,
+                                    start_date=imprisonment_start_date, end_date=imprisonment_end_date,
+    court_of_law=court_of_law, database=database)
 
 
 def main():
@@ -241,22 +289,14 @@ def main():
         for _, row in file.iterrows():
             row = row.where(pd.notna(row), other=None)
             is_gefangenenbuch = i == 1
+            is_imi_liste = i == 0
             person = insert_data.insert_person(row=row, database=database,
-                                               is_gefangenenbuch=is_gefangenenbuch)
+                                               is_gefangenenbuch=is_gefangenenbuch, is_imi_liste=is_imi_liste)
+
             if person and is_gefangenenbuch:
-                person_id = person[0]
-                company = insert_data.insert_company(
-                    row=row, database=database)
-                if company:
-                    company_id = company[0]
-                    insert_data.insert_employment(
-                        occupation=row["Berufsangabe"], company_id=company_id, person_id=person_id, database=database)
-                housing = insert_data.insert_housing(row=row, database=database)
-                if housing:
-                    housing_id = housing[0][0]
-                    start_date = normalize_data.date(row["Aufenthalt ab"])
-                    end_date = normalize_data.date(row["Aufenthalt bis"])
-                    insert_data.insert_tenancy(housing_id=housing_id, person_id=person_id, start_date=start_date, end_date=end_date, database=database)
+                handle_gefangenenbuch(insert_data=insert_data, normalize_data=normalize_data,
+                                      database=database, row=row, person=person)
+
         i += 1
 
 

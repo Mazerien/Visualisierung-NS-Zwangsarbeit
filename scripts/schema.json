@@ -169,7 +169,7 @@
         "`id` INT NOT NULL AUTO_INCREMENT,",
         "`person_id` INT,",
         "`housing_id` INT,",
-        "`Imprisonment_id` VARCHAR(255),",
+        "`imprisonment_id` VARCHAR(255),",
         "`alt_prisoner_id` VARCHAR(255),",
         "`category_reason` VARCHAR(255),",
         "`start_date` DATE,",
