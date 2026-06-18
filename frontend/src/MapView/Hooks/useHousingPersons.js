@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
-import { safeFetch } from "../Utils/safeFetch";
+import { safeFetchCached } from "../Utils/safeFetchCached";
 
 export function useHousingPersons(zoomLevel) {
   const [data, setData] = useState([]);
 
   useEffect(() => {
     if (zoomLevel === 2) {
-      safeFetch(
+      safeFetchCached(
+        "housing-persons",
         "https://flask.p-qsvcne.project.space/api/housing-persons",
         []
       ).then(setData);

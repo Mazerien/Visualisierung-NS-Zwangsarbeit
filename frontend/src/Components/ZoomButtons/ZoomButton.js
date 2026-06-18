@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import './ZoomButton.css';
 
+const ZOOM_LABELS = {
+  0: 'Europa',
+  1: 'West Europa',
+  2: 'Schwenningen',
+};
+
 export default function ZoomButton({ level, isActive, onClick }) {
   const [isPressed, setIsPressed] = useState(false);
 
@@ -19,7 +25,7 @@ export default function ZoomButton({ level, isActive, onClick }) {
       className={`zoom-button ${isActive ? 'active' : ''} ${isPressed ? 'pulse' : ''}`}
       onClick={handleClick}
     >
-      Zoom {level}
+      {ZOOM_LABELS[level] ?? `Zoom ${level}`}
     </button>
   );
 }

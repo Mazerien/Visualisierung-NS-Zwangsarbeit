@@ -47,7 +47,9 @@ export default function MapView({ zoom, year, selected, setSelected, panelUI, se
 
   const selectedCountryRef = useRef(null);
 
-  if (!data) return <div>Loading map...</div>;
+  if (!data || !data.view || !data.view.center) {
+    return <div>Loading map...</div>;
+  }
 
   const counts = Object.values(nationalityCounts);
   const min = counts.length ? Math.min(...counts) : 0;
