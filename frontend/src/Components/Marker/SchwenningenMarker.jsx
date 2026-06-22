@@ -2,7 +2,6 @@ import { Circle } from "react-leaflet";
 import HousingPanel from "../InfoPanels/HousingPanel";
 
 export default function SchwenningenMarker({ housing, setPanelUI, selectedHousing, setSelectedHousing }) {
-  console.log(housing.coords);
   if (!housing?.coords) return null;
 
   const isSelected = selectedHousing?.housing_id === housing.housing_id;

@@ -3,7 +3,7 @@ import './ZoomButton.css';
 
 const ZOOM_LABELS = {
   0: 'Europa',
-  1: 'West Europa',
+  1: 'Mitteleuropa',
   2: 'Schwenningen',
 };
 

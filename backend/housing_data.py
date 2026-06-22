@@ -20,12 +20,13 @@ def get_housing_with_persons():
         "Authorization": f"Bearer {token}"
     }
 
-    # Which Places to display. Place the IDs here
     housing_ids = [17, 25, 22]
 
-    # Get Housing
+    # -------------------------
+    # HOUSING
+    # -------------------------
     housing_res = requests.get(
-        f"{directus_url}/items/Housing",
+        f"{directus_url}/items/housing_update",
         params={
             "filter[id][_in]": ",".join(map(str, housing_ids)),
             "fields": "id,name_place,type,foto,geo_coord"
@@ -36,9 +37,11 @@ def get_housing_with_persons():
 
     housings = housing_res.json().get("data", [])
 
-    # Get Tenancies
+   # -------------------------
+    # TENANCY (FIXED FIELD NAMES)
+    # -------------------------
     tenancy_res = requests.get(
-        f"{directus_url}/items/Tenancy",
+        f"{directus_url}/items/tenancy_update",
         params={
             "filter[housing_id][_in]": ",".join(map(str, housing_ids)),
             "fields": "housing_id,person_id"
@@ -49,14 +52,15 @@ def get_housing_with_persons():
 
     tenancies = tenancy_res.json().get("data", [])
 
-    # Collect person IDs
-    person_ids = list({t["person_id"] for t in tenancies})
+    # -------------------------
+    # PERSONS (FIXED FIELD NAME)
+    # -------------------------
+    person_ids = list({t["person_update"] for t in tenancies if t.get("person_update") is not None})
 
-    # Get Persons
     person_res = requests.get(
-        f"{directus_url}/items/Person",
+        f"{directus_url}/items/person_update",
         params={
-            "filter[id][_in]": ",".join(map(str, person_ids)),
+            "filter[id][_in]": ",".join(map(str, person_ids)) if person_ids else "0",
             "fields": "id,first_name,last_name"
         },
         headers=headers,
@@ -65,9 +69,8 @@ def get_housing_with_persons():
 
     persons = person_res.json().get("data", [])
 
-    # Map person_id → name
     person_map = {
-        p["id"]: f"{p['first_name']} {p['last_name']}"
+        p["id"]: f"{p.get('first_name','')} {p.get('last_name','')}".strip()
         for p in persons
     }
 
@@ -75,14 +78,17 @@ def get_housing_with_persons():
     housing_map = {h["id"]: {**h, "persons": []} for h in housings}
 
     for t in tenancies:
-        hid = t["housing_id"]
-        pid = t["person_id"]
+        hid = t.get("housing_update")
+        pid = t.get("person_update")
 
         if hid in housing_map and pid in person_map:
             housing_map[hid]["persons"].append(person_map[pid])
 
-    # Final formatting
+    # -------------------------
+    # FINAL OUTPUT (FRONTEND SAFE CONTRACT)
+    # -------------------------
     result = []
+
     for h in housing_map.values():
         geo = h.get("geo_coord")
 

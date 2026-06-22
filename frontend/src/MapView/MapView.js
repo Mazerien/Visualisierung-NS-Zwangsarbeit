@@ -21,8 +21,6 @@ export default function MapView({ zoom, year, selected, setSelected, panelUI, se
     ...h,
     coords: housingGeo[h.housing_id] || null
   }));
-  console.log("housingData:", housingData);
-  console.log("enriched:", enrichedHousingData);
   useEffect(() => {
     if (!setPanelUI) return;
 
@@ -131,7 +129,7 @@ export default function MapView({ zoom, year, selected, setSelected, panelUI, se
           );
         })}
 
-      {zoom < 2 && arrowsWithWidth
+      {zoom > 2 && arrowsWithWidth
         .filter(a =>
           Array.isArray(a.start?.coords) &&
           Array.isArray(a.end?.coords)
