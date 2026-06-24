@@ -35,6 +35,12 @@ def create_app() -> Flask:
             "error": "Internal Server Error",
             "message": str(e)
         }), 500
+    
+    @a.route("/debug")
+    def debug():
+        return {
+            "loaded": True
+        }
 
     @a.route("/debug")
     def debug():
