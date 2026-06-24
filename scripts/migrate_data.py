@@ -99,14 +99,10 @@ class InsertData:
         except (KeyError, AttributeError, TypeError):
             gender = "Other"
         if is_gefangenenbuch:
-            # Is this horrible spaghetti code?
-            # Absolutely. But I was told to rewrite it so many times,
-            # that I simply lost track.
-            # Proceed with caution.
             last_name = row["Nachname (korrigiert)"].title()
             first_name = row["Vorname (korrigiert)"]
             try:
-                geburtsort = row["Geburtsort"]
+                geburtsort = row["Geburt‏sort"]
             except KeyError:
                 try:
                     geburtsort = row['Geburt']
@@ -228,8 +224,11 @@ class InsertData:
 
     def insert_imprisonment(self, person_id: int, alt_prisoner_id: str, start_date: dt.date,
                             end_date: dt.date,
-                            court_of_law: str, database: MySQL):
-        alt_prisoner_id = alt_prisoner_id.replace("?", "")
+                            court_of_law: str, database: MySQL):  
+        try:
+            alt_prisoner_id = alt_prisoner_id.replace("?", "")
+        except AttributeError:
+            pass
         database.insert_imprisonment(person_id=person_id, alt_prisoner_id=alt_prisoner_id,
             start_date=start_date,
             end_date=end_date, court_of_law=court_of_law)
