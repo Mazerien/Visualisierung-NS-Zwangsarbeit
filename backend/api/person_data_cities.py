@@ -5,6 +5,7 @@ import os
 import requests
 
 def get_directus_config():
+    """TODO: Docstring"""
     url = os.getenv("DIRECTUS_URL")
     token = os.getenv("DIRECTUS_TOKEN")
 

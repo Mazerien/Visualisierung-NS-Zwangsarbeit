@@ -1,43 +1,47 @@
 """Script for the data migration from Excel to Directus collections."""
 import datetime as dt
-import json
-import numpy as np
 import pandas as pd
-import requests
-from __init__ import URL, ADMIN_TOKEN, AUTH_HEADER
+from sql_migration import MySQL
 
 
 class NormalizeData:
     """Helper class for migrating xlsx data by transforming and normalizing data."""
-    def replace_string(s: str, replacement: dict[str]) -> str:
+
+    def replace_string(self, s: str, replacement: dict[str]) -> str:
         """Replaces all given substrings with the given dict."""
+        if not isinstance(s, str):
+            return
         s = s.replace("(", "").replace(")", "")
         for old, new in replacement.items():
             s = s.replace(old, new)
         return s
 
-    def date(d: str) -> dt.date:
+    def date(self, d: str) -> dt.date:
         """
         Checks if given date is in DD.MM.JJJJ, MM/DD/YYYY, or YYYY-MM-DD format. 
         Returns date object.
         """
         d = str(d).split()[0]
-        for format in ("%d.%m.%Y", "%m/%d/%Y", "%Y-%m-%d"):
+        for frm in ("%d.%m.%Y", "%m/%d/%Y", "%Y-%m-%d"):
             try:
-                return dt.datetime.strptime(d, format).date()
+                return dt.datetime.strptime(d, frm).date()
             except ValueError:
                 continue
 
-    def gender(g: str) -> chr:
+    def gender(self, g: str) -> chr:
         """Converts gender markers to an international standard."""
         codes = {
-            "m/w": "x",
-            "m/f": "x",
-            "w": "f"
+            "m/w": "Other",
+            "m/f": "Other",
+            "w": "Female",
+            "m": "Male",
         }
-        return NormalizeData.replace_string(g, codes)
+        if not isinstance(g, str) or g.strip() == "":
+            return "Other"
+        return codes.get(g.strip().lower(), "Other")
 
-    def country(c: str) -> str:
+
+    def country(self, c: str) -> str:
         """Standardizes and cleans country names or codes."""
         if c is None or c == "?":
             return "Unknown"
@@ -53,9 +57,9 @@ class NormalizeData:
             "ESP": "Spain",
             "GB": "United Kingdom"
         }
-        return NormalizeData.replace_string(c, codes)
+        return self.replace_string(c, codes)
 
-    def place_of_birth(uncorrected: str, corrected: str) -> str:
+    def place_birth(self, uncorrected: str, corrected: str) -> str:
         """Returns the most accurate data available from two city strings."""
         if corrected and corrected != "?":
             return corrected.title()
@@ -63,7 +67,7 @@ class NormalizeData:
             return uncorrected.title()
         return "Unknown"
 
-    def age_at_date(birth_date: dt.date, target_date: dt.date) -> int:
+    def age_at_date(self, birth_date: dt.date, target_date: dt.date) -> int:
         """Calculates age at a given date based on birth date."""
         if birth_date is None or target_date is None:
             return None
@@ -73,128 +77,48 @@ class NormalizeData:
         return age
 
 
-class MigrateData:
-    """Helper class for inserting data into Directus."""
-    files = [pd.read_excel(
-        "Ostarbeitendenliste.xlsx", usecols="B:V"
-    ), pd.read_excel(
-        "Gefangenenbuch.xlsx", skiprows=4, usecols="D,F:N,P:T,X:AD,AF,AB:AN,AT"),
-        pd.read_excel("IMIs.xlsx", usecols="B:V"
-                      )
+class InsertData:
+    """
+    Helper class for inserting data into the MySQL database.
+    """
+    normalize_data = NormalizeData()
 
-    ]
-    # TODO: Refactor this class. This is hell, but it *does* work.
-
-    def migrate():
-        """Main function for migrating Excel data into Directus."""
-        for i in range(len(MigrateData.files)):
-            is_gefangenenbuch: bool = i == 1
-            is_imi_liste: bool = i == 2
-            file = MigrateData.files[i].replace({np.nan: None})
-
-            for _, row in file.iterrows():
-                person = MigrateData.person(
-                    row, is_gefangenenbuch, is_imi_liste)
-                if is_gefangenenbuch:
-                    # TODO
-                    company = MigrateData.company(row)
-                    housing = MigrateData.housing(row)
-                    tenancy = MigrateData.tenancy(row)
-                    imprisonment = MigrateData.imprisonment(row)
-
-    def company(row: pd.Series) -> requests.Response:
-        """Inserts one or more companies from a given DataFrame row into Directus."""
-        companies: list[str] = [row["Unternehmen"], row["Unternehmen2"]]
-        companies_corrected: list[str] = []
-
-        # Checks if either Company have a string in the Excel; discards if it is empty or erroneous.
-        for c in companies:
-            if c is not None and len(c) > 0 and c != "?":
-                # TODO: Think of a unified algorithm for correcting these human data insertion errors?
-                replacement = {
-                    "... Ziegelwerk Mühlacker u.a.": "Ziegelwerk Mühlacker"
-                }
-                c = NormalizeData.replace_string(c, replacement)
-                companies_corrected.append(c)
-        if len(companies_corrected) == 0:
-            return
-
-        # Checks if either Company is already in the DB. Creates an entry if not.
-        companies = []
-        for c in companies_corrected:
-            req = requests.get(
-                f"{URL}/items/Company", params={"filter[Name][_eq]": c}, headers=AUTH_HEADER)
-            req = json.loads(req.content)
-            if len(req["data"]) == 0:
-                print(f"New Company {c} added to Directus.")
-                payload = {
-                    "Name": c
-                }
-                req = requests.post(
-                    f"{URL}/items/Company", json=payload, headers=AUTH_HEADER)
-
-    def housing(row: pd.Series):
-        """Inserts new housing data. If no housing data is given, returns."""
-        houses = [
-            row["Unterkunft (Adresse Kriegszeit)"], row["Unterkunft2"]]
-        houses_corrected = []
-
-        for h in houses:
-            if h is not None and len(h) > 0 and h != "?":
-                h = h.replace("Wohnsitz unbek.", "")
-                houses_corrected.append(h)
-        if len(houses_corrected) == 0:
-            return
-
-        houses = []
-        for h in houses_corrected:
-            req = requests.get(
-                f"{URL}/items/Housing", params={"filter[Adress][_eq]": h}, headers=AUTH_HEADER)
-            req = json.loads(req.content)
-            if h and len(req["data"]) == 0:
-                print(f"New Housing Adress {h} added to Directus.")
-                payload = {
-                    "Adress": h,
-                    "Type": "Schwenningen"
-                }
-                req = requests.post(
-                    f"{URL}/items/Housing", json=payload, headers=AUTH_HEADER)
-
-    def imprisonment(row: pd.Series):
-        # TODO
-        pass
-
-    def person(row: pd.Series, is_gefangenenbuch: bool, is_imi_liste: bool) -> requests.Response:
-        """Inserts a person from a given DataFrame row into Directus."""
-        # TODO: Check if person already exists in DB. If they do, skips it to avoid duplicate entries.
-        # TODO: Maybe fuzzy matching?
+    def insert_person(self, row: pd.Series, database: MySQL,
+                      is_gefangenenbuch: bool, is_imi_liste: bool):
+        """
+        Inserts a person from a given DataFrame row into the database.
+        Also returns the Person within the DB.
+        """
+        row = row.where(pd.notna(row), other=None)
         try:
             maiden_name = row["Geburtsname"].title()
-            maiden_name = NormalizeData.replace_string(maiden_name, {
-                "Ostaberiterin": ""
-            })
-        except AttributeError:
-            maiden_name = None
-
+        except (KeyError, AttributeError, TypeError):
+            maiden_name = ""
         try:
-            gender = NormalizeData.gender(row["Geschlecht"])
-        except:
-            gender = "X"
-
+            gender = self.normalize_data.gender(row["Geschlecht"])
+        except (KeyError, AttributeError, TypeError):
+            gender = "Other"
         if is_gefangenenbuch:
             last_name = row["Nachname (korrigiert)"].title()
-            first_name = row["Vorname (korrigiert)"].title()
-            place_of_birth = NormalizeData.place_of_birth(
-                uncorrected=row["Geburt‏sort"], corrected=row["Geburtsort (aktuell/korrigiert)"])
+            first_name = row["Vorname (korrigiert)"]
             try:
-                place_of_death = row["Sterbeort"].replace("nan", "")
+                geburtsort = row["Geburt‏sort"]
+            except KeyError:
+                try:
+                    geburtsort = row['Geburt']
+                except KeyError:
+                    geburtsort = ""
+            place_birth = geburtsort
+            try:
+                place_death = row["Sterbeort"].replace("nan", "")
             except AttributeError:
-                place_of_death = None
-            nationality = NormalizeData.country(row["Nationalität"])
-            father = row["Name Vater"]
-            mother = row["Name Mutter"]
+                place_death = None
+            nationality = self.normalize_data.country(row["Nationalität"])
+            father = None
+            mother = None
+            marriage = None
             profession = row["Berufsangabe"]
-            last_place_of_residence = row["Letzter Wohnort (Land)"]
+            last_place_residence = row["Letzter Wohnort (Land)"]
             religion = row["Religion"]
             source = "Gefangenenbuch"
         else:
@@ -202,44 +126,178 @@ class MigrateData:
             if last_name == "Nachname":
                 return
             first_name = row["Vorname"].title()
-            place_of_birth = None
-            place_of_death = None
-            nationality = None
-            father = None
-            mother = None
+            place_birth = ""
+            place_death = ""
+            nationality = ""
+            father = ""
+            mother = ""
             profession = None
-            last_place_of_residence = None
+            last_place_residence = None
             religion = None
+            marriage = None
             if is_imi_liste:
                 source = "IMIliste"
             else:
                 source = "Ostarbeiterliste"
+        birthday = self.normalize_data.date(row["Geburtsdatum"])
 
-        payload = {
-            "LastName": last_name,
-            "FirstName": first_name,
-            "MaidenName": maiden_name,
-            "Gender": gender,
-            "DateOfBirth": str(NormalizeData.date(row["Geburtsdatum"])),
-            "PlaceOfBirth": place_of_birth,
-            "PlaceOfDeath": place_of_death,
-            "Nationality": nationality,
-            "LastPlaceOfResidence": last_place_of_residence,
-            "Marriage": None,   # TODO
-            "Father": None,    # TODO
-            "Mother": None,   # TODO
-            "Religion": religion,
-            "Profession": profession,
-            "Source": source
-        }
-        finalpayload = {}
-        for k, v in payload.items():
-            if v is not None and v != "None":
-                finalpayload[k] = v
+        try:
+            database.insert_person(last_name, first_name, maiden_name, gender, place_birth,
+                                   birthday, place_death, nationality, last_place_residence,
+                                   marriage, father, mother, religion, profession, source)
+            return database.get_person_by_name(first_name, maiden_name, last_name)[0]
+        except Exception as e:
+            print(e)
+            pass
 
-        req = requests.post(f"{URL}/items/Person",
-                            json=finalpayload, headers=AUTH_HEADER)
+    def insert_company(self, row: pd.Series, database: MySQL):
+        """Inserts into the Company table."""
+        companies: list[str] = [row["Unternehmen"], row["Unternehmen2"]]
+        companies_corrected: list[str] = []
 
-    def tenancy(row: pd.Series):
-        # TODO
-        pass
+        # Checks if either Company have a string in the Excel; discards if it is empty or erroneous.
+        for c in companies:
+            if c is not None and isinstance(c, str) and len(c) > 0 and c != "?":
+                replacement = {
+                    "... Ziegelwerk Mühlacker u.a.": "Ziegelwerk Mühlacker"
+                }
+                c = self.normalize_data.replace_string(c, replacement)
+                companies_corrected.append(c)
+        if len(companies_corrected) == 0:
+            return
+
+        # Checks if either Company is already in the DB. Creates an entry if not.
+        companies = []
+        for c in companies_corrected:
+            company = database.get_company_by_name(c)
+            if company is not None and len(company) == 0:
+                print(f"New Company {c} added to DB.")
+                database.insert_company(c)
+                companies.append(database.get_company_by_name(c)[0])
+        if len(companies) > 0:
+            return companies[0]
+        if company:
+            return company[0]
+        return None
+
+    def insert_housing(self, row: pd.Series, database: MySQL):
+        """Inserts a house with its respective housing type."""
+        housing: list[str] = [
+            row["Unterkunft (Adresse Kriegszeit)"], row["Unterkunft2"]]
+        housing_corrected: list[str] = []
+        for h in housing:
+            if h is not None and isinstance(h, str) and len(h) > 0 and h != "?":
+                h = h.replace("Wohnsitz unbek.", "")
+                housing_corrected.append(h)
+        if len(housing_corrected) == 0:
+            return
+
+        housing = []
+        for h in housing_corrected:
+            house = database.get_housing_by_adress(h)
+            if isinstance(h, str) and len(house) == 0:
+                database.insert_housing(name_place=h, location="Schwenningen")
+                house = database.get_housing_by_adress(h)
+                print(f"Housing {h} added to DB.")
+                housing.append(house)
+        if len(housing) > 0:
+            return housing[0]
+
+    def insert_employment(self, occupation: str, company_id: tuple,
+                          person_id: tuple, database: MySQL):
+        """Inserts employment"""
+        if company_id is None or person_id is None:
+            return
+        employment = database.get_employment_by_id(
+            company_id=company_id, person_id=person_id)
+        if len(employment) == 0:
+            database.insert_employment(occupation=occupation,
+                                       company_id=company_id, person_id=person_id)
+
+    def insert_tenancy(self, housing_id: int, person_id: int, start_date: dt.date, end_date:
+                       dt.date, database: MySQL):
+        if not housing_id:
+            return
+        database.insert_tenancy(housing_id=housing_id, person_id=person_id, start_date=start_date,
+                                end_date=end_date)
+        return database.get_tenancy_by_id(housing_id=housing_id, person_id=person_id)
+
+    def insert_imprisonment(self, person_id: int, alt_prisoner_id: str, start_date: dt.date,
+                            end_date: dt.date,
+                            court_of_law: str, database: MySQL):  
+        try:
+            alt_prisoner_id = alt_prisoner_id.replace("?", "")
+        except AttributeError:
+            pass
+        database.insert_imprisonment(person_id=person_id, alt_prisoner_id=alt_prisoner_id,
+            start_date=start_date,
+            end_date=end_date, court_of_law=court_of_law)
+
+
+def handle_gefangenenbuch(insert_data: InsertData, normalize_data: NormalizeData, database, row: pd.Series, person: tuple):
+    """
+    Only the Gefangenenbuch has this data. For every other list,
+    it simply skips this.
+    """
+    # Person
+    person_id = person[0]
+    company = insert_data.insert_company(
+        row=row, database=database)
+    
+    # Company
+    if company:
+        company_id = company[0]
+        insert_data.insert_employment(
+            occupation=row["Berufsangabe"], company_id=company_id, person_id=person_id,
+            database=database)
+        
+    # Housing and Tenancy
+    housing = insert_data.insert_housing(row=row, database=database)
+    if housing:
+        housing_id = housing[0][0]
+        start_date = normalize_data.date(row["Aufenthalt ab"])
+        end_date = normalize_data.date(row["Aufenthalt bis"])
+        insert_data.insert_tenancy(housing_id=housing_id, person_id=person_id,
+                                   start_date=start_date, end_date=end_date, database=database)
+    
+    # Imprisonment
+    alt_prisoner_id = row["lfd.Nr."]
+    imprisonment_start_date = normalize_data.date(row["Aufenthalt (von)"])
+    imprisonment_end_date = normalize_data.date(row["Aufenthalt (bis)"])
+    court_of_law = row["Gericht"]
+    insert_data.insert_imprisonment(person_id=person_id, alt_prisoner_id=alt_prisoner_id,
+                                    start_date=imprisonment_start_date, end_date=imprisonment_end_date,
+    court_of_law=court_of_law, database=database)
+
+
+def main():
+    """Do the migration."""
+    files = [pd.read_excel("IMIs.xlsx", usecols="B:V"), pd.read_excel(
+        "Gefangenenbuch.xlsx", skiprows=4, usecols="D,F:N,P:T,X:AD,AF,AB:AN,AT"),
+        pd.read_excel(
+        "Ostarbeitendenliste.xlsx", usecols="B:V"
+    )
+    ]
+    database = MySQL("mysql", "mysql", "localhost", "mysql")
+    database.drop_tables(reset_db=True)
+    insert_data = InsertData()
+    normalize_data = NormalizeData()
+
+    i = 0
+    for file in files:
+        for _, row in file.iterrows():
+            row = row.where(pd.notna(row), other=None)
+            is_gefangenenbuch = i == 1
+            is_imi_liste = i == 0
+            person = insert_data.insert_person(row=row, database=database,
+                                               is_gefangenenbuch=is_gefangenenbuch, is_imi_liste=is_imi_liste)
+
+            if person and is_gefangenenbuch:
+                handle_gefangenenbuch(insert_data=insert_data, normalize_data=normalize_data,
+                                      database=database, row=row, person=person)
+
+        i += 1
+
+
+if __name__ == "__main__":
+    main()

@@ -1,45 +1,66 @@
 .zoom-button {
-  padding: 10px 30px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* fully responsive sizing */
+  padding: clamp(6px, 0.8vw, 12px) clamp(12px, 1.6vw, 20px);
+
+  min-height: clamp(40px, 4vw, 56px);
+
+  border: 1px solid #D9D9D9;
+  border-radius: 999px;
+
   cursor: pointer;
-  font-weight: normal;
-  background-color: #f0f0f0;
-  color: #000;
-  transition: 
-    background-color 0.2s, 
-    color 0.2s, 
-    font-weight 0.2s, 
-    transform 0.2s, 
-    box-shadow 0.2s;
 
- font-size: clamp(16px, 3vw, 24px);
+  background-color: #F5F5F5;
+  color: #333333;
+
+  font-size: clamp(12px, 1.2vw, 16px);
+  font-weight: 400;
+  line-height: 1;
+
+  white-space: nowrap;
+
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    transform 0.2s,
+    box-shadow 0.2s,
+    border-color 0.2s;
 }
 
-.zoom-button.active {
-  background-color: #4CAF50;
-  color: #fff;
-  font-weight: bold;
-}
-
+/* Hover (subtle elevation) */
 .zoom-button:not(.active):hover {
-  background-color: #ffffff; 
-  transform: translateY(-3px); 
-  box-shadow: 0 4px 6px rgba(0,0,0,0.2); 
+  background-color: #ffffff;
+  border-color: #1E2A38;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.08);
 }
 
+/* Active state = primary navigation (dark blue) */
+.zoom-button.active {
+  background-color: #1E2A38;
+  border-color: #1E2A38;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+/* Active hover */
 .zoom-button.active:hover {
-  background-color: #5dda61; 
-  transform: translateY(-3px); 
-  box-shadow: 0 4px 6px rgba(0,0,0,0.2); 
+  background-color: #2A3A4D;
+  border-color: #2A3A4D;
+  transform: translateY(-2px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+}
+
+/* Press animation */
+.zoom-button.pulse {
+  animation: pulse 0.2s ease-in-out;
 }
 
 @keyframes pulse {
   0% { transform: scale(1); }
-  50% { transform: scale(1.5s); }
-  100% { transform: scale(0.5); }
-}
-
-.zoom-button.pulse {
-  animation: pulse 0.3s ease-in-out;
+  50% { transform: scale(0.92); }
+  100% { transform: scale(1); }
 }

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { safeFetch } from "../Utils/safeFetch";
+import { safeFetchCached } from "../Utils/safeFetchCached";
 
 const fallbackMap = {
   countries: {},
@@ -17,7 +17,8 @@ export function useMapData(zoom, year) {
   useEffect(() => {
     setData(null);
 
-    safeFetch(
+    safeFetchCached(
+      `map-${zoom}-${year}`,
       `https://flask.p-qsvcne.project.space/api/osm?zoom_level=${zoom}&year=${year}`,
       fallbackMap
     ).then(setData);

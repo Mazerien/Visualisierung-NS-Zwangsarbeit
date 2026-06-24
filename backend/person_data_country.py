@@ -39,11 +39,11 @@ def get_nationality_counts():
     if not directus_url or not directus_token:
         raise RuntimeError("Missing directus_url or directus_token")
 
-    url = f"{directus_url}/items/Person"
+    url = f"{directus_url}/items/person_update"
 
     params = {
         "aggregate[count]": "*",
-        "groupBy": "Nationality"
+        "groupBy": "nationality"
     }
 
     headers = {
@@ -59,7 +59,7 @@ def get_nationality_counts():
     data = response.json().get("data", [])
 
     raw_counts = {
-        item["Nationality"]: item["count"]
+        item["nationality"]: item["count"]
         for item in data
     }
 

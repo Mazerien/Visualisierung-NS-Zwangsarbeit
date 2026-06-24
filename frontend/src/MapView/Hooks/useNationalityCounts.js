@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
-import { safeFetch } from "../Utils/safeFetch";
+import { safeFetchCached } from "../Utils/safeFetchCached";
 
 export function useNationalityCounts() {
   const [counts, setCounts] = useState({});
 
   useEffect(() => {
-    safeFetch(
-      "https://flask.p-qsvcne.project.space/api/nationality",
-      {} // fallback
+    safeFetchCached(
+      "Nationality-Counts",
+      `https://flask.p-qsvcne.project.space/api/nationality`,
+      []
     ).then(setCounts);
   }, []);
 

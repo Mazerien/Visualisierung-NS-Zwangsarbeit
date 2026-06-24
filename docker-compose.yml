@@ -44,6 +44,13 @@ services:
       - db:/var/lib/mysql
     networks:
       - app
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=mysql
+      - MYSQL_DATABASE=mysql
+      - MYSQL_USER=mysql
+      - MYSQL_PASSWORD=mysql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       timeout: 30s
@@ -60,7 +67,10 @@ services:
     environment:
       DB_CLIENT: "mysql"
       DB_HOST: "db"
+      DB_DATABASE: "mysql"
       DB_PORT: "3306"
+      DB_USER: "mysql"
+      DB_PASSWORD: "mysql"
     networks:
       - app
 

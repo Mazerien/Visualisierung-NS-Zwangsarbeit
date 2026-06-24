@@ -9,8 +9,8 @@ export function getColor(name) {
     hash = name.charCodeAt(i) + ((hash << 5) - hash);
   }
 
-  const hue = Math.abs(hash) % 360;
-  const color = `hsl(${hue}, 60%, 75%)`;
+  const lightness = 70 + (Math.abs(hash) % 20); // Hier die Grau werte Ändern. In der Klammer ist der Wert für die Variirung
+  const color = `hsl(0, 0%, ${lightness}%)`;
 
   colorCache[name] = color;
   return color;
