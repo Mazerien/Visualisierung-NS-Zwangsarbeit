@@ -42,12 +42,6 @@ def create_app() -> Flask:
             "loaded": True
         }
 
-    @a.route("/debug")
-    def debug():
-        return {
-            "loaded": True
-        }
-
     middleware: list[Blueprint] = [DEBUG, OSM, OHM, NATIONALITY, HOUSING]
     with a.app_context():
         for api in middleware:
