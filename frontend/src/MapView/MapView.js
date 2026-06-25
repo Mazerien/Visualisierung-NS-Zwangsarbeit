@@ -81,6 +81,28 @@ export default function MapView({ zoom, year, selected, setSelected, panelUI, se
 
   const threshold = zoom === 0 ? 1 : zoom === 1 ? 0.5 : 0;
   const clusteredCities = clusterCities(cityArray, threshold);
+  const bounds = {
+    0: [
+      [30.0, -10.5],
+      [68.0, 40.0]
+    ],
+
+    1: [
+      [38.0, -8.0],   // more room downward + west
+      [60.5, 30.0]    // more room upward + east
+    ],
+
+    2: [
+      [48.03, 8.48],  // more west space (this is the big fix)
+      [48.11, 8.62]   // more east + a bit more south room
+    ]
+  };
+
+  const ZOOM_LIMITS = {
+    0: { min: 4, max: 7 },   // Europe (zoomed out)
+    1: { min: 6, max: 8 },   // region / country
+    2: { min: 15, max: 17 }  // city (Schwenningen)
+  };
 
   return (
     <MapContainer
@@ -88,12 +110,16 @@ export default function MapView({ zoom, year, selected, setSelected, panelUI, se
       center={data.view.center}
       zoom={data.view.zoom}
       style={{ height: "100vh", width: "100%" }}
-      scrollWheelZoom={false}
-      dragging={false}
+      scrollWheelZoom={true}
+      dragging={true}
+      touchZoom={true}
       doubleClickZoom={false}
-      touchZoom={false}
       keyboard={false}
       zoomControl={false}
+      maxBounds={bounds[zoom]}
+      maxBoundsViscosity={1.0}
+      minZoom={ZOOM_LIMITS[zoom].min}  
+      maxZoom={ZOOM_LIMITS[zoom].max}
     >
       <TileLayer
         url={
