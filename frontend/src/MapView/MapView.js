@@ -190,6 +190,22 @@ export default function MapView({ zoom, year, selected, setSelected, panelUI, se
           setSelectedHousing={setSelectedHousing}
         />
       ))}
+
+    <div
+      style={{
+        position: "absolute",
+        bottom: "5px",
+        right: "10px",
+        zIndex: 1000,
+        background: "rgba(255,255,255,0.8)",
+        padding: "4px 8px",
+        fontSize: "11px",
+        borderRadius: "4px"
+      }}
+    >
+      © OpenStreetMap contributors | Tiles © Esri <br />
+      Data: Natural Earth, historical-basemaps (A. Ourednik)
+    </div>
     </MapContainer>
   );
 }
