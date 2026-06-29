@@ -195,7 +195,7 @@ export default function MapView({ zoom, year, selected, setSelected, panelUI, se
       style={{
         position: "absolute",
         bottom: "5px",
-        right: "10px",
+        left: "10px",
         zIndex: 1000,
         background: "rgba(255,255,255,0.8)",
         padding: "4px 8px",
