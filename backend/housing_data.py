@@ -31,7 +31,7 @@ def get_housing_with_persons():
         "Authorization": f"Bearer {token}"
     }
 
-    housing_ids = [17, 25, 22]
+    housing_ids = [14, 26, 22, 41, 21]
 
     # -------------------------
     # HOUSING (_update)
