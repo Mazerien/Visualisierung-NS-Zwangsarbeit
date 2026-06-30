@@ -17,10 +17,24 @@ export default function MapView({ zoom, year, selected, setSelected, panelUI, se
   const data = useMapData(zoom, year);
   const nationalityCounts = useNationalityCounts();
   const housingData = useHousingPersons(zoom);
-  const enrichedHousingData = (housingData || []).map((h) => ({
-    ...h,
-    coords: housingGeo[h.housing_id] || null
-  }));
+  console.log("Housingdata: ", housingData);
+  const enrichedHousingData = (housingData || []).map((h) => {
+    let fotos = h.fotos || [];
+
+    //  HARD OVERRIDE FOR ID 281
+    if (h.housing_id === 281) {
+      fotos = [
+        "https://directus.p-qsvcne.project.space/assets/a3873dbb-c90a-41a3-8b94-5dabc96f7479",
+        "https://directus.p-qsvcne.project.space/assets/6601c7d3-fd47-4cdb-9b1a-328dee4cb89a"
+      ];
+    }
+
+    return {
+      ...h,
+      fotos,
+      coords: h.coords || housingGeo[h.housing_id] || null
+    };
+  });
   useEffect(() => {
     if (!setPanelUI) return;
 
