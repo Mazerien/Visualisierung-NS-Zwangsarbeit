@@ -24,6 +24,37 @@ def extract_id(value):
     return value
 
 
+def extract_photo_urls(photos, directus_url):
+    """
+    Handles Directus file fields:
+    - single file (dict)
+    - multiple files (list)
+    - direct ID (str)
+    """
+    urls = []
+
+    if isinstance(photos, list):
+        for p in photos:
+            if isinstance(p, dict):
+                # M2M structure
+                file_id = (
+                    p.get("id") or
+                    (p.get("directus_files_id") or {}).get("id")
+                )
+                if file_id:
+                    urls.append(f"{directus_url}/assets/{file_id}")
+
+    elif isinstance(photos, dict):
+        file_id = photos.get("id")
+        if file_id:
+            urls.append(f"{directus_url}/assets/{file_id}")
+
+    elif isinstance(photos, str):
+        urls.append(f"{directus_url}/assets/{photos}")
+
+    return urls
+
+
 def get_housing_with_persons():
     directus_url, token = get_directus_config()
 
@@ -31,16 +62,16 @@ def get_housing_with_persons():
         "Authorization": f"Bearer {token}"
     }
 
-    housing_ids = [14, 26, 22, 41, 21]
+    housing_ids = [14, 26, 22, 41, 21, 281]
 
     # -------------------------
-    # HOUSING (_update)
+    # HOUSING
     # -------------------------
     housing_res = requests.get(
         f"{directus_url}/items/housing_update",
         params={
             "filter[id][_in]": ",".join(map(str, housing_ids)),
-            "fields": "id,name_place,type,foto.id,geo_coord"
+            "fields": "id,name_place,type,photos.id,photos.directus_files_id.id,geo_coord"
         },
         headers=headers,
         timeout=TIMEOUT
@@ -49,7 +80,7 @@ def get_housing_with_persons():
     housings = housing_res.json().get("data", [])
 
     # -------------------------
-    # TENANCY (_update RELATIONS)
+    # TENANCY RELATIONS
     # -------------------------
     tenancy_res = requests.get(
         f"{directus_url}/items/tenancy_update",
@@ -63,7 +94,6 @@ def get_housing_with_persons():
 
     tenancies_raw = tenancy_res.json().get("data", [])
 
-    # Normalize tenancy data
     tenancies = []
     for t in tenancies_raw:
         hid = extract_id(t.get("housing_id"))
@@ -76,7 +106,7 @@ def get_housing_with_persons():
             })
 
     # -------------------------
-    # PERSONS (_update)
+    # PERSONS
     # -------------------------
     person_ids = list({t["person_id"] for t in tenancies})
 
@@ -133,20 +163,16 @@ def get_housing_with_persons():
             lng, lat = geo["coordinates"]
             coords = [lat, lng]
 
-        # File handling
-        foto = None
-        if isinstance(h.get("foto"), dict):
-            file_id = h["foto"].get("id")
-            if file_id:
-                foto = f"{directus_url}/assets/{file_id}"
+        fotos = extract_photo_urls(h.get("photos"), directus_url)
 
         result.append({
             "housing_id": h["id"],
             "name_place": h.get("name_place") or "Unknown place",
             "type": h.get("type") or "Unknown",
-            "foto": foto,
+            "fotos": fotos,
             "coords": coords,
             "persons_count": len(set(h["persons"])),
             "persons": list(set(h["persons"]))
         })
+
     return result

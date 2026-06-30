@@ -6,6 +6,7 @@ export default function HousingPanel({ data }) {
   if (!data) return null;
 
   const persons = Array.isArray(data.persons) ? data.persons : [];
+  const fotos = Array.isArray(data.fotos) ? data.fotos : [];
 
   return (
     <div>
@@ -24,14 +25,19 @@ export default function HousingPanel({ data }) {
           <li>No persons found</li>
         )}
       </ul>
-      
-      {data.foto && (
-        <img
-            src={data.foto}
-            alt={data.name_place || "Housing image"}
-            className="panel-image"
-        />
-        )}
+
+      {fotos.length > 0 && (
+        <div className="panel-images">
+          {fotos.map((url, i) => (
+            <img
+              key={i}
+              src={url}
+              alt={`${data.name_place || "Housing"} ${i + 1}`}
+              className="panel-image"
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
