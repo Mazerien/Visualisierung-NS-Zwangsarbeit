@@ -1,5 +1,5 @@
 """
-TODO: Docstring
+creates Requests for the extern API OHM. This File was created for tests so it can be removed.
 """
 import requests
 

@@ -1,5 +1,5 @@
 """
-TODO: Docstring
+Returns Data for the Map creation in the Frontend
 """
 from geo_cache import get_city_coords
 from geojson_cache import get_geojson
@@ -19,37 +19,6 @@ WORLD_BY_YEAR = {
     1945: "https://raw.githubusercontent.com/aourednik/historical-basemaps/master/geojson/world_1945.geojson",
     2025: "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson"
 }
-
-
-# -------------------------
-# COLORS
-# -------------------------
-
-COUNTRY_COLORS = {}
-
-COLOR_ONE = ["Germany", "USSR", "Spain", "United Kingdom", "Turkey", "Hungary"]
-COLOR_TWO = ["Italy", "Finland", "Yugoslavia", "Netherlands", "Czechoslovakia",
-             "Portugal", "Bulgaria", "Libya"
-             ]
-COLOR_THREE = ["Poland", "Romania", "Greece", "France", "Norway", "Estonia",
-               "Iran", "Syria", "Tunisia"
-               ]
-COLOR_FOUR = ["Sweden", "Switzerland", "Belgium", "Ireland", "Lithuania", "Algeria"
-              ]
-COLOR_FIVE = ["Denmark", "Latvia", "Iraq", "Luxembourg", "Armenia", "Albania",
-              "Morocco", "Mesopotamia"
-              ]
-
-for s in COLOR_ONE:
-    COUNTRY_COLORS[s] = "#fffdc1"
-for s in COLOR_TWO:
-    COUNTRY_COLORS[s] = "#ffcdcd"
-for s in COLOR_THREE:
-    COUNTRY_COLORS[s] = "#e9f2ae"
-for s in COLOR_FOUR:
-    COUNTRY_COLORS[s] = "#ffdfaa"
-for s in COLOR_FIVE:
-    COUNTRY_COLORS[s] = "#eccff2"
 
 
 # -------------------------
@@ -80,7 +49,7 @@ class OSMGeoMap:
             return MAP_CACHE[cache_key]
 
         # -------------------------
-        # LOCATION LOGIC (KEEP)
+        # LOCATION LOGIC 
         # -------------------------
 
         location = [44, 9]
@@ -94,7 +63,7 @@ class OSMGeoMap:
             zoom_start = 15
 
         # -------------------------
-        # CITY DATA (KEEP)
+        # CITY DATA 
         # -------------------------
 
         city_dataset = get_city_dataset()
@@ -107,7 +76,7 @@ class OSMGeoMap:
 
             # -------------------------
             # 1. TOTAL COUNT (like old system)
-            # -------------------------
+            # ----------
             total_count = 0
             for c, count in countries.items():
                 if isinstance(count, (int, float)):
@@ -143,7 +112,7 @@ class OSMGeoMap:
             }
 
         # -------------------------
-        # ARROWS → RETURN DATA
+        # ARROWS
         # -------------------------
 
         arrows_data = []

@@ -1,3 +1,6 @@
+/*
+  This file creates the Popups, that appear when clicking on an Circle in the Europe Map
+*/
 import { Popup } from "react-leaflet";
 
 export default function CityPopup({ selected, setSelected }) {

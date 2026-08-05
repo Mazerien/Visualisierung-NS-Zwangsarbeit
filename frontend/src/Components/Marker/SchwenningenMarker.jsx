@@ -1,3 +1,6 @@
+/*
+  This file creates the Circles for the Schwenningen Map
+*/
 import { Circle } from "react-leaflet";
 import HousingPanel from "../InfoPanels/HousingPanel";
 

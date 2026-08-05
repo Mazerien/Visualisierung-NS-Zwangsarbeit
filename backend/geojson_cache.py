@@ -1,5 +1,5 @@
 """
-TODO: Docstring
+Map Geodata caching logic (Country borders).
 """
 import json
 import os

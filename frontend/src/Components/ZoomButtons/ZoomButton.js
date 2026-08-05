@@ -1,3 +1,6 @@
+/*
+  This file creates the Buttons and is called by "ZoomControls.js"
+*/
 import React, { useState } from 'react';
 import './ZoomButton.css';
 

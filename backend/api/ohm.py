@@ -1,5 +1,5 @@
 """
-TODO: Docstring
+This API was created for tests and can be deleted.
 """
 from flask import Blueprint, request, jsonify
 from ohm import get_ohm_city_data
@@ -9,9 +9,6 @@ OHM = Blueprint("OHM", __name__)
 
 @OHM.route(f"{END_POINT}/ohm", methods=["GET"])
 def api_ohm_city():
-    """
-    TODO: Docstring
-    """
     city_name = request.args.get("name")
     country = request.args.get("country")
     year = request.args.get("year", type=int)

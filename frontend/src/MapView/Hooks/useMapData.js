@@ -1,3 +1,6 @@
+/*
+  This file is just a Fetcher with a fallback value
+*/
 import { useEffect, useState } from "react";
 import { safeFetchCached } from "../Utils/safeFetchCached";
 

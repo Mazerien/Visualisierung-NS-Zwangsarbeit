@@ -1,5 +1,7 @@
 // Panels/HousingPanel.jsx
-
+/*
+  This file contains the Data that is displayed within the Panels
+*/
 import "./InfoPanel.css";
 
 export default function HousingPanel({ data }) {

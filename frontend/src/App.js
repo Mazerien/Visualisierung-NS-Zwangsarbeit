@@ -1,3 +1,6 @@
+/*
+  This file is displaying everything 
+*/
 import { useState } from "react";
 import ZoomControls from "./Components/ZoomButtons/ZoomControls";
 import TimelineSlider from "./Components/TimeLineSlider/TimelineSlider";
@@ -16,15 +19,6 @@ function App() {
   const zoomLevels = [0, 1, 2];
   const [year, setYear] = useState(1938);
 
-  // For when switching to Backend Data
-  /*
-   useEffect(() => {
-    // Fetch interactables for the current zoom from your backend
-    fetch(`http://localhost:5000/api/interactables?zoom=${zoom}`)
-      .then((res) => res.json())
-      .then((data) => setInteractables(data))
-      .catch((err) => console.error("Failed to load interactables:", err));
-  }, [zoom]);*/ 
   return (
     <div>
       <ZoomControls zoom={zoom} setZoom={setZoom} zoomLevels={zoomLevels} />

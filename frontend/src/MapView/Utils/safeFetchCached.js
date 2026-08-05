@@ -1,5 +1,7 @@
 // utils/safeFetchCached.js
-
+/*
+  This file secures a safe fetch
+*/
 const memoryCache = new Map();
 
 export async function safeFetchCached(key, url, fallback) {

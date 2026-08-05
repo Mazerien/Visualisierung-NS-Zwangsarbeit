@@ -1,5 +1,5 @@
 """
-TODO: Docstring
+Initialising Arrows. Not used anymore, can be deleted.
 """
 from dataclasses import dataclass
 from typing import List
@@ -9,9 +9,6 @@ TARGET_COUNTRY = "Deutschland"
 
 @dataclass
 class Arrow:
-    """
-    TODO: Docstring
-    """
     start_city: str
     start_country: str
     color: str

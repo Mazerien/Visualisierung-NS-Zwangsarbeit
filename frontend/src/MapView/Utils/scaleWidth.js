@@ -1,3 +1,7 @@
+/*
+  This file manages the scale of the Europe Map Circles.
+  So that the size of the Circles is normalized
+*/
 export function scaleWidth(value, min, max) {
   const minWidth = 2;
   const maxWidth = 20;

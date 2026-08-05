@@ -1,3 +1,6 @@
+/*
+  This file was created on the first Concept. Can be deleted.
+*/
 import React from "react";
 import "./Interactable.css";
 

@@ -1,3 +1,6 @@
+/*
+  This file manages the cluster Logic, which clusters nearby Circles in the Europe Map.
+*/
 export function clusterCities(citiesArray, threshold = 0.5) {
   const clusters = [];
 

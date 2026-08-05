@@ -1,5 +1,5 @@
 """
-TODO: Docstring
+Manages the caching logic and creates extern API requests for the Geodata
 """
 import json
 import os
@@ -13,6 +13,9 @@ from mapper.country_bbox_map import COUNTRY_BBOX
 # -------------------------
 
 GEONAMES_URL = "http://api.geonames.org/searchJSON"
+
+# IMPORTANT!!! change Geonames Account. Geonames just needs a simple Account for Requests.
+# TODO: Go to the Geonames Website, create an Account and replace the Current GEONAMES_USERNAME
 GEONAMES_USERNAME = "PatrickProjekt"
 
 OHM_URL = "https://flask.p-qsvcne.project.space/api/ohm"
@@ -52,7 +55,6 @@ def resolve_country_code(country_name: str | None):
 
     c = country_name.strip().lower()
 
-    # already ISO code
     if len(c) == 2 and c.isalpha():
         return c.upper()
 

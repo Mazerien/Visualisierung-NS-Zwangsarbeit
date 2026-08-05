@@ -1,3 +1,7 @@
+/*
+  This file creates the Layer on the Europe Map which is dividing the Countries. 
+  This means Boundingboxes for interaction for each Country that is picked to be interactable.
+*/
 import { GeoJSON } from "react-leaflet";
 import { getColor } from "../Utils/getColor";
 

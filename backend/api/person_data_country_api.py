@@ -1,4 +1,4 @@
-"""TODO: Docstring"""
+"""This API was only used for the Arrows. So if Arrows are not continiued you can delete this."""
 import os
 from flask import Blueprint, jsonify
 import os

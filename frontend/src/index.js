@@ -1,3 +1,6 @@
+/*
+  This file is the index of the Website
+*/
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';

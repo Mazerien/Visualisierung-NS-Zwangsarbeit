@@ -1,3 +1,7 @@
+"""
+This file creates the Directus Requests
+"""
+
 import os
 import requests
 

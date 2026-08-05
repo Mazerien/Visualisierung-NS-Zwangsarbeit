@@ -1,3 +1,6 @@
+/*
+  This file creates the Timeslider
+*/
 import "./TimelineSlider.css";
 
 const years = [1938, 1945, 2025];

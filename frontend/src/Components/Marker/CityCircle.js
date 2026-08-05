@@ -1,3 +1,6 @@
+/*
+  This file creates the interactable Circles for the Europe Map.
+*/
 import { Circle, Tooltip } from "react-leaflet";
 import "./CityCircle.css";
 

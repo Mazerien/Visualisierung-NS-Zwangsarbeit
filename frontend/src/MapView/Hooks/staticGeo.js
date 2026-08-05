@@ -1,3 +1,6 @@
+/*
+  This file is just a throwaway Static variable help for the Presentation, due to missing Data. Can be deleted.
+*/
 export const housingGeo = {
   14: [48.0618, 8.5372],
   26: [48.0655, 8.5400],

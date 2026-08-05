@@ -1,3 +1,6 @@
+/*
+  This file creates the whole Frontend MapView. Combines the many Components into one MapContainer
+*/
 import { MapContainer, TileLayer, Polyline } from "react-leaflet";
 import { useEffect, useRef } from "react";
 

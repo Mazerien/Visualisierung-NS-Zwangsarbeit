@@ -1,3 +1,7 @@
+"""
+This file creates the Requests to get the Data from the table updated_housing, updated_persons for the SchwenningenMarker.
+"""
+
 import requests
 import os
 

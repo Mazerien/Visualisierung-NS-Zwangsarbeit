@@ -1,3 +1,6 @@
+/*
+  This file adds the color Layer on the Europe Map
+*/
 const colorCache = {};
 
 export function getColor(name) {

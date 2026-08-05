@@ -1,5 +1,5 @@
 """
-TODO: Docstring
+API which gets data from the updated_persons table
 """
 import os
 import requests

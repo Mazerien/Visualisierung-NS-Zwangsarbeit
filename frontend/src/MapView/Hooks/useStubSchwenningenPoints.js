@@ -1,5 +1,7 @@
 // data/schwenningenPoints.js
-
+/*
+  This file was created as a Placeholder and is not used anymore. Can be delted.
+*/
 import MarktplatzPanel from "../../Components/InfoPanels/MarktplatzPanek";
 import NeckarquellePanel from "../../Components/InfoPanels/NeckarquellePanel";
 import CampusPanel from "../../Components/InfoPanels/CampusPanel"

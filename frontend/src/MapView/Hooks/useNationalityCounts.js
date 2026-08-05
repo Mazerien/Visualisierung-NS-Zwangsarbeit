@@ -1,3 +1,6 @@
+/*
+  This file is just a Fetcher
+*/
 import { useEffect, useState } from "react";
 import { safeFetchCached } from "../Utils/safeFetchCached";
 

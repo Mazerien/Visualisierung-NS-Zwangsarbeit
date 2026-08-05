@@ -1,3 +1,7 @@
+
+/*
+  This file contains the structure of the Panels
+*/
 import "./InfoPanel.css";
 
 export default function InfoPanel({ panelUI, setPanelUI, setSelectedHousing }) {

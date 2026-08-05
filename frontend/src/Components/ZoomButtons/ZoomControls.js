@@ -1,3 +1,6 @@
+/*
+  This file creates each Zoom Button for the 3 different Zooms.
+*/
 import ZoomButton from "./ZoomButton";
 export default function ZoomControls({ zoom, setZoom, zoomLevels }) {
   return (
